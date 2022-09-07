@@ -1,0 +1,14 @@
+[package]
+edition   = "2021"
+name      = "wasm-launcher"
+version   = "0.1.0"
+workspace = "../.."
+
+[dependencies]
+forgotten_app = { path = "../../app" }
+
+stylist = { version = "0.10.1", features = ["yew_integration"] }
+web-sys = { version = "0.3.59", features = ["Document", "Window"] }
+yew     = "0.19.3"
+
+log = "0.4"

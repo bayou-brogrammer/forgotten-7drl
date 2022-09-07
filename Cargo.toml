@@ -1,0 +1,61 @@
+[package]
+edition = "2021"
+name    = "forgotten"
+version = "0.1.0"
+
+[workspace]
+members = ["launchers/wasm", "launchers/native", "app", "forgotten", "util/rational", "util/rand-range"]
+
+[[bin]]
+name = "native-launcher"
+path = "launchers/native/src/main.rs"
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.dev]
+opt-level = 1
+
+# Optimizations for WASM
+[profile.release]
+codegen-units = 1
+lto           = true
+opt-level     = 'z'
+panic         = 'abort'
+
+# [features]
+
+[dependencies]
+audio_data    = { path = "audio-data" }
+forgotten_app = { path = "app" }
+
+gridbugs = { version = "0.2", features = [
+  "chargrid_wgpu",
+  "chargrid_ansi_terminal",
+  "chargrid",
+  "backend_serialize",
+  "chargrid_serialize",
+  "coord_2d",
+  "grid_2d",
+  "rgb_int",
+  "storage_format_json",
+  "storage_format_bincode",
+  "audio",
+  "direction",
+  "direction_rand",
+  "chargrid_gamepad",
+  "storage_backend_file",
+  "audio_backend_native",
+  "audio_format_native_vorbis",
+] }
+
+clap   = { version = "3", features = ["derive", "cargo"] }
+log    = "0.4"
+maplit = "1"
+serde  = { version = "1.0", features = ["serde_derive"] }
+
+# Random number generator
+getrandom     = "0.2"
+rand          = "0.8"
+rand_isaac    = { version = "0.3", features = ["serde1"] }
+rand_xorshift = { version = "0.3", features = ["serde1"] }

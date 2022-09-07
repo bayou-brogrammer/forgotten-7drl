@@ -1,0 +1,19 @@
+[package]
+edition   = "2021"
+name      = "native-launcher"
+version   = "0.1.0"
+workspace = "../.."
+
+[dependencies]
+forgotten_app = { path = "../../app" }
+
+clap = { version = "3", features = ["derive", "cargo"] }
+log  = "0.4"
+
+gridbugs = { version = "0.2", features = [
+  "chargrid_wgpu",
+  "chargrid_ansi_terminal",
+  "storage_backend_file",
+  "audio_backend_native",
+  "audio_format_native_vorbis",
+] }

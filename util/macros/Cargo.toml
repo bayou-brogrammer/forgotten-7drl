@@ -1,0 +1,9 @@
+[package]
+authors = ["Jacob LeCoq <lecojacob@gmail.com>"]
+edition = "2021"
+name    = "macros"
+version = "0.1.0"
+
+[dependencies]
+rand  = "0.8"
+serde = { version = "1.0", features = ["serde_derive"] }
