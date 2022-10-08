@@ -22,22 +22,14 @@ pub fn prologue(width: u32) -> AppCF<()> {
     text_component(
         width,
         vec![
-            t("You tape over the flashing warning light. An overheating engine is the least of your worries. \
-            Gotta focus.\n\n\
-            The space station looms ahead. It's out of fuel, and about to come crashing down to Earth. \
-            Unless you get to it first. \
-            Special delivery: 1 hydrogen fuel cell with enough juice to kick the station out of this pesky \
-            atmosphere and back into space where it belongs.\n\n\
-            Back home your buddies are placing bets on whether you'll make it back alive. \
-            Last you heard, odds were 5 to 1 against.\n\n\
-            \"Docking complete,\" sounds a lifeless mechanical voice. No word yet from the station crew. Comms must be down. Figures. \
-            Shouldering your pack containing the fuel cell, you trudge into the airlock. \
-            Gotta lug this thing down the five flights of stairs to the fuel bay. Who designed this place?\n\n\
-            A dim light flickers on in the airlock revealing words smeared in blood on the opposite door:\n", NORMAL),
-            t("DON'T OPEN! DEAD INSIDE!", BOLD),
-            t("\n\n\
-                Better make those odds 6 to 1...", NORMAL),
-                t("\n\n\n\n\n\nPress any key...", FAINT),
+            t("You try one final time to page command center, but all you hear is static. 
+            You stare at the last MRE and water bottle in the storage locker. It has been 3 weeks since the last communication with home base.\n\n
+            You are the last survivor of the 3rd expedition to the planet X-23. Tasked with researching the rich mines of the X-23 seemed like an easy task
+            until they showed up. Now you have to fight for your life to escape.\n\n
+            You page one more time.....nothing\n\n", NORMAL),
+            t("You come to the realization that ", NORMAL),
+            t("You are forgotten\n\n", BOLD),
+            t("\n\n\n\nPress any key...", FAINT),
         ],
     )
 }

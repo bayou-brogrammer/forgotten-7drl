@@ -4,7 +4,14 @@ name    = "forgotten"
 version = "0.1.0"
 
 [workspace]
-members = ["launchers/wasm", "launchers/native", "app", "forgotten", "util/rational", "util/rand-range"]
+members = [
+  "launchers/wasm",
+  "launchers/native",
+  "app",
+  "forgotten",
+  "util/rational",
+  "util/rand-range",
+]
 
 [[bin]]
 name = "native-launcher"

@@ -17,6 +17,7 @@ impl Component for GameInstanceComponent {
     }
 
     fn update(&mut self, state: &mut Self::State, _ctx: Ctx, event: Event) -> Self::Output {
+        _ctx.add_size(Size::new(20, 20));
         let running = self.0.take().unwrap();
         if event.is_escape_or_start() {
             GameLoopState::Paused(running)
@@ -26,25 +27,24 @@ impl Component for GameInstanceComponent {
     }
 
     fn size(&self, _state: &Self::State, ctx: Ctx) -> Size {
+        println!("GameInstanceComponent::size");
         ctx.bounding_box.size()
     }
 }
 
 impl GameInstanceComponent {
-    fn update(&mut self, state: &mut GameLoopData, event: Event, running: witness::Running) -> GameLoopState {
+    fn update(&mut self, state: &mut GameLoopData, event: Event, running: state::Running) -> GameLoopState {
         let instance = state.instance.as_mut().unwrap();
+
         let witness = match event {
             Event::Input(input) => {
                 if let Some(app_input) = state.controls.get(input) {
                     state.cursor = None;
-                    let cfg = &state.game_config;
                     let (witness, action_result) = match app_input {
                         AppInput::Get => todo!(),
                         AppInput::Wait => todo!(),
                         AppInput::Examine => todo!(),
-                        AppInput::Direction(direction) => {
-                            running.player_walk(&mut instance.scope, direction, cfg)
-                        }
+                        AppInput::Direction(direction) => running.player_walk(&mut instance.scope, direction),
                     };
 
                     if let Err(action_error) = action_result {
@@ -57,14 +57,14 @@ impl GameInstanceComponent {
                     running.into_witness()
                 }
             }
-            Event::Tick(since_previous) => Witness::Running(running),
-            _ => Witness::Running(running),
+            Event::Tick(since_previous) => running.tick(&mut instance.scope, since_previous),
+            _ => GameState::Running(running),
         };
 
         GameLoopState::Playing(witness)
     }
 }
 
-pub fn game_instance_component(running: witness::Running) -> AppCF<GameLoopState> {
+pub fn game_instance_component(running: state::Running) -> AppCF<GameLoopState> {
     cf(GameInstanceComponent::new(running)).some().no_peek()
 }

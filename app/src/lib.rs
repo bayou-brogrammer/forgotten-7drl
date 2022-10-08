@@ -1,4 +1,3 @@
-pub mod color;
 pub mod render;
 pub mod storage;
 
@@ -19,21 +18,21 @@ mod prelude {
     pub use serde::{Deserialize, Serialize};
 
     pub use forgotten_game::prelude::*;
-    pub use forgotten_game::witness;
+    pub use forgotten_game::state;
 
     pub use crate::action::*;
     pub use crate::audio::*;
     pub use crate::controls::*;
     pub use crate::game_instance::*;
     pub use crate::game_loop::*;
+    pub use crate::render::color::*;
     pub use crate::render::*;
     pub use crate::rng::*;
+    pub use crate::storage;
     pub use crate::storage::*;
     pub use crate::AppConfig;
-    pub use crate::{color, storage};
 
-    // pub const GAME_VIEW_SIZE: Size = Size::new_u16(26, 18);
-    pub const GAME_VIEW_SIZE: Size = Size::new_u16(20, 30);
+    pub const GAME_VIEW_SIZE: Size = Size::new_u16(40, 40);
     pub const GAME_VIEW_OFFSET: Coord = Coord::new(0, 0);
     pub const LAUNCHER_TITLE: &str = "F.o.r.g.o.t.t.e.n";
 }
@@ -52,12 +51,6 @@ impl Default for AppConfig {
         Self { music_volume: 0.2, sfx_volume: 0.5, won: false, first_run: true }
     }
 }
-
-pub struct AppState {
-    game_loop_data: game_loop::GameLoopData,
-}
-
-impl_new!(AppState, game_loop_data: game_loop::GameLoopData);
 
 pub struct AppArgs {
     pub new_game: bool,

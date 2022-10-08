@@ -10,12 +10,12 @@ impl Wgpu {
     pub fn run(&self, app: gridbugs::chargrid::control_flow::App) {
         use gridbugs::chargrid_wgpu::*;
 
-        const CELL_SCALE: f64 = 3.;
+        const CELL_SCALE: f64 = 2.;
         const CELL_HEIGHT: f64 = 6. * CELL_SCALE;
         const CELL_WIDTH: f64 = 6. * CELL_SCALE;
 
         let ctx = Context::new(Config {
-            resizable: false,
+            resizable: true,
             force_secondary_adapter: false,
             underline_width_cell_ratio: 0.1,
             underline_top_offset_cell_ratio: 0.8,

@@ -9,7 +9,7 @@ pub struct GameInstanceStorable {
 }
 
 impl GameInstanceStorable {
-    pub fn into_game_instance(self) -> (GameInstance, witness::Running) {
+    pub fn into_game_instance(self) -> (GameInstance, state::Running) {
         let Self { running_game, current_music } = self;
         let (scope, running) = running_game.into_game();
         (GameInstance { scope, current_music }, running)

@@ -12,7 +12,7 @@ enum MainMenuEntry {
 }
 
 pub enum MainMenuOutput {
-    NewGame { new_running: witness::Running },
+    NewGame { new_running: state::Running },
     Quit,
 }
 
@@ -39,23 +39,19 @@ fn main_menu() -> AppCF<MainMenuEntry> {
 }
 
 fn title_decorate<T: 'static>(cf: AppCF<T>) -> AppCF<T> {
-    cf.with_title(styled_string("Rrouge?".to_string(), Style::plain_text()), 2).centre()
+    cf.with_title(styled_string(LAUNCHER_TITLE.to_string(), Style::plain_text()), 2).centre()
 }
 
 pub fn main_menu_loop() -> AppCF<MainMenuOutput> {
     use MainMenuEntry::*;
-    title_decorate(main_menu())
-        .repeat_unit(move |entry| match entry {
-            NewGame => {
-                on_state(|state: &mut State| MainMenuOutput::NewGame { new_running: state.new_game() })
-                    .break_()
-            }
-            Options => title_decorate(options_menu()).continue_(),
-            Help => text::help(MAIN_MENU_TEXT_WIDTH).centre().continue_(),
-            Prologue => text::prologue(MAIN_MENU_TEXT_WIDTH).centre().continue_(),
-            Epilogue => text::epilogue(MAIN_MENU_TEXT_WIDTH).centre().continue_(),
-            Quit => val_once(MainMenuOutput::Quit).break_(),
-        })
-        .bound_width(42)
-    // .overlay(MenuBackgroundComponent, 10)
+    title_decorate(main_menu()).repeat_unit(move |entry| match entry {
+        NewGame => {
+            on_state(|state: &mut State| MainMenuOutput::NewGame { new_running: state.new_game() }).break_()
+        }
+        Options => title_decorate(options_menu()).continue_(),
+        Help => text::help(MAIN_MENU_TEXT_WIDTH).centre().continue_(),
+        Prologue => text::prologue(MAIN_MENU_TEXT_WIDTH).centre().continue_(),
+        Epilogue => text::epilogue(MAIN_MENU_TEXT_WIDTH).centre().continue_(),
+        Quit => val_once(MainMenuOutput::Quit).break_(),
+    })
 }

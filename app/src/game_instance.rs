@@ -1,17 +1,17 @@
 use crate::prelude::*;
 
 pub struct GameInstance {
-    pub scope: WitnessScope,
+    pub scope: StateScope,
     pub current_music: Option<Music>,
 }
 
 impl GameInstance {
-    pub fn new<R: Rng>(config: &GameConfig, rng: &mut R) -> (Self, witness::Running) {
-        let (scope, running) = witness::Witness::new_game(config, rng);
+    pub fn new<R: Rng>(config: &GameConfig, rng: &mut R) -> (Self, state::Running) {
+        let (scope, running) = state::GameState::new_game(config, rng);
         (GameInstance { scope, current_music: None }, running)
     }
 
-    pub fn into_storable(self, running: witness::Running) -> GameInstanceStorable {
+    pub fn into_storable(self, running: state::Running) -> GameInstanceStorable {
         let Self { scope, current_music } = self;
         let running_game = running.running_game(scope);
         GameInstanceStorable { running_game, current_music }

@@ -6,9 +6,16 @@ version = "0.1.0"
 [dependencies]
 macros = { path = "../util/macros" }
 
-gridbugs = { version = "0.2", features = ["backend_serialize", "rgb_int_rand"] }
-log      = "0.4"
-serde    = { version = "1.0", features = ["serde_derive"] }
+gridbugs = { version = "0.3", features = [
+  "backend_serialize",
+  "rgb_int_rand",
+  "visible_area_detection_serialize",
+  "grid_search_cardinal_serialize",
+  "grid_2d",
+  "perlin2",
+] }
+log = "0.4"
+serde = { version = "1.0", features = ["serde_derive"] }
 
 # Random
 rand       = "0.8"
@@ -16,4 +23,8 @@ rand_isaac = { version = "0.3", features = ["serde1"] }
 rand_range = { path = "../util/rand-range" }
 rational   = { path = "../util/rational" }
 
-shipyard = "0.6"
+lazy_static = "1.4"
+mopa        = "0.2"
+parking_lot = "0.12"
+shred       = "0.14"
+tynm        = "0.1"

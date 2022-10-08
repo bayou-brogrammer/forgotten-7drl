@@ -11,8 +11,8 @@ pub type State = GameLoopData;
 #[derive(Debug)]
 pub enum GameLoopState {
     MainMenu,
-    Paused(witness::Running),
-    Playing(witness::Witness),
+    Paused(state::Running),
+    Playing(state::GameState),
 }
 
 pub struct GameLoopData {
@@ -33,10 +33,7 @@ pub struct GameLoopData {
     pub rng_seed_source: RngSeedSource,
 }
 
-fn new_game(
-    rng_seed_source: &mut RngSeedSource,
-    game_config: &GameConfig,
-) -> (GameInstance, witness::Running) {
+fn new_game(rng_seed_source: &mut RngSeedSource, game_config: &GameConfig) -> (GameInstance, state::Running) {
     let mut rng = Isaac64Rng::seed_from_u64(rng_seed_source.next_seed());
     GameInstance::new(game_config, &mut rng)
 }
@@ -102,7 +99,7 @@ impl GameLoopData {
         (game_loop_data, state)
     }
 
-    pub(crate) fn new_game(&mut self) -> witness::Running {
+    pub(crate) fn new_game(&mut self) -> state::Running {
         let (instance, running) = new_game(&mut self.rng_seed_source, &self.game_config);
         self.instance = Some(instance);
         running
@@ -116,6 +113,18 @@ impl GameLoopData {
 impl GameLoopData {
     pub fn save_config(&mut self) {
         self.storage.save_config(&self.config);
+    }
+
+    pub fn save_instance(&mut self, running: state::Running) -> state::Running {
+        let instance = self.instance.take().unwrap().into_storable(running);
+        self.storage.save_game(&instance);
+        let (instance, running) = instance.into_game_instance();
+        self.instance = Some(instance);
+        running
+    }
+
+    pub fn clear_saved_game(&mut self) {
+        self.storage.clear_game();
     }
 }
 
@@ -148,12 +157,18 @@ pub fn game_loop_component(initial_state: GameLoopState) -> AppCF<()> {
                     LoopControl::Continue(Playing(new_running.into_witness()))
                 }
             }),
-            Paused(_) => todo!(),
+            Paused(running) => pause_menu_loop(running).map(|pause_output| match pause_output {
+                PauseOutput::Quit => LoopControl::Break(()),
+                PauseOutput::MainMenu => LoopControl::Continue(MainMenu),
+                PauseOutput::ContinueGame { running } => {
+                    LoopControl::Continue(Playing(running.into_witness()))
+                }
+            }),
             Playing(witness) => match witness {
-                Witness::Win => todo!(),
-                Witness::GameOver => todo!(),
-                Witness::Prompt(_) => todo!(),
-                Witness::Running(running) => game_instance_component(running).continue_(),
+                GameState::Win => todo!(),
+                GameState::GameOver => todo!(),
+                GameState::Prompt(prompt_witness) => prompt(prompt_witness).map(Playing).continue_(),
+                GameState::Running(running) => game_instance_component(running).continue_(),
             },
         })
     })

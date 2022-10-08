@@ -13,7 +13,7 @@ web          = ["getrandom/js", "gridbugs/storage_backend_web", "gridbugs/audio_
 audio_data     = { path = "../audio-data" }
 forgotten_game = { path = "../forgotten" }
 
-gridbugs = { version = "0.2", features = [
+gridbugs = { version = "0.3", features = [
     "storage_format_json",
     "storage_format_bincode",
     "audio",
@@ -23,6 +23,7 @@ gridbugs = { version = "0.2", features = [
     "coord_2d",
     "chargrid_serialize",
     "chargrid_gamepad",
+    "visible_area_detection_serialize",
 ] }
 
 log      = "0.4"
