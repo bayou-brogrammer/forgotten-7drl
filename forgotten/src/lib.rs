@@ -93,6 +93,14 @@ impl Game {
         game.prime_npcs();
         game
     }
+
+    pub fn is_game_over(&self) -> bool {
+        self.world.components.dead.get(self.player_entity).is_some()
+    }
+
+    pub fn is_won(&self) -> bool {
+        false
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

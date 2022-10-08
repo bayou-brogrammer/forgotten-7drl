@@ -37,13 +37,12 @@ impl Game {
             self.turn_state = TurnState::PlayerTurn;
         }
 
-        // if self.is_game_over() {
-        //     Some(ControlFlow::GameOver)
-        // } else if self.won {
-        //     Some(ControlFlow::Win)
-        // } else {
-        //     None
-        // }
-        None
+        if self.is_game_over() {
+            Some(ControlFlow::GameOver)
+        } else if self.is_won() {
+            Some(ControlFlow::Win)
+        } else {
+            None
+        }
     }
 }
