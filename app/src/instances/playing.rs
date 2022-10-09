@@ -27,7 +27,6 @@ impl Component for GameInstanceComponent {
     }
 
     fn size(&self, _state: &Self::State, ctx: Ctx) -> Size {
-        println!("GameInstanceComponent::size");
         ctx.bounding_box.size()
     }
 }
@@ -42,8 +41,8 @@ impl GameInstanceComponent {
                     state.cursor = None;
                     let (witness, action_result) = match app_input {
                         AppInput::Get => todo!(),
-                        AppInput::Wait => todo!(),
                         AppInput::Examine => todo!(),
+                        AppInput::Wait => (running.player_wait(&mut instance.scope), Ok(())),
                         AppInput::Direction(direction) => running.player_walk(&mut instance.scope, direction),
                     };
 
@@ -52,6 +51,7 @@ impl GameInstanceComponent {
                     } else {
                         state.context_message = None;
                     }
+
                     witness
                 } else {
                     running.into_witness()

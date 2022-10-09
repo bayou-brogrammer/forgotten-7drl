@@ -16,7 +16,9 @@ impl World {
                 return false;
             }
             if let Some(feature) = spatial_cell.feature {
-                self.components.door_state.contains(feature) || !(self.components.solid.contains(feature))
+                self.components.door_state.contains(feature)
+                    || self.components.grass_state.contains(feature)
+                    || !(self.components.solid.contains(feature))
             } else {
                 true
             }

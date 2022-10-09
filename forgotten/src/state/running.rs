@@ -73,4 +73,8 @@ impl Running {
     ) -> (GameState, Result<(), ActionError>) {
         self.handle_control_flow_result(game.0.player_walk(direction))
     }
+
+    pub fn player_wait(self, game: &mut StateScope) -> GameState {
+        self.handle_control_flow(game.0.player_wait())
+    }
 }

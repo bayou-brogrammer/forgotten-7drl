@@ -8,7 +8,6 @@ spatial_table::declare_layers_module! {
   }
 }
 
-pub use layers::Layer;
-pub use layers::{LayerTable, Layers};
+pub use layers::{Layer, LayerTable, Layers};
 pub type SpatialTable = spatial_table::SpatialTable<Layers>;
 pub type Location = spatial_table::Location<Layer>;

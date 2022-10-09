@@ -2,13 +2,20 @@ use crate::{Agent, World};
 use gridbugs::{entity_table::ComponentTable, spatial_table::Coord};
 
 pub struct EnemyCounts {
-    orc: Vec<usize>,
-    troll: Vec<usize>,
+    mini: Vec<usize>,
+    sec: Vec<usize>,
+    sentry: Vec<usize>,
+    doom: Vec<usize>,
 }
 
 impl EnemyCounts {
     fn new() -> Self {
-        Self { orc: vec![8, 10, 10, 12, 12], troll: vec![2, 2, 4, 6, 6] }
+        Self {
+            mini: vec![8, 10, 10, 12, 12],
+            sec: vec![2, 2, 4, 6, 6],
+            sentry: vec![2, 3, 3, 4, 4],
+            doom: vec![0, 0, 1, 2, 4],
+        }
     }
 }
 
@@ -23,18 +30,30 @@ pub fn generate_npcs(
     let index = level as usize - 1;
     let enemy_count = EnemyCounts::new();
 
-    for _ in 0..enemy_count.orc[index] {
+    for _ in 0..enemy_count.mini[index] {
         if let Some(coord) = npc_candidates.pop() {
-            println!("Spawning orc at {:?}", coord);
-            let orc = world.spawn_orc(coord);
-            agents.insert(orc, Agent::new(world.size()));
+            let mini = world.spawn_minibot(coord);
+            agents.insert(mini, Agent::new(world.size()));
         }
     }
-    for _ in 0..enemy_count.troll[index] {
+    for _ in 0..enemy_count.sec[index] {
         if let Some(coord) = npc_candidates.pop() {
-            println!("Spawning troll at {:?}", coord);
-            let troll = world.spawn_troll(coord);
-            agents.insert(troll, Agent::new(world.size()));
+            let sec_bot = world.spawn_secbot(coord);
+            agents.insert(sec_bot, Agent::new(world.size()));
+        }
+    }
+    for _ in 0..enemy_count.sentry[index] {
+        if let Some(coord) = npc_candidates.pop() {
+            println!("Spawning sentry at {:?}", coord);
+            // let sentry = world.spawn_sentry(coord);
+            // agents.insert(sentry, Agent::new(world.size()));
+        }
+    }
+    for _ in 0..enemy_count.doom[index] {
+        if let Some(coord) = npc_candidates.pop() {
+            println!("Spawning doom at {:?}", coord);
+            // let doom = world.spawn_doom(coord);
+            // agents.insert(doom, Agent::new(world.size()));
         }
     }
 }

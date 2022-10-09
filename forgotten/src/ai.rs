@@ -11,6 +11,7 @@ impl Game {
 
     pub fn npc_turn(&mut self) {
         self.update_behaviour();
+
         for (entity, agent) in self.agents.iter_mut() {
             if !self.world.entity_exists(entity) {
                 self.world.components.dead.insert(entity, ());

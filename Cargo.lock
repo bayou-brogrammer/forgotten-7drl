@@ -523,9 +523,9 @@ dependencies = [
 
 [[package]]
 name = "coord_2d"
-version = "0.3.5"
+version = "0.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "463681b0bafa07afbff1a697703521d515369ac3a621af57c61ea2d2c75d755d"
+checksum = "f1020a2ed8bf43fc850b01db7570c0e4194d3e3d8d806a5f1857d2ab15feec57"
 dependencies = [
  "serde",
 ]
@@ -959,7 +959,7 @@ dependencies = [
  "audio_data",
  "forgotten_game",
  "getrandom",
- "gridbugs 0.3.3",
+ "gridbugs 0.4.0",
  "log",
  "maplit",
  "rand",
@@ -973,7 +973,7 @@ dependencies = [
 name = "forgotten_game"
 version = "0.1.0"
 dependencies = [
- "gridbugs 0.3.3",
+ "gridbugs 0.4.0",
  "lazy_static",
  "log",
  "macros",
@@ -1351,9 +1351,9 @@ dependencies = [
 
 [[package]]
 name = "grid_2d"
-version = "0.15.2"
+version = "0.15.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10ea69b4e8dfc8ae7b0f0d1fa510109113f3ae3fc265ba05c49e14cb3f249db4"
+checksum = "6dfb23b456edfd3f388df8047a84a367a1168f4606bc21fe1e5dc9606a23689b"
 dependencies = [
  "coord_2d",
  "serde",
@@ -1442,9 +1442,9 @@ dependencies = [
 
 [[package]]
 name = "gridbugs"
-version = "0.3.3"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4530de66623678c1a5fd480c84ef82cc7b7f74a8aa9eef2b5e3d49a6309b7a29"
+checksum = "aa72e60725e8e0ae6c680774c195000618aa51acbf2b074eb0724bd1154f8f57"
 dependencies = [
  "chargrid",
  "coord_2d",
@@ -2208,9 +2208,9 @@ dependencies = [
 
 [[package]]
 name = "profiling"
-version = "1.0.6"
+version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f61dcf0b917cd75d4521d7343d1ffff3d1583054133c9b5cbea3375c703c40d"
+checksum = "74605f360ce573babfe43964cbe520294dcb081afbf8c108fc6e23036b4da2df"
 
 [[package]]
 name = "quote"
@@ -2896,9 +2896,9 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 
 [[package]]
 name = "visible_area_detection"
-version = "0.1.2"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "456a54a68e13d269ab61e05071229db9120e6cfe2120343264634e8374226140"
+checksum = "42e8264bb79c53d0b79f0ec65973e929d2927ce7bdc80738e30784fbf488c255"
 dependencies = [
  "direction",
  "grid_2d",

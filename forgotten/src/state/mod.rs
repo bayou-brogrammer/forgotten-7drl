@@ -45,7 +45,7 @@ pub struct StateScope(pub crate::Game);
 
 mod game_interface {
     use super::StateScope;
-    use crate::{Fetch, ToRenderEntity, VisibleCellData};
+    use crate::{Fetch, VisibleCellData};
     use gridbugs::{coord_2d::Coord, visible_area_detection::VisibilityGrid};
 
     impl StateScope {
@@ -58,10 +58,6 @@ mod game_interface {
 
         pub fn is_wall_known_at(&self, coord: Coord) -> bool {
             self.0.is_wall_known_at(coord)
-        }
-
-        pub fn to_render_entities(&self) -> impl '_ + Iterator<Item = ToRenderEntity> {
-            self.0.world.to_render_entities()
         }
 
         //////////////////////////////

@@ -29,7 +29,8 @@ impl Game {
     }
 
     pub fn handle_tick_inner(&mut self, since_previous: Duration) -> Option<ControlFlow> {
-        // self.animation_context.animation_tick(&mut self.animation_context, &mut self.animation_rng);
+        self.world.run_systems(&mut self.agents, &mut self.animation_context);
+
         self.update_visibility();
 
         if self.turn_state == TurnState::EnemyTurn {

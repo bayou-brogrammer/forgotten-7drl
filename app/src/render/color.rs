@@ -1,4 +1,3 @@
-use crate::NpcType;
 use gridbugs::rgb_int::Rgba32;
 
 pub const CURSOR: Rgba32 = Rgba32::new(255, 255, 0, 64);
@@ -25,11 +24,15 @@ pub const CAVE_WALL_FG: Rgba32 = Rgba32::new_rgb(68, 39, 14);
 pub const CAVE_WALL_BG: Rgba32 = Rgba32::new_rgb(125, 82, 44);
 pub const ROOM_WALL_FG: Rgba32 = WHITE;
 pub const ROOM_WALL_BG: Rgba32 = LIGHT_GREY;
+pub const WATER_FG: Rgba32 = Rgba32::new_rgb(0, 127, 187);
+pub const WATER_BG: Rgba32 = Rgba32::new_rgb(0, 63, 127);
 
 // Entity Colors
 pub const PLAYER: Rgba32 = YELLOW;
-pub const ORC: Rgba32 = Rgba32::new_rgb(0, 187, 0);
-pub const TROLL: Rgba32 = Rgba32::new_rgb(187, 0, 0);
+pub const MINIBOT: Rgba32 = Rgba32::new_rgb(0, 187, 0);
+pub const SECBOT: Rgba32 = Rgba32::new_rgb(187, 0, 0);
+pub const PATROLBOT: Rgba32 = Rgba32::new_rgb(187, 0, 0);
+pub const DOOMBOT: Rgba32 = Rgba32::new_rgb(187, 0, 0);
 
 // Item Colors
 pub const HEALTH_POTION: Rgba32 = Rgba32::new_rgb(255, 0, 255);
@@ -39,10 +42,3 @@ pub const SWORD: Rgba32 = Rgba32::new_rgb(187, 187, 187);
 pub const STAFF: Rgba32 = Rgba32::new_rgb(187, 127, 255);
 pub const ARMOUR: Rgba32 = Rgba32::new_rgb(127, 127, 127);
 pub const ROBE: Rgba32 = Rgba32::new_rgb(127, 127, 187);
-
-pub fn npc_colour(npc_type: NpcType) -> Rgba32 {
-    match npc_type {
-        NpcType::Orc => ORC,
-        NpcType::Troll => TROLL,
-    }
-}

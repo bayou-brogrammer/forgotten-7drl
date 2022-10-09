@@ -13,7 +13,7 @@ web          = ["getrandom/js", "gridbugs/storage_backend_web", "gridbugs/audio_
 audio_data     = { path = "../audio-data" }
 forgotten_game = { path = "../forgotten" }
 
-gridbugs = { version = "0.3", features = [
+gridbugs = { version = "0.4", features = [
     "storage_format_json",
     "storage_format_bincode",
     "audio",

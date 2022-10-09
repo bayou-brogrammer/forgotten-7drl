@@ -11,9 +11,8 @@ use gridbugs::{
         CanEnter, Path, Step,
     },
     line_2d::LineSegment,
-    visible_area_detection::{vision_distance, CellVisibility, VisibilityGrid, VisionDistance},
+    visible_area_detection::{vision_distance, VisibilityGrid, VisionDistance},
 };
-use rand::seq::IteratorRandom;
 
 struct WorldCanEnterIgnoreCharacters<'a> {
     world: &'a World,
@@ -150,8 +149,10 @@ impl<'a> BestSearch for Wander<'a> {
                 }
 
                 let last_seen_count = last_seen_cell.count;
-                self.min_last_seen_count = last_seen_count;
-                self.min_last_seen_coord = Some(coord);
+                if last_seen_count < self.min_last_seen_count {
+                    self.min_last_seen_count = last_seen_count;
+                    self.min_last_seen_coord = Some(coord);
+                }
 
                 true
             } else {
@@ -225,7 +226,7 @@ impl Agent {
 
         self.behaviour = if let Some(player_coord) = world.entity_coord(player) {
             let can_see_player = has_line_of_sight(coord, player_coord, world, self.vision_distance);
-            self.last_seen_grid.update_custom(world, self.vision_distance, coord, |d, c| {
+            self.last_seen_grid.update_custom(AMBIENT_COL, world, self.vision_distance, coord, |d, c| {
                 d.update(c, can_see_player, behaviour_context)
             });
 

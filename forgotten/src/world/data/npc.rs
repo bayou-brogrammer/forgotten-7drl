@@ -2,8 +2,10 @@ use crate::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum NpcType {
-    Orc,
-    Troll,
+    MiniBot,
+    SecBot,
+    RoboCop,
+    DoomBot,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

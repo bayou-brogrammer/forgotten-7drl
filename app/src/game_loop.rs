@@ -166,7 +166,7 @@ pub fn game_loop_component(initial_state: GameLoopState) -> AppCF<()> {
             }),
             Playing(witness) => match witness {
                 GameState::Win => todo!(),
-                GameState::GameOver => todo!(),
+                GameState::GameOver => game_over().map_val(|| MainMenu).continue_(),
                 GameState::Prompt(prompt_witness) => prompt(prompt_witness).map(Playing).continue_(),
                 GameState::Running(running) => game_instance_component(running).continue_(),
             },

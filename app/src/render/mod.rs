@@ -40,9 +40,12 @@ pub(crate) fn render_game_with_visibility(
             CellVisibility::Never => (),
             CellVisibility::Previous(data) => {
                 let dim_ctx = ctx.with_tint(&|colour: Rgba32| colour.saturating_scalar_mul_div(1, 2));
-                render_cell(scope, coord, data, dim_ctx, fb);
+                render_cell(scope, coord, data, true, dim_ctx, fb);
             }
-            CellVisibility::Current { data, .. } => render_cell(scope, coord, data, ctx, fb),
+            CellVisibility::Current { data, light_colour } => {
+                let light_colour = light_colour.unwrap_or(Rgb24::new_grey(255));
+                render_cell(scope, coord, data, false, ctx_tint!(ctx, LightBlend { light_colour }), fb);
+            }
         }
     }
 
@@ -68,39 +71,37 @@ pub(crate) fn render_game_with_visibility(
     // }
 }
 
-fn render_cell(scope: &StateScope, coord: Coord, cell: &VisibleCellData, ctx: Ctx, fb: &mut FrameBuffer) {
-    // Render Map
+fn render_cell(
+    scope: &StateScope,
+    coord: Coord,
+    cell: &VisibleCellData,
+    remembered: bool,
+    ctx: Ctx,
+    fb: &mut FrameBuffer,
+) {
     cell.tiles.option_for_each_enumerate(|&tile, layer| {
-        let render_cell = render_cell_from_tile(scope, tile, coord);
+        let render_cell = render_cell_from_tile(scope, tile, coord, remembered);
         let depth = layer_depth(layer);
         fb.set_cell_relative_to_ctx(ctx, coord, depth, render_cell);
     });
 }
 
 /// Associate each tile with a description of how to render it
-fn render_cell_from_tile(scope: &StateScope, tile: Tile, coord: Coord) -> RenderCell {
+fn render_cell_from_tile(scope: &StateScope, tile: Tile, coord: Coord, remembered: bool) -> RenderCell {
     match tile {
         // Terrain
-        Tile::DoorClosed => {
-            RenderCell::BLANK.with_character('+').with_background(LIGHT_GREY).with_foreground(WHITE)
-        }
-        Tile::DoorOpen => {
-            RenderCell::BLANK.with_character('-').with_background(LIGHT_GREY).with_foreground(WHITE)
-        }
-        Tile::Grass => RenderCell::BLANK.with_character('"').with_foreground(GRASS),
-        Tile::GrassCrushed => RenderCell::BLANK.with_character('\'').with_foreground(GRASS_CRUSHED),
-        Tile::RoomFloor | Tile::CaveFloor => floor_renderable(tile),
-        Tile::RoomWall | Tile::CaveWall => {
-            let is_wall_below = scope.0.is_wall_known_at(coord + Coord::new(0, 1));
-            wall_renderable(tile, is_wall_below)
-        }
+        Tile::Wall
+        | Tile::CaveWall
+        | Tile::Floor
+        | Tile::CaveFloor
+        | Tile::Water
+        | Tile::Grass
+        | Tile::GrassCrushed
+        | Tile::DoorClosed
+        | Tile::DoorOpen => terrain_renderable(scope, tile, coord),
 
         // Entity
-        Tile::Player => RenderCell::BLANK.with_character('@').with_foreground(PLAYER).with_bold(true),
-        Tile::Npc(npc_type) => RenderCell::BLANK
-            .with_character(npc_char(npc_type))
-            .with_foreground(npc_colour(npc_type))
-            .with_bold(true),
+        Tile::Player | Tile::Npc(_) | Tile::Weapon(_) => npc_renderable(tile, remembered),
     }
 }
 

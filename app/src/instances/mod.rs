@@ -1,46 +1,44 @@
 use super::prelude::*;
 use gridbugs::chargrid::{
-    self,
-    border::BorderStyle,
     input::*,
     menu::{builder::*, Menu},
+    pad_by::Padding,
     text::StyledString,
 };
 
-mod main_menu;
-mod options;
-mod paused;
+mod gameover;
+mod menus;
 mod playing;
-mod prologue;
-mod prompt;
 
-pub use main_menu::*;
-pub use options::*;
-pub use paused::*;
+pub use gameover::*;
+pub use menus::*;
 pub use playing::*;
-pub use prologue::*;
-pub use prompt::*;
 
-fn _menu_style<T: 'static>(menu: AppCF<T>) -> AppCF<T> {
-    menu.border(BorderStyle::default()).fill(color::MENU_BACKGROUND).centre().overlay_tint(
-        render_state(|state: &State, ctx, fb| state.render(color::CURSOR, ctx, fb)),
-        gridbugs::chargrid::core::TintDim(63),
-        10,
+pub fn popup_delay(string: String) -> AppCF<()> {
+    popup_style(
+        StyledString {
+            string: string.clone(),
+            style: Style::new().with_bold(false).with_underline(false).with_foreground(Rgba32::new_grey(255)),
+        }
+        .wrap_word()
+        .cf()
+        .bound_width(50)
+        .pad_by(Padding::all(1))
+        .delay(Duration::from_secs(2)),
     )
+    .then(|| popup(string))
 }
 
-pub fn menu_style<T: 'static>(menu: AppCF<T>) -> AppCF<T> {
-    menu.border(BorderStyle::default()).fill(Rgba32::new_grey(0)).centre().overlay_tint(
-        render_state(|state: &State, ctx, fb| state.render(color::CURSOR, ctx, fb)),
-        gridbugs::chargrid::core::TintDim(63),
-        10,
-    )
-}
-
-pub fn popup_style<T: 'static>(menu: AppCF<T>) -> AppCF<T> {
-    menu.border(BorderStyle::default()).fill(Rgba32::new_grey(0)).centre().add_y(30).overlay_tint(
-        render_state(|state: &State, ctx, fb| state.render(color::CURSOR, ctx, fb)),
-        chargrid::core::TintDim(255),
-        10,
+pub fn popup(string: String) -> AppCF<()> {
+    popup_style(
+        StyledString {
+            string,
+            style: Style::new().with_bold(false).with_underline(false).with_foreground(Rgba32::new_grey(255)),
+        }
+        .wrap_word()
+        .cf()
+        .bound_width(50)
+        .pad_by(Padding::all(1))
+        .press_any_key(),
     )
 }

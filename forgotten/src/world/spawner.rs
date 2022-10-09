@@ -2,7 +2,7 @@ use crate::prelude::*;
 use gridbugs::{
     coord_2d::Coord,
     entity_table::{entity_data, Entity},
-    visible_area_detection::vision_distance,
+    visible_area_detection::{vision_distance, Light, Rational},
 };
 
 impl World {
@@ -21,19 +21,24 @@ impl World {
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                vision: vision_distance::Circle::new(200),
-                hp: HitPoints::new_full(10),
-                player: (),
                 tile: Tile::Player,
+                player: Player::new(),
+                hp: HitPoints::new_full(10),
+                vision: vision_distance::Circle::new(200),
+                light: Light {
+                    colour: Rgb24::new_grey(200),
+                    vision_distance: vision_distance::Circle::new_squared(200),
+                    diminish: Rational {numerator: 1, denominator: 8},
+                },
             },
         )
     }
 
-    pub fn spawn_room_wall(&mut self, coord: Coord) {
+    pub fn spawn_wall(&mut self, coord: Coord) {
         self.spawn_entity(
             (coord, Layer::Feature),
             entity_data! {
-                tile: Tile::RoomWall,
+                tile: Tile::Wall,
                 solid: (),
                 opacity: 255,
             },
@@ -63,11 +68,11 @@ impl World {
         );
     }
 
-    pub fn spawn_room_floor(&mut self, coord: Coord) {
+    pub fn spawn_floor(&mut self, coord: Coord) {
         self.spawn_entity(
             (coord, Layer::Floor),
             entity_data! {
-                tile: Tile::RoomFloor,
+                tile: Tile::Floor,
             },
         );
     }
@@ -92,31 +97,63 @@ impl World {
         );
     }
 
-    pub fn spawn_orc(&mut self, coord: Coord) -> Entity {
+    pub fn spawn_water(&mut self, coord: Coord) {
+        self.spawn_entity(
+            (coord, Layer::Floor),
+            entity_data! {
+                tile: Tile::Water,
+            },
+        );
+    }
+
+    pub fn spawn_minibot(&mut self, coord: Coord) -> Entity {
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                npc: Npc {
-                    disposition: Disposition::Hostile,
-                },
                 enemy: (),
-                hp: HitPoints::new_full(5),
-                tile: Tile::Npc(NpcType::Orc),
+                armour: Armour::new(1),
+                hp: HitPoints::new_full(3),
+                tile: Tile::Npc(NpcType::MiniBot),
+                npc: Npc { disposition: Disposition::Hostile },
             },
         )
     }
 
-    pub fn spawn_troll(&mut self, coord: Coord) -> Entity {
+    pub fn spawn_secbot(&mut self, coord: Coord) -> Entity {
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                npc: Npc {
-                    disposition: Disposition::Hostile,
-                },
                 enemy: (),
-                hp: HitPoints::new_full(8),
-                tile: Tile::Npc(NpcType::Troll),
+                armour: Armour::new(3),
+                hp: HitPoints::new_full(5),
+                tile: Tile::Npc(NpcType::SecBot),
+                npc: Npc { disposition: Disposition::Hostile },
+            },
+        )
+    }
 
+    pub fn spawn_robocop(&mut self, coord: Coord) -> Entity {
+        self.spawn_entity(
+            (coord, Layer::Character),
+            entity_data! {
+                enemy: (),
+                armour: Armour::new(5),
+                hp: HitPoints::new_full(10),
+                tile: Tile::Npc(NpcType::RoboCop),
+                npc: Npc { disposition: Disposition::Hostile },
+            },
+        )
+    }
+
+    pub fn spawn_doombot(&mut self, coord: Coord) -> Entity {
+        self.spawn_entity(
+            (coord, Layer::Character),
+            entity_data! {
+                enemy: (),
+                armour: Armour::new(10),
+                hp: HitPoints::new_full(30),
+                tile: Tile::Npc(NpcType::DoomBot),
+                npc: Npc { disposition: Disposition::Hostile },
             },
         )
     }

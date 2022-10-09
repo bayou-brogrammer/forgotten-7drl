@@ -60,21 +60,21 @@ pub struct Game {
     pub world: World,
     pub player_entity: Entity,
 
+    pub turn_state: TurnState,
     pub agents: ComponentTable<Agent>,
-    pub visibility_grid: VisibilityGrid<VisibleCellData>,
     pub behavior_context: BehaviourContext,
+    pub visibility_grid: VisibilityGrid<VisibleCellData>,
 
     // Duration
     since_last_frame: Duration,
-
-    pub turn_state: TurnState,
+    animation_context: AnimationContext,
 }
 
 impl Game {
     pub fn new<R: Rng>(config: &GameConfig, base_rng: &mut R) -> Self {
         crate::rng::reseed_from_rng(base_rng);
 
-        let Terrain { player_entity, world, agents } = Terrain::generate(Size::new(80, 60), 1);
+        let Terrain { player_entity, world, agents } = Terrain::generate(Size::new(40, 40), 1);
         let visibility_grid = VisibilityGrid::new(world.size());
         let behavior_context = BehaviourContext::new(world.size());
 
@@ -88,6 +88,7 @@ impl Game {
             behavior_context,
             turn_state: TurnState::PlayerTurn,
             since_last_frame: Duration::from_millis(0),
+            animation_context: AnimationContext::default(),
         };
         game.update_visibility();
         game.prime_npcs();

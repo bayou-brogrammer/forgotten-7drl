@@ -11,4 +11,10 @@ impl Game {
         self.turn_state = TurnState::EnemyTurn;
         Ok(flow)
     }
+
+    pub fn player_wait(&mut self) -> Option<ControlFlow> {
+        self.update_visibility();
+        self.turn_state = TurnState::EnemyTurn;
+        None
+    }
 }
