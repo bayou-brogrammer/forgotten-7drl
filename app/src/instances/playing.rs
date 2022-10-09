@@ -17,7 +17,6 @@ impl Component for GameInstanceComponent {
     }
 
     fn update(&mut self, state: &mut Self::State, _ctx: Ctx, event: Event) -> Self::Output {
-        _ctx.add_size(Size::new(20, 20));
         let running = self.0.take().unwrap();
         if event.is_escape_or_start() {
             GameLoopState::Paused(running)
@@ -60,6 +59,10 @@ impl GameInstanceComponent {
             Event::Tick(since_previous) => running.tick(&mut instance.scope, since_previous),
             _ => GameState::Running(running),
         };
+
+        state.examine_mouse(event);
+        state.update_examine_text();
+        state.handle_game_events();
 
         GameLoopState::Playing(witness)
     }

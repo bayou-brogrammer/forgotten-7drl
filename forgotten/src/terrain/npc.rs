@@ -1,4 +1,4 @@
-use crate::{Agent, World};
+use crate::{Agent, NpcType, World};
 use gridbugs::{entity_table::ComponentTable, spatial_table::Coord};
 
 pub struct EnemyCounts {
@@ -33,13 +33,13 @@ pub fn generate_npcs(
     for _ in 0..enemy_count.mini[index] {
         if let Some(coord) = npc_candidates.pop() {
             let mini = world.spawn_minibot(coord);
-            agents.insert(mini, Agent::new(world.size()));
+            agents.insert(mini, Agent::new(world.size(), NpcType::MiniBot));
         }
     }
     for _ in 0..enemy_count.sec[index] {
         if let Some(coord) = npc_candidates.pop() {
             let sec_bot = world.spawn_secbot(coord);
-            agents.insert(sec_bot, Agent::new(world.size()));
+            agents.insert(sec_bot, Agent::new(world.size(), NpcType::SecBot));
         }
     }
     for _ in 0..enemy_count.sentry[index] {

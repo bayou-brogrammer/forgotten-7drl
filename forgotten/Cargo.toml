@@ -14,7 +14,8 @@ gridbugs = { version = "0.4", features = [
   "grid_2d",
   "perlin2",
 ] }
-log = "0.4"
+
+log   = "0.4"
 serde = { version = "1.0", features = ["serde_derive"] }
 
 # Random

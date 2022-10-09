@@ -5,8 +5,6 @@ pub const STRIPE: Rgba32 = Rgba32::new_rgb(0xFF, 0xBE, 0x4C);
 pub const SPACE_BACKGROUND: Rgba32 = Rgba32::new_rgb(0x00, 0x00, 0x38);
 pub const MENU_BACKGROUND: Rgba32 = SPACE_BACKGROUND.saturating_scalar_mul_div(2, 3);
 
-pub const WALL_TOP: Rgba32 = Rgba32::new_rgb(0x49, 0x2E, 0x00);
-
 // Base Colors
 pub const RED: Rgba32 = Rgba32::new_rgb(255, 0, 0);
 pub const BLACK: Rgba32 = Rgba32::new_grey(0);
@@ -31,14 +29,14 @@ pub const WATER_BG: Rgba32 = Rgba32::new_rgb(0, 63, 127);
 pub const PLAYER: Rgba32 = YELLOW;
 pub const MINIBOT: Rgba32 = Rgba32::new_rgb(0, 187, 0);
 pub const SECBOT: Rgba32 = Rgba32::new_rgb(187, 0, 0);
-pub const PATROLBOT: Rgba32 = Rgba32::new_rgb(187, 0, 0);
+pub const ROBOCOP: Rgba32 = Rgba32::new_rgb(187, 0, 0);
 pub const DOOMBOT: Rgba32 = Rgba32::new_rgb(187, 0, 0);
 
-// Item Colors
-pub const HEALTH_POTION: Rgba32 = Rgba32::new_rgb(255, 0, 255);
-pub const FIREBALL_SCROLL: Rgba32 = Rgba32::new_rgb(255, 127, 0);
-pub const CONFUSION_SCROLL: Rgba32 = Rgba32::new_rgb(187, 0, 255);
-pub const SWORD: Rgba32 = Rgba32::new_rgb(187, 187, 187);
-pub const STAFF: Rgba32 = Rgba32::new_rgb(187, 127, 255);
-pub const ARMOUR: Rgba32 = Rgba32::new_rgb(127, 127, 127);
-pub const ROBE: Rgba32 = Rgba32::new_rgb(127, 127, 187);
+// UI Colors
+pub const HEALTH: Rgba32 = Rgba32::new_rgb(255, 0, 0);
+pub const CREDIT_FOREGROUND: Rgba32 = Rgba32::new_rgb(0, 127, 127);
+
+// pub const MEDKIT: Rgba32 = Rgba32::new_grey(200);
+// pub const MEDKIT_TOP: Rgba32 = Rgba32::new_grey(150);
+// pub const MAP_FOREGROUND: Rgba32 = Rgba32::new_rgb(0, 63, 0);
+// pub const MAP_BACKGROUND: Rgba32 = Rgba32::new_rgb(0, 255, 0);

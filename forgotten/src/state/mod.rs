@@ -45,7 +45,7 @@ pub struct StateScope(pub crate::Game);
 
 mod game_interface {
     use super::StateScope;
-    use crate::{Fetch, VisibleCellData};
+    use crate::{CharacterInfo, ExternalEvent, Message, Player, VisibleCellData};
     use gridbugs::{coord_2d::Coord, visible_area_detection::VisibilityGrid};
 
     impl StateScope {
@@ -56,15 +56,34 @@ mod game_interface {
             self.0.player_coord()
         }
 
-        pub fn is_wall_known_at(&self, coord: Coord) -> bool {
-            self.0.is_wall_known_at(coord)
-        }
-
         //////////////////////////////
         // Visibility
         //////////////////////////////
-        pub fn visibility_grid(&self) -> Fetch<VisibilityGrid<VisibleCellData>> {
-            self.0.world.fetch::<VisibilityGrid<VisibleCellData>>()
+        pub fn visibility_grid(&self) -> &VisibilityGrid<VisibleCellData> {
+            &self.0.visibility_grid
+        }
+
+        //////////////////////////////
+        // Queries
+        //////////////////////////////
+        pub fn player_info(&self) -> CharacterInfo {
+            self.0.world.character_info(self.0.player_entity).expect("Player info not found")
+        }
+
+        pub fn player(&self) -> &Player {
+            self.0.world.components.player.get(self.0.player_entity).expect("Player not found")
+        }
+
+        pub fn current_level(&self) -> u32 {
+            self.0.current_level()
+        }
+
+        pub fn message_log(&self) -> Vec<Message> {
+            crate::log::get_log()
+        }
+
+        pub fn events(&mut self) -> Vec<ExternalEvent> {
+            crate::event::get_events()
         }
     }
 }

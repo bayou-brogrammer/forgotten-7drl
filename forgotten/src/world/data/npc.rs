@@ -17,4 +17,5 @@ pub enum Disposition {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Npc {
     pub disposition: Disposition,
+    pub npc_type: NpcType,
 }

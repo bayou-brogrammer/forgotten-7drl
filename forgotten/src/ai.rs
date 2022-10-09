@@ -19,10 +19,14 @@ impl Game {
             }
 
             match agent.act(entity, &self.world, self.player_entity, &mut self.behavior_context) {
+                NpcAction::Wait => (),
+                NpcAction::FireLaser(direction) => {
+                    let coord = self.world.spatial_table.coord_of(entity).unwrap();
+                    self.world.fire_laser(entity, coord + direction.coord());
+                }
                 NpcAction::Walk(direction) => {
                     let _ = self.world.character_walk_in_direction(entity, direction);
                 }
-                NpcAction::Wait => (),
             }
         }
     }

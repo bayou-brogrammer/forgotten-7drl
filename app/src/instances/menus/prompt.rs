@@ -1,5 +1,4 @@
 use super::*;
-use gridbugs::chargrid::pad_by::Padding;
 
 pub fn prompt(prompt_witness: Prompt) -> AppCF<GameState> {
     on_state_then(move |state: &mut State| {

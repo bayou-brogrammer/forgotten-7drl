@@ -38,6 +38,18 @@ impl WeaponType {
     }
 }
 
+impl ToString for WeaponType {
+    fn to_string(&self) -> String {
+        match self {
+            WeaponType::BareHands => "Bare Hands".to_string(),
+            WeaponType::CattleProd => "Cattle Prod".to_string(),
+            WeaponType::Chainsaw => "Chainsaw".to_string(),
+            WeaponType::Railgun => "Railgun".to_string(),
+            WeaponType::LifeStealer => "Life Stealer".to_string(),
+        }
+    }
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Weapon {
     pub pen: u32,

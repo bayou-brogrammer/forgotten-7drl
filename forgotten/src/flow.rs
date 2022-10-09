@@ -29,14 +29,13 @@ impl Game {
     }
 
     pub fn handle_tick_inner(&mut self, since_previous: Duration) -> Option<ControlFlow> {
-        self.world.run_systems(&mut self.agents, &mut self.animation_context);
-
-        self.update_visibility();
-
         if self.turn_state == TurnState::EnemyTurn {
             self.npc_turn();
             self.turn_state = TurnState::PlayerTurn;
         }
+
+        self.world.run_systems(&mut self.agents, &mut self.animation_context);
+        self.update_visibility();
 
         if self.is_game_over() {
             Some(ControlFlow::GameOver)

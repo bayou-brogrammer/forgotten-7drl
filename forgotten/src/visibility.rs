@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use gridbugs::{spatial_table::Coord, visible_area_detection::CellVisibility};
 
-pub const AMBIENT_COL: Rgb24 = Rgb24::new_grey(31);
+pub const AMBIENT_COL: Rgb24 = Rgb24::new_grey(75);
 
 impl Game {
     pub fn update_visibility(&mut self) {

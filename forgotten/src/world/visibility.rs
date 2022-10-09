@@ -29,14 +29,47 @@ impl VisibleWorld for World {
     }
 }
 
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct RealTimeEntity {
+    pub coord: Coord,
+    pub particle: bool,
+    pub fade: Option<u8>,
+    pub tile: Option<Tile>,
+    pub layer: Option<Layer>,
+    pub colour_hint: Option<Rgb24>,
+}
+
 #[derive(Default, Serialize, Deserialize)]
 pub struct VisibleCellData {
     pub tiles: LayerTable<Option<Tile>>,
+    pub realtime: Vec<RealTimeEntity>,
 }
 
 impl VisibleCellData {
     pub fn update(&mut self, world: &World, coord: Coord) {
         let layers = world.spatial_table.layers_at_checked(coord);
         self.tiles = layers.option_and_then(|&entity| world.components.tile.get(entity).cloned());
+
+        let tile_component = &world.components.tile;
+        let spatial_table = &world.spatial_table;
+        let realtime_component = &world.components.realtime;
+        self.realtime = realtime_component
+            .iter()
+            .filter_map(move |(entity, &())| {
+                if let Some(location) = spatial_table.location_of(entity) {
+                    let tile = tile_component.get(entity).cloned();
+                    Some(RealTimeEntity {
+                        tile,
+                        coord: location.coord,
+                        layer: location.layer,
+                        fade: None,
+                        colour_hint: None,
+                        particle: false,
+                    })
+                } else {
+                    None
+                }
+            })
+            .collect();
     }
 }

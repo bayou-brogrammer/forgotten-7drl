@@ -6,12 +6,16 @@ use gridbugs::{
 
 mod character;
 pub mod color;
+mod examine;
 mod menu;
 pub mod text;
+pub mod ui;
 
 pub use character::*;
+pub use examine::*;
 pub use menu::*;
 pub use text::*;
+pub use ui::*;
 
 #[derive(Clone, Copy)]
 pub struct LightBlend {
@@ -28,6 +32,15 @@ impl Tint for LightBlend {
     }
 }
 
+#[derive(Clone, Copy)]
+struct Remembered;
+impl Tint for Remembered {
+    fn tint(&self, rgba32: Rgba32) -> Rgba32 {
+        let mean = rgba32.to_rgb24().weighted_mean_u16(rgb24::WeightsU16::new(1, 1, 1));
+        Rgb24::new_grey(mean).saturating_scalar_mul_div(1, 2).to_rgba32(255)
+    }
+}
+
 pub(crate) fn render_game_with_visibility(
     scope: &StateScope,
     offset: Coord,
@@ -35,40 +48,43 @@ pub(crate) fn render_game_with_visibility(
     ctx: Ctx,
     fb: &mut FrameBuffer,
 ) {
-    for (coord, visibility) in scope.0.enumerate_cell_visibility() {
-        match visibility {
-            CellVisibility::Never => (),
-            CellVisibility::Previous(data) => {
-                let dim_ctx = ctx.with_tint(&|colour: Rgba32| colour.saturating_scalar_mul_div(1, 2));
-                render_cell(scope, coord, data, true, dim_ctx, fb);
-            }
-            CellVisibility::Current { data, light_colour } => {
-                let light_colour = light_colour.unwrap_or(Rgb24::new_grey(255));
-                render_cell(scope, coord, data, false, ctx_tint!(ctx, LightBlend { light_colour }), fb);
-            }
-        }
-    }
-
-    // let visibility_grid = *scope.visibility_grid();
-    // let vis_count = visibility_grid.count();
-    // for screen_coord in size.coord_iter_row_major() {
-    //     let world_coord = offset + screen_coord;
-    //     if let Some(visibility_cell) = visibility_grid.get_cell(world_coord) {
-    //         match visibility_cell.visibility(vis_count) {
-    //             CellVisibility::CurrentlyVisibleWithLightColour(Some(light_colour)) => render_visibile(
-    //                 screen_coord,
-    //                 visibility_cell,
-    //                 ctx_tint!(ctx, LightBlend { light_colour }),
-    //                 fb,
-    //             ),
-    //             CellVisibility::PreviouslyVisible => {
-    //                 let dim_ctx = ctx.with_tint(&|colour: Rgba32| colour.saturating_scalar_mul_div(1, 2));
-    //                 render_remembered(screen_coord, visibility_cell, dim_ctx, fb)
-    //             }
-    //             CellVisibility::NeverVisible | CellVisibility::CurrentlyVisibleWithLightColour(None) => (),
+    // for (coord, visibility) in scope.0.enumerate_cell_visibility() {
+    //     match visibility {
+    //         CellVisibility::Never => (),
+    //         CellVisibility::Previous(data) => {
+    //             let light_colour = AMBIENT_COL;
+    //             // let dim_ctx = ctx.with_tint(&|colour: Rgba32| colour.saturating_scalar_mul_div(1, 2));
+    //             render_cell(scope, coord, data, true, ctx_tint!(ctx, LightBlend { light_colour }), fb);
+    //         }
+    //         CellVisibility::Current { data, light_colour } => {
+    //             let light_colour = light_colour.unwrap_or(AMBIENT_COL);
+    //             render_cell(scope, coord, data, false, ctx_tint!(ctx, LightBlend { light_colour }), fb);
     //         }
     //     }
     // }
+
+    let visibility_grid = scope.visibility_grid();
+    for screen_coord in size.coord_iter_row_major() {
+        let world_coord = offset + screen_coord;
+        match visibility_grid.get_visibility(world_coord) {
+            CellVisibility::Never => (),
+            CellVisibility::Previous(data) => {
+                let light_colour = AMBIENT_COL;
+                render_cell(scope, screen_coord, data, true, ctx_tint!(ctx, LightBlend { light_colour }), fb);
+            }
+            CellVisibility::Current { data, light_colour } => {
+                let light_colour = light_colour.unwrap_or(AMBIENT_COL);
+                render_cell(
+                    scope,
+                    screen_coord,
+                    data,
+                    false,
+                    ctx_tint!(ctx, LightBlend { light_colour }),
+                    fb,
+                );
+            }
+        }
+    }
 }
 
 fn render_cell(
@@ -84,6 +100,13 @@ fn render_cell(
         let depth = layer_depth(layer);
         fb.set_cell_relative_to_ctx(ctx, coord, depth, render_cell);
     });
+
+    // cell.realtime.iter().for_each(|entity| {
+    //     if let Some(tile) = entity.tile {
+    //         let render_cell = render_cell_from_tile(scope, tile, entity.coord, remembered);
+    //         fb.set_cell_relative_to_ctx(ctx, entity.coord, 1, render_cell);
+    //     }
+    // });
 }
 
 /// Associate each tile with a description of how to render it
@@ -102,6 +125,7 @@ fn render_cell_from_tile(scope: &StateScope, tile: Tile, coord: Coord, remembere
 
         // Entity
         Tile::Player | Tile::Npc(_) | Tile::Weapon(_) => npc_renderable(tile, remembered),
+        Tile::Laser => RenderCell::BLANK.with_character('*').with_foreground(RED),
     }
 }
 

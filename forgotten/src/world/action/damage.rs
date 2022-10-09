@@ -20,17 +20,18 @@ impl World {
             false
         };
 
-        // if player.melee_weapon.name == WeaponType::Chainsaw {
-        //     println!("Chain Saw Sound");
-        //     //     external_events.push(ExternalEvent::SoundEffect(SoundEffect::Chainsaw));
-        // } else {
-        //     println!("Punch Sound");
-        //     //     external_events.push(ExternalEvent::SoundEffect(SoundEffect::Punch));
-        // }
+        if player.melee_weapon.name == WeaponType::Chainsaw {
+            crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::Chainsaw));
+        } else {
+            crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::Punch));
+        }
 
-        // if let Some(enemy) = self.components.enemy.get(victim) {
-        //     message_log.push(Message::PlayerHitEnemy { enemy: *enemy, weapon: player.melee_weapon.name });
-        // }
+        if let Some(enemy) = self.components.npc.get(victim) {
+            crate::log::append_entry(Message::PlayerHitEnemy {
+                enemy: enemy.npc_type,
+                weapon: player.melee_weapon.name,
+            });
+        }
 
         let pen = player.melee_pen();
         if pen >= self.components.armour.get(victim).expect("npc lacks armour").value {
@@ -66,7 +67,27 @@ impl World {
         }
     }
 
-    pub fn npc_melee_attack(&mut self, attacker: Entity, victim: Entity) {}
+    pub fn npc_melee_attack(&mut self, attacker: Entity, victim: Entity) {
+        let &damage = self.components.damage.get(attacker).expect("npc lacks damage component");
+        let npc_type = self.components.npc.get(attacker).expect("npc lacks npc component").npc_type;
+
+        let stun_percentage = match npc_type {
+            NpcType::MiniBot => 10,
+            NpcType::SecBot => 20,
+            NpcType::RoboCop => 25,
+            NpcType::DoomBot => 40,
+        };
+
+        if crate::rng::range(0..100) < stun_percentage {
+            self.components.stunned.insert(victim, Stunned { turns: 1 });
+        }
+
+        if let Some(npc) = self.components.npc.get(attacker) {
+            crate::log::append_entry(Message::EnemyHitPlayer(npc.npc_type));
+        }
+
+        self.damage_character(victim, damage);
+    }
 
     pub fn damage_character(&mut self, character: Entity, hit_points_to_lose: u32) {
         if self.components.dead.contains(character) {
@@ -97,12 +118,11 @@ impl World {
         projectile_movement_direction: Direction,
         entity_to_damage: Entity,
     ) {
-        println!("apply_projectile_damage");
         if let Some(armour) = self.components.armour.get(entity_to_damage).cloned() {
             if let Some(remaining_pen) = projectile_damage.pen.checked_sub(armour.value) {
-                if let Some(&enemy) = self.components.enemy.get(entity_to_damage) {
+                if let Some(&enemy) = self.components.npc.get(entity_to_damage) {
                     if let Some(weapon) = projectile_damage.weapon_name {
-                        // message_log.push(Message::PlayerHitEnemy { enemy, weapon });
+                        crate::log::append_entry(Message::PlayerHitEnemy { enemy: enemy.npc_type, weapon })
                     }
                 }
 

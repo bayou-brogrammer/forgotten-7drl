@@ -20,3 +20,10 @@ impl Player {
         self.melee_weapon.pen
     }
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct CharacterInfo {
+    pub coord: Coord,
+    pub hit_points: HitPoints,
+    pub stunned: bool,
+}

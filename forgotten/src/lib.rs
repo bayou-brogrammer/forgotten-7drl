@@ -8,6 +8,8 @@ mod terrain;
 mod visibility;
 mod world;
 
+pub mod event;
+pub mod log;
 pub mod rng;
 pub mod state;
 
@@ -28,7 +30,9 @@ pub mod prelude {
 
     pub use crate::ai::*;
     pub use crate::behavior::*;
+    pub use crate::event::*;
     pub use crate::flow::*;
+    pub use crate::log::*;
     pub use crate::player::*;
     pub use crate::prompt::*;
     pub use crate::sound::*;
@@ -36,8 +40,10 @@ pub mod prelude {
     pub use crate::terrain::*;
     pub use crate::visibility::*;
     pub use crate::world::*;
+
     pub use crate::{Game, GameConfig};
 }
+
 use gridbugs::visible_area_detection::VisibilityGrid;
 pub use prelude::*;
 
@@ -74,7 +80,7 @@ impl Game {
     pub fn new<R: Rng>(config: &GameConfig, base_rng: &mut R) -> Self {
         crate::rng::reseed_from_rng(base_rng);
 
-        let Terrain { player_entity, world, agents } = Terrain::generate(Size::new(40, 40), 1);
+        let Terrain { player_entity, world, agents } = Terrain::generate(Size::new(80, 60), 1);
         let visibility_grid = VisibilityGrid::new(world.size());
         let behavior_context = BehaviourContext::new(world.size());
 
@@ -101,6 +107,10 @@ impl Game {
 
     pub fn is_won(&self) -> bool {
         false
+    }
+
+    pub fn current_level(&self) -> u32 {
+        self.world.level
     }
 }
 

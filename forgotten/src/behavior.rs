@@ -38,7 +38,7 @@ impl<'a> CanEnter for WorldCanEnterAvoidNpcs<'a> {
     }
 }
 
-const FLEE_DISTANCE: Distance = 5;
+const MAX_DISTANCE: Distance = 5;
 
 fn has_line_of_sight(
     eye: Coord,
@@ -107,6 +107,7 @@ enum Behaviour {
 pub enum NpcAction {
     Walk(CardinalDirection),
     Wait,
+    FireLaser(CardinalDirection),
 }
 
 struct Wander<'a> {
@@ -174,6 +175,7 @@ impl<'a> BestSearch for Wander<'a> {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Agent {
+    npc_type: NpcType,
     behaviour: Behaviour,
     vision_distance: vision_distance::Circle,
     last_seen_grid: VisibilityGrid<LastSeenCell>,
@@ -192,7 +194,7 @@ impl LastSeenCell {
 
         if can_see_player {
             if let Some(distance_to_player) = distance_map_to_player.distance(coord) {
-                if distance_to_player < 5 {
+                if distance_to_player < MAX_DISTANCE {
                     self.avoid_until = self.count + 20;
                 }
             }
@@ -201,8 +203,9 @@ impl LastSeenCell {
 }
 
 impl Agent {
-    pub fn new(size: Size) -> Self {
+    pub fn new(size: Size, npc_type: NpcType) -> Self {
         Self {
+            npc_type,
             last_seen_grid: VisibilityGrid::new(size),
             vision_distance: vision_distance::Circle::new_squared(40),
             behaviour: Behaviour::Wander { avoid: true },
@@ -236,7 +239,7 @@ impl Agent {
                         Behaviour::Chase { last_seen_player_coord: player_coord, accurate: true }
                     }
                     Disposition::Afraid => {
-                        if behaviour_context.player_approach.distance(coord).unwrap() < FLEE_DISTANCE {
+                        if behaviour_context.player_approach.distance(coord).unwrap() < MAX_DISTANCE {
                             Behaviour::Flee
                         } else {
                             Behaviour::Wander { avoid: true }
@@ -311,11 +314,28 @@ impl Agent {
             }
             Behaviour::Chase { last_seen_player_coord, accurate } => {
                 if accurate {
+                    // if self.npc_type == NpcType::MiniBot {
+                    //     let line = LineSegment::new(coord, last_seen_player_coord);
+                    //     if line.num_steps() == 2 && line.num_steps() == line.num_cardinal_steps() {
+                    //         let direction = match last_seen_player_coord.x.cmp(&coord.x) {
+                    //             Ordering::Equal => match last_seen_player_coord.y.cmp(&coord.y) {
+                    //                 Ordering::Equal => unreachable!(),
+                    //                 Ordering::Less => CardinalDirection::North,
+                    //                 Ordering::Greater => CardinalDirection::South,
+                    //             },
+                    //             Ordering::Less => CardinalDirection::West,
+                    //             Ordering::Greater => CardinalDirection::East,
+                    //         };
+
+                    //         return NpcAction::FireLaser(direction);
+                    //     }
+                    // }
+
                     let maybe_cardinal_direction =
                         behaviour_context.distance_map_search_context.search_first(
                             &WorldCanEnterAvoidNpcs { world },
                             coord,
-                            5,
+                            MAX_DISTANCE,
                             &behaviour_context.player_approach,
                         );
 
@@ -333,6 +353,7 @@ impl Agent {
                         coord,
                         last_seen_player_coord,
                     );
+
                     match result {
                         Err(NoPath) | Ok(None) => {
                             self.behaviour = Behaviour::Wander { avoid: true };

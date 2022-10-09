@@ -23,7 +23,7 @@ impl World {
             entity_data! {
                 tile: Tile::Player,
                 player: Player::new(),
-                hp: HitPoints::new_full(10),
+                hp: HitPoints::new_full(100),
                 vision: vision_distance::Circle::new(200),
                 light: Light {
                     colour: Rgb24::new_grey(200),
@@ -110,11 +110,11 @@ impl World {
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                enemy: (),
+                damage: 1,
                 armour: Armour::new(1),
                 hp: HitPoints::new_full(3),
                 tile: Tile::Npc(NpcType::MiniBot),
-                npc: Npc { disposition: Disposition::Hostile },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::MiniBot },
             },
         )
     }
@@ -123,11 +123,11 @@ impl World {
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                enemy: (),
+                damage: 2,
                 armour: Armour::new(3),
                 hp: HitPoints::new_full(5),
                 tile: Tile::Npc(NpcType::SecBot),
-                npc: Npc { disposition: Disposition::Hostile },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::SecBot },
             },
         )
     }
@@ -136,11 +136,11 @@ impl World {
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                enemy: (),
+                damage: 3,
                 armour: Armour::new(5),
                 hp: HitPoints::new_full(10),
                 tile: Tile::Npc(NpcType::RoboCop),
-                npc: Npc { disposition: Disposition::Hostile },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::RoboCop },
             },
         )
     }
@@ -149,12 +149,24 @@ impl World {
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                enemy: (),
+                damage: 5,
                 armour: Armour::new(10),
                 hp: HitPoints::new_full(30),
                 tile: Tile::Npc(NpcType::DoomBot),
-                npc: Npc { disposition: Disposition::Hostile },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::DoomBot },
             },
         )
+    }
+
+    pub fn spawn_laser(&mut self, start: Coord, target: Coord) {
+        println!("Laser fired from {:?} to {:?}", start, target);
+
+        let entity = self.entity_allocator.alloc();
+        self.spatial_table.update(entity, Location { coord: start, layer: None }).unwrap();
+
+        self.components.insert_entity_data(
+            entity,
+            entity_data!(realtime: (), on_collision: OnCollision::Remove, tile: Tile::Laser,),
+        );
     }
 }

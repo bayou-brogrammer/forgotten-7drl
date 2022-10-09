@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use self::npc::generate_npcs;
+use crate::{Agent, World};
 use gridbugs::{
     coord_2d::{Axis, Coord, Size},
     direction::CardinalDirection,
@@ -15,9 +17,7 @@ mod npc;
 mod rooms;
 use rooms::*;
 
-use crate::{Agent, World};
-
-use self::npc::generate_npcs;
+pub const FINAL_LEVEL: u32 = 5;
 
 fn print_map(grid: &Grid<LevelCell>) {
     for row in grid.rows() {
@@ -232,7 +232,7 @@ pub struct Terrain {
 
 impl Terrain {
     pub fn generate(size: Size, level: u32) -> Self {
-        let mut world = World::new(size);
+        let mut world = World::new(size, level);
 
         let RoomsAndCorridorsLevel { map: rooms_and_corridors_map, player_spawn } =
             RoomsAndCorridorsLevel::generate(size);
@@ -291,6 +291,7 @@ impl Terrain {
             }
         }
 
+        npc_candidates.retain(|c| *c != player_spawn);
         let mut agents = ComponentTable::default();
         generate_npcs(&mut world, level, &mut npc_candidates, &mut agents);
 

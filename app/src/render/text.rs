@@ -3,6 +3,7 @@ use super::*;
 pub const BOLD: Style = Style::new().with_foreground(color::STRIPE).with_bold(true);
 pub const NORMAL: Style = Style::new().with_foreground(color::STRIPE).with_bold(false);
 pub const FAINT: Style = Style::new().with_foreground(color::STRIPE).with_bold(false);
+pub const PLAIN: Style = Style::new().with_foreground(Rgba32::new_grey(255));
 
 pub fn t(text: &str, style: Style) -> StyledString {
     StyledString { string: text.to_string(), style }
@@ -12,6 +13,9 @@ pub fn f(text: &str) -> StyledString {
 }
 pub fn b(text: &str) -> StyledString {
     StyledString { string: text.to_string(), style: BOLD }
+}
+pub fn plain(text: &str) -> StyledString {
+    StyledString { string: text.to_string(), style: PLAIN }
 }
 
 fn text_component(width: u32, text: Vec<StyledString>) -> AppCF<()> {

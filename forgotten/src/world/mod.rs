@@ -5,7 +5,6 @@ mod action;
 mod data;
 mod query;
 mod realtime;
-mod resource;
 mod spatial;
 pub mod spawner;
 mod sys;
@@ -15,15 +14,14 @@ pub use action::*;
 pub use data::*;
 pub use query::*;
 pub use realtime::*;
-pub use resource::*;
 pub use spatial::*;
 pub use sys::*;
 pub use visibility::*;
 
 #[derive(Serialize, Deserialize)]
 pub struct World {
+    pub level: u32,
     #[serde(skip)]
-    pub resources: Resources,
     pub components: Components,
     pub spatial_table: SpatialTable,
     pub entity_allocator: EntityAllocator,
@@ -31,14 +29,13 @@ pub struct World {
 }
 
 impl World {
-    pub fn new(size: Size) -> Self {
-        let resources = Resources::default();
+    pub fn new(size: Size, level: u32) -> Self {
         let components = Components::default();
         let spatial_table = SpatialTable::new(size);
         let entity_allocator = EntityAllocator::default();
         let realtime_components = realtime::RealtimeComponents::default();
 
-        Self { entity_allocator, components, spatial_table, resources, realtime_components }
+        Self { level, entity_allocator, components, spatial_table, realtime_components }
     }
 
     pub fn size(&self) -> Size {

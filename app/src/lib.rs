@@ -32,8 +32,9 @@ mod prelude {
     pub use crate::storage::*;
     pub use crate::AppConfig;
 
-    pub const GAME_VIEW_SIZE: Size = Size::new_u16(40, 40);
-    pub const GAME_VIEW_OFFSET: Coord = Coord::new(0, 0);
+    pub const GAME_VIEW_SIZE: Size = Size::new_u16(40, 33);
+    pub const GAME_VIEW_OFFSET: Coord = Coord::new(0, 2);
+    pub const GAME_UI_OFFSET: Coord = Coord::new(42, 0);
     pub const LAUNCHER_TITLE: &str = "F.o.r.g.o.t.t.e.n";
 }
 pub use prelude::*;

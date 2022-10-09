@@ -104,6 +104,32 @@ impl GameLoopData {
         self.instance = Some(instance);
         running
     }
+
+    pub fn scope(&self) -> &StateScope {
+        &self.instance.as_ref().unwrap().scope
+    }
+
+    pub fn handle_game_events(&mut self) {
+        let instance = self.instance.as_mut().unwrap();
+        for event in instance.scope.events() {
+            match event {
+                ExternalEvent::LoopMusic(music) => {
+                    instance.current_music = Some(music);
+                    self.audio_state.loop_music(game_music_to_audio(music), self.config.music_volume);
+                }
+                ExternalEvent::SoundEffect(sound_effect) => {
+                    self.audio_state.play_once(Audio::SoundEffect(sound_effect), self.config.sfx_volume);
+                }
+                ExternalEvent::Explosion(_coord) => {
+                    // self.screen_shake = Some(ScreenShake {
+                    //     direction: self.effect_rng.gen(),
+                    //     remaining: Duration::from_millis(100),
+                    // });
+                    // self.audio_state.play_once(Audio::Explosion, self.config.sfx_volume);
+                }
+            }
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -136,9 +162,59 @@ impl GameLoopData {
     pub fn render(&self, cursor_colour: Rgba32, ctx: Ctx, fb: &mut FrameBuffer) {
         let instance = self.instance.as_ref().unwrap();
         instance.render(ctx, fb);
+
+        if let Some(cursor) = self.cursor {
+            if cursor.is_valid(GAME_VIEW_SIZE + Size::new_u16(1, 1)) {
+                let screen_cursor = GAME_VIEW_OFFSET + (cursor * 3);
+                for offset in Size::new_u16(3, 3).coord_iter_row_major() {
+                    fb.set_cell_relative_to_ctx(
+                        ctx,
+                        screen_cursor + offset,
+                        10,
+                        RenderCell::BLANK.with_background(cursor_colour),
+                    );
+                }
+            }
+        }
+
+        self.render_text(ctx, fb);
     }
 
     pub fn render_stars(&self, ctx: Ctx, fb: &mut FrameBuffer) {}
+
+    fn render_text(&self, ctx: Ctx, fb: &mut FrameBuffer) {
+        let instance = self.instance.as_ref().unwrap();
+        if let Some(context_message) = self.context_message.as_ref() {
+            context_message.render(&(), ctx.add_y(1), fb);
+        }
+
+        if let Some(top_text) = self.examine_message.as_ref() {
+            top_text.clone().wrap_word().render(&(), ctx, fb);
+        } else {
+            instance.floor_text().render(&(), ctx, fb);
+        }
+    }
+
+    #[allow(clippy::collapsible_match)]
+    pub fn examine_mouse(&mut self, event: Event) {
+        if let Event::Input(Input::Mouse(mouse_input)) = event {
+            if let MouseInput::MouseMove { button: _, coord } = mouse_input {
+                let cursor = (coord - GAME_VIEW_OFFSET) / 3;
+                if cursor.is_valid(GAME_VIEW_SIZE) {
+                    self.cursor = Some(cursor);
+                } else {
+                    self.cursor = None;
+                }
+            }
+        }
+    }
+
+    pub fn update_examine_text(&mut self) {
+        self.examine_message = self.cursor.and_then(|coord| {
+            let world_coord = self.scope().player_coord() - (GAME_VIEW_SIZE / 2) + coord;
+            examine(self.scope(), world_coord)
+        });
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

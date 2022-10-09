@@ -22,3 +22,8 @@ impl HitPoints {
         Self { current: max, max }
     }
 }
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct Stunned {
+    pub turns: u32,
+}

@@ -20,6 +20,7 @@ pub enum Tile {
     Player,
     Npc(NpcType),
     Weapon(WeaponType),
+    Laser,
 
     Wall,
     DoorOpen,
@@ -54,21 +55,22 @@ entity_table::declare_entity_module! {
 
         //Entity
         npc: Npc,
-        enemy: (),
         player: Player,
+        stunned: Stunned,
 
         // Stats
         dead: (),
+        damage: u32,
         hp: HitPoints,
         armour: Armour,
 
         // Animation / Projectile
-        animating: (),
         realtime: (),
+        animating: (),
+        pushed_from: Coord,
         on_collision: OnCollision,
         collides_with: CollidesWith,
         projectile_damage: ProjectileDamage,
-        pushed_from: Coord,
 
     }
 }

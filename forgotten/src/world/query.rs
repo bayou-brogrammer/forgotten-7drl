@@ -64,4 +64,25 @@ impl World {
     pub fn entity_exists(&self, entity: Entity) -> bool {
         self.entity_allocator.exists(entity) && !self.components.dead.contains(entity)
     }
+
+    pub fn character_info(&self, entity: Entity) -> Option<CharacterInfo> {
+        let coord = self.spatial_table.coord_of(entity)?;
+        let &hit_points = self.components.hp.get(entity)?;
+        let stunned = self.components.stunned.contains(entity);
+        Some(CharacterInfo { coord, hit_points, stunned })
+    }
+
+    pub fn check_movement_blocked(&self, entity: Entity) -> bool {
+        self.components.realtime.get(entity).is_some() || self.components.stunned.get(entity).is_some()
+    }
+
+    pub fn reduce_stun(&mut self, entity: Entity) {
+        if let Some(stun) = self.components.stunned.get_mut(entity) {
+            stun.turns -= 1;
+
+            if stun.turns == 0 {
+                self.components.stunned.remove(entity);
+            }
+        }
+    }
 }

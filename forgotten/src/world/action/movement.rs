@@ -7,7 +7,8 @@ impl World {
         direction: CardinalDirection,
     ) -> Result<Option<crate::ControlFlow>, ActionError> {
         // Prevent NPC from moving while being knocked back
-        if self.components.realtime.get(character).is_some() {
+        if self.check_movement_blocked(character) {
+            self.reduce_stun(character);
             return Ok(None);
         }
 
@@ -70,10 +71,10 @@ impl World {
                     }
                 }
 
-                // Is there a feature here? TODO: self.components.enemy || self.components.npc??
+                // Is there a feature here?
                 if let Some(entity_in_cell) = spatial_cell.feature.or(spatial_cell.character) {
                     if (collides_with.solid && self.components.solid.contains(entity_in_cell))
-                        || (collides_with.character && self.components.enemy.contains(entity_in_cell))
+                        || (collides_with.character && self.components.npc.contains(entity_in_cell))
                     {
                         let mut stop = true;
                         if let Some(&projectile_damage) =

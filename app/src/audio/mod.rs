@@ -18,6 +18,7 @@ pub fn game_music_to_audio(music: Music) -> Audio {
 pub enum Audio {
     Menu,
     Gameplay0,
+    SoundEffect(SoundEffect),
 }
 
 pub struct AudioTable {
