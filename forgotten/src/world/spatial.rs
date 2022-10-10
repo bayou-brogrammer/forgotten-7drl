@@ -5,6 +5,7 @@ spatial_table::declare_layers_module! {
       character: Character,
       feature: Feature,
       floor: Floor,
+      item: Item,
   }
 }
 

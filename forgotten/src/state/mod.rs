@@ -1,8 +1,12 @@
 use crate::prelude::*;
 
+mod fire;
+mod get;
 mod prompt;
 mod running;
 
+pub use fire::*;
+pub use get::*;
 pub use prompt::*;
 pub use running::*;
 
@@ -31,6 +35,9 @@ pub enum GameState {
     GameOver,
     Prompt(Prompt),
     Running(Running),
+    FireWeapon(FireWeapon),
+    GetRangedWeapon(GetRangedWeapon),
+    GetMeleeWeapon(GetMeleeWeapon),
 }
 
 impl GameState {
@@ -74,7 +81,7 @@ mod game_interface {
             self.0.world.components.player.get(self.0.player_entity).expect("Player not found")
         }
 
-        pub fn current_level(&self) -> u32 {
+        pub fn current_level(&self) -> u8 {
             self.0.current_level()
         }
 

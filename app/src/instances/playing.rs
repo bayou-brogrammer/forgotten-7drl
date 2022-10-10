@@ -39,9 +39,10 @@ impl GameInstanceComponent {
                 if let Some(app_input) = state.controls.get(input) {
                     state.cursor = None;
                     let (witness, action_result) = match app_input {
-                        AppInput::Get => todo!(),
-                        AppInput::Examine => todo!(),
+                        AppInput::Get => running.player_get(&mut instance.scope),
+                        AppInput::Examine => return GameLoopState::Examine(running),
                         AppInput::Wait => (running.player_wait(&mut instance.scope), Ok(())),
+                        AppInput::Slot(slot) => running.player_fire_weapon(&instance.scope, slot),
                         AppInput::Direction(direction) => running.player_walk(&mut instance.scope, direction),
                     };
 

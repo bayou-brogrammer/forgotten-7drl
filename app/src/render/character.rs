@@ -16,11 +16,22 @@ pub fn npc_renderable(tile: Tile, remembered: bool) -> RenderCell {
                 NpcType::DoomBot => RenderCell::BLANK.with_character('Œ').with_bold(true),
             },
             Tile::Weapon(weapon_type) => match weapon_type {
-                forgotten_game::WeaponType::BareHands => todo!(),
-                forgotten_game::WeaponType::CattleProd => todo!(),
-                forgotten_game::WeaponType::Chainsaw => todo!(),
-                forgotten_game::WeaponType::Railgun => todo!(),
-                forgotten_game::WeaponType::LifeStealer => todo!(),
+                forgotten_game::WeaponType::BareHands => RenderCell::BLANK,
+                forgotten_game::WeaponType::CattleProd => {
+                    RenderCell::BLANK.with_character('|').with_foreground(SHOCK).with_bold(true)
+                }
+                forgotten_game::WeaponType::Chainsaw => {
+                    RenderCell::BLANK.with_character('Δ').with_foreground(YELLOW).with_bold(true)
+                }
+                forgotten_game::WeaponType::Railgun => {
+                    RenderCell::BLANK.with_character('r').with_foreground(PLASMA).with_bold(true)
+                }
+                forgotten_game::WeaponType::LifeStealer => {
+                    RenderCell::BLANK.with_character('ł').with_foreground(HEALTH).with_bold(true)
+                }
+                forgotten_game::WeaponType::FiftyCal => {
+                    RenderCell::BLANK.with_character('£').with_foreground(PLASMA).with_bold(true)
+                }
             },
             _ => unreachable!("npc_renderable called with non-npc tile"),
         }

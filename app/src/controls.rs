@@ -11,6 +11,7 @@ pub enum AppInput {
     Get,
     Wait,
     Examine,
+    Slot(RangedWeaponSlot),
     Direction(CardinalDirection),
 }
 
@@ -40,6 +41,9 @@ impl Default for Controls {
             KeyboardInput::Char('l') => AppInput::Direction(CardinalDirection::East),
             KeyboardInput::Char('k') => AppInput::Direction(CardinalDirection::North),
             KeyboardInput::Char('j') => AppInput::Direction(CardinalDirection::South),
+            KeyboardInput::Char('1') => AppInput::Slot(RangedWeaponSlot::Slot1),
+            KeyboardInput::Char('2') => AppInput::Slot(RangedWeaponSlot::Slot2),
+            KeyboardInput::Char('3') => AppInput::Slot(RangedWeaponSlot::Slot3),
         ];
 
         let gamepad = btreemap![
@@ -72,10 +76,10 @@ impl Controls {
         })
     }
 
-    // pub fn get_slot(&self, input: Input) -> Option<RangedWeaponSlot> {
-    //     self.get(input).and_then(|app_input| match app_input {
-    //         AppInput::Slot(slot) => Some(slot),
-    //         _ => None,
-    //     })
-    // }
+    pub fn get_slot(&self, input: Input) -> Option<RangedWeaponSlot> {
+        self.get(input).and_then(|app_input| match app_input {
+            AppInput::Slot(slot) => Some(slot),
+            _ => None,
+        })
+    }
 }

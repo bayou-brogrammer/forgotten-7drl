@@ -80,7 +80,7 @@ impl Game {
     pub fn new<R: Rng>(config: &GameConfig, base_rng: &mut R) -> Self {
         crate::rng::reseed_from_rng(base_rng);
 
-        let Terrain { player_entity, world, agents } = Terrain::generate(Size::new(80, 60), 1);
+        let Terrain { player_entity, world, agents } = terrain::build_station(1);
         let visibility_grid = VisibilityGrid::new(world.size());
         let behavior_context = BehaviourContext::new(world.size());
 
@@ -109,7 +109,7 @@ impl Game {
         false
     }
 
-    pub fn current_level(&self) -> u32 {
+    pub fn current_level(&self) -> u8 {
         self.world.level
     }
 }
@@ -130,5 +130,9 @@ impl Game {
         } else {
             false
         }
+    }
+
+    pub fn player(&self) -> Option<&Player> {
+        self.world.entity_player(self.player_entity)
     }
 }

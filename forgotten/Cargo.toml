@@ -5,6 +5,7 @@ version = "0.1.0"
 
 [dependencies]
 macros = { path = "../util/macros" }
+vector = { path = "../util/vector" }
 
 gridbugs = { version = "0.4", features = [
   "backend_serialize",

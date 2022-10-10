@@ -4,6 +4,10 @@ use crate::prelude::*;
 
 pub const ANIMATION_FRAME_DURATION: Duration = Duration::from_micros(1_000_000 / 60);
 
+pub fn period_per_frame(num_per_frame: u32) -> Duration {
+    ANIMATION_FRAME_DURATION / num_per_frame
+}
+
 #[derive(Default)]
 pub struct AnimationContext {
     realtime_entities: Vec<Entity>,

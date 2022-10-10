@@ -3,13 +3,18 @@ use lazy_static::lazy_static;
 use parking_lot::Mutex;
 
 lazy_static! {
-    pub static ref LOG: Mutex<Vec<Message>> = Mutex::new(vec![Message::Intro]);
+    static ref LOG: Mutex<Vec<Message>> = Mutex::new(vec![Message::Intro]);
 }
 
 #[derive(Serialize, Deserialize, Clone, Copy, Debug)]
 pub enum Message {
     Intro,
+    PlayerDies,
+    PlayerStunned,
+    EnemyDies(NpcType),
+    EnemyStunend(NpcType),
     EnemyHitPlayer(NpcType),
+    EquipWeapon(WeaponType),
     PlayerHitEnemy { enemy: NpcType, weapon: WeaponType },
 }
 

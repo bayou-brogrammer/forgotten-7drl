@@ -18,7 +18,7 @@ impl Component for Hud {
         let player = state.player();
         let player_info = state.player_info();
 
-        let stunned_txt = if player_info.stunned { "~Stunned~" } else { "" };
+        let stunned_txt = if player_info.stunned { "** Stunned **" } else { "" };
         let text = vec![
             plain("Health: "),
             StyledString {
@@ -32,17 +32,32 @@ impl Component for Hud {
                 style: Style::new().with_foreground(color::CREDIT_FOREGROUND).with_bold(true),
             },
             plain("\n"),
-            plain("\n"),
             plain(stunned_txt),
         ];
         Text::from(text).render(&(), ctx, fb);
+
+        render_weapon("Melee:", &player.melee_weapon, player, ctx.add_y(5), fb);
+
+        let ctx = ctx.add_y(13);
+        for (i, ranged_slot) in player.ranged_weapons.iter().enumerate() {
+            if let Some(weapon) = ranged_slot {
+                render_weapon(
+                    format!("Ranged {}:", i + 1).as_str(),
+                    weapon,
+                    player,
+                    ctx.add_y(i as i32 * 7),
+                    fb,
+                );
+            } else {
+                render_empty_weapon_slot(format!("Ranged {}:", i + 1).as_str(), ctx.add_y(i as i32 * 10), fb);
+            }
+        }
     }
 
     fn update(&mut self, _: &mut Self::State, _: Ctx, _: Event) -> Self::Output {}
 
     fn size(&self, _: &Self::State, ctx: Ctx) -> Size {
-        println!("{:?}", ctx.bounding_box.size());
-        Size::new(ctx.bounding_box.size().width() + 1, GAME_VIEW_SIZE.height() - 2)
+        Size::new(ctx.bounding_box.size().width() + 1, GAME_VIEW_SIZE.height() - 1)
     }
 }
 

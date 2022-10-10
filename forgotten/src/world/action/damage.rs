@@ -35,15 +35,16 @@ impl World {
 
         let pen = player.melee_pen();
         if pen >= self.components.armour.get(victim).expect("npc lacks armour").value {
-            let dmg = player.melee_dmg();
-            // if player.traits.double_damage {
-            //     dmg *= 2;
-            // }
+            let mut dmg = player.melee_dmg();
+            if player.traits.double_damage {
+                dmg *= 2;
+            }
             self.damage_character(victim, dmg);
         }
 
-        let player = self.components.player.get_mut(attacker).unwrap();
-        for ability in player.melee_weapon.abilities.iter() {
+        let player = self.components.player.get(attacker).unwrap();
+        let stun = player.stun_percent();
+        for ability in player.melee_weapon.abilities.clone() {
             use WeaponAbility::*;
             match ability {
                 KnockBack => {
@@ -59,9 +60,18 @@ impl World {
                         .build(),
                     );
                 }
+                Shock => {
+                    self.apply_stun(victim, stun);
+                    self.spawn_flash(
+                        self.spatial_table.coord_of(victim).unwrap(),
+                        Some(Rgb24 { r: 255, g: 255, b: 0 }),
+                    );
+                }
+                LifeSteal => todo!(),
             }
         }
 
+        let player = self.components.player.get_mut(attacker).unwrap();
         if remove {
             player.melee_weapon = Weapon::new_bare_hands();
         }
@@ -78,14 +88,11 @@ impl World {
             NpcType::DoomBot => 40,
         };
 
-        if crate::rng::range(0..100) < stun_percentage {
-            self.components.stunned.insert(victim, Stunned { turns: 1 });
+        if self.apply_stun(victim, stun_percentage) {
+            crate::log::append_entry(Message::PlayerStunned);
         }
 
-        if let Some(npc) = self.components.npc.get(attacker) {
-            crate::log::append_entry(Message::EnemyHitPlayer(npc.npc_type));
-        }
-
+        crate::log::append_entry(Message::EnemyHitPlayer(npc_type));
         self.damage_character(victim, damage);
     }
 
@@ -105,6 +112,13 @@ impl World {
     }
 
     fn character_die(&mut self, character: Entity) {
+        if self.components.player.contains(character) {
+            crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::Die));
+            crate::log::append_entry(Message::PlayerDies);
+        } else if let Some(enemy) = self.components.npc.get(character) {
+            crate::log::append_entry(Message::EnemyDies(enemy.npc_type));
+        }
+
         self.components.dead.insert(character, ());
     }
 }

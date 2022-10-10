@@ -30,7 +30,7 @@ pub fn menu_style<T: 'static>(menu: AppCF<T>) -> AppCF<T> {
 }
 
 pub fn popup_style<T: 'static>(menu: AppCF<T>) -> AppCF<T> {
-    menu.border(BorderStyle::default()).fill(Rgba32::new_grey(0)).centre().add_y(30).overlay_tint(
+    menu.border(BorderStyle::default()).fill(Rgba32::new_grey(0)).centre().add_y(0).overlay_tint(
         render_state(|state: &State, ctx, fb| state.render(color::CURSOR, ctx, fb)),
         gridbugs::chargrid::core::TintDim(255),
         10,

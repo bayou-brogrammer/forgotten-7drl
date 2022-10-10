@@ -38,6 +38,12 @@ impl World {
             false
         }
     }
+
+    pub fn weapon_under_entity(&self, entity: Entity) -> Option<&Weapon> {
+        self.spatial_table
+            .layers_at(self.spatial_table.coord_of(entity)?)
+            .and_then(|layers| layers.item.and_then(|item_entity| self.components.weapon.get(item_entity)))
+    }
 }
 
 // Visibility
@@ -61,6 +67,10 @@ impl World {
         self.components.npc.get(entity).unwrap()
     }
 
+    pub fn entity_player(&self, entity: Entity) -> Option<&Player> {
+        self.components.player.get(entity)
+    }
+
     pub fn entity_exists(&self, entity: Entity) -> bool {
         self.entity_allocator.exists(entity) && !self.components.dead.contains(entity)
     }
@@ -74,15 +84,5 @@ impl World {
 
     pub fn check_movement_blocked(&self, entity: Entity) -> bool {
         self.components.realtime.get(entity).is_some() || self.components.stunned.get(entity).is_some()
-    }
-
-    pub fn reduce_stun(&mut self, entity: Entity) {
-        if let Some(stun) = self.components.stunned.get_mut(entity) {
-            stun.turns -= 1;
-
-            if stun.turns == 0 {
-                self.components.stunned.remove(entity);
-            }
-        }
     }
 }

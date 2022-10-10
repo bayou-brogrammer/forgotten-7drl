@@ -48,21 +48,6 @@ pub(crate) fn render_game_with_visibility(
     ctx: Ctx,
     fb: &mut FrameBuffer,
 ) {
-    // for (coord, visibility) in scope.0.enumerate_cell_visibility() {
-    //     match visibility {
-    //         CellVisibility::Never => (),
-    //         CellVisibility::Previous(data) => {
-    //             let light_colour = AMBIENT_COL;
-    //             // let dim_ctx = ctx.with_tint(&|colour: Rgba32| colour.saturating_scalar_mul_div(1, 2));
-    //             render_cell(scope, coord, data, true, ctx_tint!(ctx, LightBlend { light_colour }), fb);
-    //         }
-    //         CellVisibility::Current { data, light_colour } => {
-    //             let light_colour = light_colour.unwrap_or(AMBIENT_COL);
-    //             render_cell(scope, coord, data, false, ctx_tint!(ctx, LightBlend { light_colour }), fb);
-    //         }
-    //     }
-    // }
-
     let visibility_grid = scope.visibility_grid();
     for screen_coord in size.coord_iter_row_major() {
         let world_coord = offset + screen_coord;
@@ -70,15 +55,26 @@ pub(crate) fn render_game_with_visibility(
             CellVisibility::Never => (),
             CellVisibility::Previous(data) => {
                 let light_colour = AMBIENT_COL;
-                render_cell(scope, screen_coord, data, true, ctx_tint!(ctx, LightBlend { light_colour }), fb);
+                render_cell(
+                    scope,
+                    screen_coord,
+                    world_coord,
+                    data,
+                    true,
+                    light_colour,
+                    ctx_tint!(ctx, LightBlend { light_colour }),
+                    fb,
+                );
             }
             CellVisibility::Current { data, light_colour } => {
                 let light_colour = light_colour.unwrap_or(AMBIENT_COL);
                 render_cell(
                     scope,
                     screen_coord,
+                    world_coord,
                     data,
                     false,
+                    light_colour,
                     ctx_tint!(ctx, LightBlend { light_colour }),
                     fb,
                 );
@@ -87,26 +83,39 @@ pub(crate) fn render_game_with_visibility(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
 fn render_cell(
     scope: &StateScope,
-    coord: Coord,
+    screen_coord: Coord,
+    world_coord: Coord,
     cell: &VisibleCellData,
     remembered: bool,
+    light_colour: Rgb24,
     ctx: Ctx,
     fb: &mut FrameBuffer,
 ) {
     cell.tiles.option_for_each_enumerate(|&tile, layer| {
-        let render_cell = render_cell_from_tile(scope, tile, coord, remembered);
+        let render_cell = render_cell_from_tile(scope, tile, world_coord, remembered);
         let depth = layer_depth(layer);
-        fb.set_cell_relative_to_ctx(ctx, coord, depth, render_cell);
+        fb.set_cell_relative_to_ctx(ctx, screen_coord, depth, render_cell);
     });
 
-    // cell.realtime.iter().for_each(|entity| {
-    //     if let Some(tile) = entity.tile {
-    //         let render_cell = render_cell_from_tile(scope, tile, entity.coord, remembered);
-    //         fb.set_cell_relative_to_ctx(ctx, entity.coord, 1, render_cell);
-    //     }
-    // });
+    cell.realtime.iter().for_each(|entity| {
+        let light_colour = Rgb24::new(light_colour.r, light_colour.g, light_colour.b);
+        if let Some(tile) = entity.tile {
+            let render_cell = render_cell_from_tile(scope, tile, entity.coord, remembered);
+            fb.set_cell_relative_to_ctx(ctx, screen_coord, 1, render_cell);
+        }
+
+        // if entity.particle {
+        //     if let Some(fade) = entity.fade {
+        //         let alpha = (255 - fade) / 10;
+        //         let cell = RenderCell::BLANK
+        //             .with_background(Rgb24::new_grey(187).normalised_mul(light_colour).to_rgba32(alpha));
+        //         fb.set_cell_relative_to_ctx(ctx, screen_coord, 1, cell);
+        //     }
+        // }
+    });
 }
 
 /// Associate each tile with a description of how to render it
@@ -126,13 +135,15 @@ fn render_cell_from_tile(scope: &StateScope, tile: Tile, coord: Coord, remembere
         // Entity
         Tile::Player | Tile::Npc(_) | Tile::Weapon(_) => npc_renderable(tile, remembered),
         Tile::Laser => RenderCell::BLANK.with_character('*').with_foreground(RED),
+        Tile::Bullet => RenderCell::BLANK.with_character('*').with_background(color::BULLET),
     }
 }
 
 fn layer_depth(layer: Layer) -> i8 {
     match layer {
-        Layer::Character => 2,
-        Layer::Feature => 1,
         Layer::Floor => 0,
+        Layer::Feature => 1,
+        Layer::Item => 2,
+        Layer::Character => 3,
     }
 }

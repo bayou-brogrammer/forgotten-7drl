@@ -21,6 +21,7 @@ pub enum Tile {
     Npc(NpcType),
     Weapon(WeaponType),
     Laser,
+    Bullet,
 
     Wall,
     DoorOpen,
@@ -33,6 +34,13 @@ pub enum Tile {
     Water,
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum Item {
+    Medkit,
+    Credit(u32),
+    Weapon(WeaponType),
+}
+
 impl Tile {
     pub fn is_wall(&self) -> bool {
         matches!(self, Self::Wall | Self::DoorClosed | Self::DoorOpen | Self::CaveWall)
@@ -43,6 +51,7 @@ entity_table::declare_entity_module! {
     components {
         // Visibility
         opacity: u8,
+        colour_hint: Rgb24,
         vision: vision_distance::Circle,
         light: Light<vision_distance::Circle>,
 
@@ -55,8 +64,11 @@ entity_table::declare_entity_module! {
 
         //Entity
         npc: Npc,
+        item: Item,
         player: Player,
         stunned: Stunned,
+        character: (),
+        weapon: Weapon,
 
         // Stats
         dead: (),
@@ -65,6 +77,7 @@ entity_table::declare_entity_module! {
         armour: Armour,
 
         // Animation / Projectile
+        particle: (),
         realtime: (),
         animating: (),
         pushed_from: Coord,

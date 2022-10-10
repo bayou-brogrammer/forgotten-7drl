@@ -1,17 +1,20 @@
 use crate::prelude::*;
 use gridbugs::entity_table::EntityAllocator;
 
+pub mod spawner;
+
 mod action;
 mod data;
+mod explosion;
 mod query;
 mod realtime;
 mod spatial;
-pub mod spawner;
 mod sys;
 mod visibility;
 
 pub use action::*;
 pub use data::*;
+pub use explosion::*;
 pub use query::*;
 pub use realtime::*;
 pub use spatial::*;
@@ -20,7 +23,7 @@ pub use visibility::*;
 
 #[derive(Serialize, Deserialize)]
 pub struct World {
-    pub level: u32,
+    pub level: u8,
     #[serde(skip)]
     pub components: Components,
     pub spatial_table: SpatialTable,
@@ -29,7 +32,7 @@ pub struct World {
 }
 
 impl World {
-    pub fn new(size: Size, level: u32) -> Self {
+    pub fn new(size: Size, level: u8) -> Self {
         let components = Components::default();
         let spatial_table = SpatialTable::new(size);
         let entity_allocator = EntityAllocator::default();

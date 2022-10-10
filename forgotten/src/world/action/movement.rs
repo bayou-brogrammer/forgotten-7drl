@@ -1,56 +1,6 @@
 use super::*;
 
 impl World {
-    pub fn character_walk_in_direction(
-        &mut self,
-        character: Entity,
-        direction: CardinalDirection,
-    ) -> Result<Option<crate::ControlFlow>, ActionError> {
-        // Prevent NPC from moving while being knocked back
-        if self.check_movement_blocked(character) {
-            self.reduce_stun(character);
-            return Ok(None);
-        }
-
-        let spatial_table = &mut self.spatial_table;
-        let current_coord = if let Some(coord) = spatial_table.coord_of(character) {
-            coord
-        } else {
-            panic!("failed to find coord for {:?}", character);
-        };
-
-        let target_coord = current_coord + direction.coord();
-        if let Some(&Layers { feature: Some(feature_entity), .. }) =
-            self.spatial_table.layers_at(target_coord)
-        {
-            // If the player bumps into a door, open the door
-            if let Some(DoorState::Closed) = self.components.door_state.get(feature_entity) {
-                self.open_door(feature_entity);
-                return Ok(None);
-            }
-
-            // Don't let the player walk through solid entities
-            if self.components.solid.contains(feature_entity) {
-                if let Some(open_door_entity) = self.open_door_entity_adjacent_to_coord(target_coord) {
-                    self.close_door(open_door_entity);
-                    return Ok(None);
-                }
-                return ActionError::err_cant_walk_there();
-            }
-
-            if let Some(GrassState::Normal) = self.components.grass_state.get(feature_entity) {
-                self.crush_grass(feature_entity);
-            }
-        }
-
-        if let Err(occupant) =
-            self.spatial_table.update_coord(character, target_coord).map_err(|e| e.unwrap_occupied_by())
-        {
-            self.melee_attack(character, occupant, direction);
-        }
-        Ok(None)
-    }
-
     pub fn projectile_move(&mut self, projectile_entity: Entity, movement_direction: Direction) {
         if let Some(current_coord) = self.spatial_table.coord_of(projectile_entity) {
             let next_coord = current_coord + movement_direction.coord();
@@ -74,7 +24,7 @@ impl World {
                 // Is there a feature here?
                 if let Some(entity_in_cell) = spatial_cell.feature.or(spatial_cell.character) {
                     if (collides_with.solid && self.components.solid.contains(entity_in_cell))
-                        || (collides_with.character && self.components.npc.contains(entity_in_cell))
+                        || (collides_with.character && self.components.character.contains(entity_in_cell))
                     {
                         let mut stop = true;
                         if let Some(&projectile_damage) =
@@ -91,7 +41,9 @@ impl World {
                         }
 
                         // Slammed against a wall
-                        if self.realtime_components.movement.contains(projectile_entity) {
+                        if self.realtime_components.movement.contains(projectile_entity)
+                            && self.components.character.contains(projectile_entity)
+                        {
                             let from_coord = self.components.pushed_from.get(projectile_entity).unwrap();
                             let distance = current_coord.manhattan_distance(*from_coord);
                             let dmg = if distance >= 2 { 2 } else { distance };

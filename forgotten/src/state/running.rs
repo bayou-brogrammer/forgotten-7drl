@@ -1,3 +1,4 @@
+use super::GetRangedWeapon;
 use super::*;
 
 /// Wraps a `Game`, and can only be constructed from a `Running`, serving as proof that the wrapped
@@ -31,21 +32,35 @@ impl Running {
         GameState::Prompt(Prompt { message, private: self.0 })
     }
 
-    fn handle_control_flow(self, cf: Option<ControlFlow>) -> GameState {
+    fn into_ranged_witness(self) -> GameState {
+        GameState::GetRangedWeapon(GetRangedWeapon(self.0))
+    }
+
+    fn into_melee_witness(self) -> GameState {
+        GameState::GetMeleeWeapon(GetMeleeWeapon(self.0))
+    }
+
+    fn into_fire_witness(self, slot: RangedWeaponSlot) -> GameState {
+        GameState::FireWeapon(FireWeapon { slot, private: self.0 })
+    }
+
+    pub(crate) fn handle_control_flow(self, cf: Option<ControlFlow>) -> GameState {
         match cf {
             None => self.into_witness(),
             Some(control_flow) => match control_flow {
-                ControlFlow::Prompt(message) => self.into_prompt_witness(message),
-                // ControlFlow::Sleep => GameState::Sleep(Sleep(self.0)),
                 ControlFlow::Win => GameState::Win,
-                ControlFlow::GameOver => GameState::GameOver,
                 ControlFlow::LevelChange => todo!(),
+                ControlFlow::GameOver => GameState::GameOver,
+                ControlFlow::GetMelee => self.into_melee_witness(),
+                ControlFlow::GetRanged => self.into_ranged_witness(),
+                ControlFlow::Prompt(message) => self.into_prompt_witness(message),
+                ControlFlow::FireWeapon(slot) => self.into_fire_witness(slot),
             },
         }
     }
 
     /// Common logic for handling the common return type of methods that update the game state
-    fn handle_control_flow_result(
+    pub(crate) fn handle_control_flow_result(
         self,
         cfr: Result<Option<ControlFlow>, ActionError>,
     ) -> (GameState, Result<(), ActionError>) {
@@ -76,5 +91,17 @@ impl Running {
 
     pub fn player_wait(self, game: &mut StateScope) -> GameState {
         self.handle_control_flow(game.0.player_wait())
+    }
+
+    pub fn player_get(self, game: &mut StateScope) -> (GameState, Result<(), ActionError>) {
+        self.handle_control_flow_result(game.0.player_get())
+    }
+
+    pub fn player_fire_weapon(
+        self,
+        game: &StateScope,
+        slot: RangedWeaponSlot,
+    ) -> (GameState, Result<(), ActionError>) {
+        self.handle_control_flow_result(game.0.player_fire(slot))
     }
 }

@@ -2,9 +2,12 @@ use crate::{prelude::*, prompt, TurnState};
 
 pub enum ControlFlow {
     Win,
+    GetMelee,
     GameOver,
+    GetRanged,
     LevelChange,
     Prompt(String),
+    FireWeapon(RangedWeaponSlot),
 }
 
 impl Game {

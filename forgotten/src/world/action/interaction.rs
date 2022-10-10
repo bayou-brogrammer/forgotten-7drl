@@ -49,4 +49,40 @@ impl World {
             },
         );
     }
+
+    pub fn equip_melee_weapon_from_ground(&mut self, entity: Entity) {
+        if let Some(coord) = self.spatial_table.coord_of(entity) {
+            if let Some((item_entity, weapon)) = self.spatial_table.layers_at(coord).and_then(|layers| {
+                layers.item.and_then(|item_entity| {
+                    self.components.weapon.get(item_entity).map(|weapon| (item_entity, weapon.clone()))
+                })
+            }) {
+                if weapon.is_melee() {
+                    if let Some(player) = self.components.player.get_mut(entity) {
+                        crate::log::append_entry(Message::EquipWeapon(weapon.name));
+                        player.melee_weapon = weapon;
+                        self.components.dead.insert(item_entity, ());
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn equip_ranged_weapon_from_ground(&mut self, entity: Entity, slot: RangedWeaponSlot) {
+        if let Some(coord) = self.spatial_table.coord_of(entity) {
+            if let Some((item_entity, weapon)) = self.spatial_table.layers_at(coord).and_then(|layers| {
+                layers.item.and_then(|item_entity| {
+                    self.components.weapon.get(item_entity).map(|weapon| (item_entity, weapon.clone()))
+                })
+            }) {
+                if weapon.is_ranged() {
+                    if let Some(player) = self.components.player.get_mut(entity) {
+                        crate::log::append_entry(Message::EquipWeapon(weapon.name));
+                        player.ranged_weapons[slot.index()] = Some(weapon);
+                        self.components.dead.insert(item_entity, ());
+                    }
+                }
+            }
+        }
+    }
 }

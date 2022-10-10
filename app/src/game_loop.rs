@@ -12,6 +12,7 @@ pub type State = GameLoopData;
 pub enum GameLoopState {
     MainMenu,
     Paused(state::Running),
+    Examine(state::Running),
     Playing(state::GameState),
 }
 
@@ -108,6 +109,9 @@ impl GameLoopData {
     pub fn scope(&self) -> &StateScope {
         &self.instance.as_ref().unwrap().scope
     }
+    pub fn scope_mut(&mut self) -> &mut StateScope {
+        &mut self.instance.as_mut().unwrap().scope
+    }
 
     pub fn handle_game_events(&mut self) {
         let instance = self.instance.as_mut().unwrap();
@@ -129,6 +133,14 @@ impl GameLoopData {
                 }
             }
         }
+    }
+
+    pub fn player_has_third_weapon_slot(&self) -> bool {
+        self.scope().0.player_has_third_weapon_slot()
+    }
+
+    pub fn player_has_weapon_in_slot(&self, slot: RangedWeaponSlot) -> bool {
+        self.scope().0.player_has_weapon_in_slot(slot)
     }
 }
 
@@ -165,15 +177,13 @@ impl GameLoopData {
 
         if let Some(cursor) = self.cursor {
             if cursor.is_valid(GAME_VIEW_SIZE + Size::new_u16(1, 1)) {
-                let screen_cursor = GAME_VIEW_OFFSET + (cursor * 3);
-                for offset in Size::new_u16(3, 3).coord_iter_row_major() {
-                    fb.set_cell_relative_to_ctx(
-                        ctx,
-                        screen_cursor + offset,
-                        10,
-                        RenderCell::BLANK.with_background(cursor_colour),
-                    );
-                }
+                let screen_cursor = GAME_VIEW_OFFSET + cursor;
+                fb.set_cell_relative_to_ctx(
+                    ctx,
+                    screen_cursor,
+                    10,
+                    RenderCell::BLANK.with_background(cursor_colour),
+                );
             }
         }
 
@@ -185,11 +195,11 @@ impl GameLoopData {
     fn render_text(&self, ctx: Ctx, fb: &mut FrameBuffer) {
         let instance = self.instance.as_ref().unwrap();
         if let Some(context_message) = self.context_message.as_ref() {
-            context_message.render(&(), ctx.add_y(1), fb);
+            context_message.render(&(), ctx.set_width(GAME_VIEW_SIZE.width()).add_y(1), fb);
         }
 
         if let Some(top_text) = self.examine_message.as_ref() {
-            top_text.clone().wrap_word().render(&(), ctx, fb);
+            top_text.clone().wrap_word().cf().set_width(GAME_VIEW_SIZE.width()).render(&(), ctx, fb);
         } else {
             instance.floor_text().render(&(), ctx, fb);
         }
@@ -199,7 +209,7 @@ impl GameLoopData {
     pub fn examine_mouse(&mut self, event: Event) {
         if let Event::Input(Input::Mouse(mouse_input)) = event {
             if let MouseInput::MouseMove { button: _, coord } = mouse_input {
-                let cursor = (coord - GAME_VIEW_OFFSET) / 3;
+                let cursor = coord - GAME_VIEW_OFFSET;
                 if cursor.is_valid(GAME_VIEW_SIZE) {
                     self.cursor = Some(cursor);
                 } else {
@@ -245,7 +255,17 @@ pub fn game_loop_component(initial_state: GameLoopState) -> AppCF<()> {
                 GameState::GameOver => game_over().map_val(|| MainMenu).continue_(),
                 GameState::Prompt(prompt_witness) => prompt(prompt_witness).map(Playing).continue_(),
                 GameState::Running(running) => game_instance_component(running).continue_(),
+                GameState::GetRangedWeapon(ranged_witness) => {
+                    try_get_ranged_weapon(ranged_witness).map(Playing).continue_()
+                }
+                GameState::GetMeleeWeapon(melee_witness) => {
+                    try_get_melee_weapon(melee_witness).map(Playing).continue_()
+                }
+                GameState::FireWeapon(fire_witness) => fire_weapon(fire_witness).map(Playing).continue_(),
             },
+            Examine(running) => {
+                game_examine_component().map_val(|| Playing(running.into_witness())).continue_()
+            }
         })
     })
 }
