@@ -5,9 +5,7 @@ pub fn first_run_prologue() -> AppCF<()> {
         if state.config.first_run {
             state.config.first_run = false;
             state.save_config();
-            crate::text::prologue(MAIN_MENU_TEXT_WIDTH)
-                .centre()
-                .overlay(render_state(|state: &State, ctx, fb| state.render_stars(ctx, fb)), 10)
+            crate::text::prologue(MAIN_MENU_TEXT_WIDTH).centre()
         } else {
             unit().some()
         }

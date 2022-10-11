@@ -4,15 +4,17 @@ pub const GAMEPLAY2: &[u8] = include_bytes!("./Level 3.ogg");
 pub const END_TEXT_HAPPY: &[u8] = include_bytes!("./Orbital Decay.ogg");
 pub const END_TEXT_SAD: &[u8] = include_bytes!("./Sad Orbital Decay.ogg");
 pub const MENU: &[u8] = include_bytes!("./Menu.ogg");
-pub const EXPLOSION: &[u8] = include_bytes!("./Explosion.ogg");
-pub const SHOTGUN: &[u8] = include_bytes!("./Shotgun.ogg");
-pub const RIFLE: &[u8] = include_bytes!("./Rifle.ogg");
-pub const RAILGUN: &[u8] = include_bytes!("./Rail Gun.ogg");
-pub const GAUS_CANNON: &[u8] = include_bytes!("./Gaus Cannon.ogg");
-pub const LIFE_STEALER: &[u8] = include_bytes!("./Health Gun.ogg");
-pub const OXIDISER: &[u8] = include_bytes!("./Oxygen Gun.ogg");
-pub const CHAINSAW: &[u8] = include_bytes!("./Chainsaw.ogg");
-pub const PUNCH: &[u8] = include_bytes!("./Punch.ogg");
-pub const DOOR_OPEN: &[u8] = include_bytes!("./Science Fiction Door Opening.ogg");
-pub const HEAL: &[u8] = include_bytes!("./Heal.ogg");
+
 pub const DIE: &[u8] = include_bytes!("./Die.ogg");
+pub const DOOR_OPEN: &[u8] = include_bytes!("./open_door.wav");
+pub const DOOR_CLOSE: &[u8] = include_bytes!("./close_door.wav");
+
+// Weapon Sounds
+pub const HEAL: &[u8] = include_bytes!("./Heal.ogg");
+pub const PUNCH: &[u8] = include_bytes!("./Punch.ogg");
+pub const CHAINSAW: &[u8] = include_bytes!("./Chainsaw.ogg");
+pub const LIFE_STEALER: &[u8] = include_bytes!("./Health Gun.ogg");
+pub const SHOTGUN: &[u8] = include_bytes!("./shotgun.ogg");
+
+pub const ZAP: &[u8] = include_bytes!("./zap.mp3");
+pub const EXPLOSION: &[u8] = include_bytes!("./Explosion.ogg");

@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, world::explosion};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct CollidesWith {
@@ -12,11 +12,12 @@ impl Default for CollidesWith {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum OnCollision {
+    #[default]
     Remove,
-    // Explode(explosion_spec::Explosion),
     RemoveRealtime,
+    Explode(explosion::spec::Explosion),
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]

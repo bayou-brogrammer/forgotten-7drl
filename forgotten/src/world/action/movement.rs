@@ -1,3 +1,5 @@
+use crate::world::explosion;
+
 use super::*;
 
 impl World {
@@ -40,15 +42,15 @@ impl World {
                             }
                         }
 
-                        // Slammed against a wall
-                        if self.realtime_components.movement.contains(projectile_entity)
-                            && self.components.character.contains(projectile_entity)
-                        {
-                            let from_coord = self.components.pushed_from.get(projectile_entity).unwrap();
-                            let distance = current_coord.manhattan_distance(*from_coord);
-                            let dmg = if distance >= 2 { 2 } else { distance };
-                            self.damage_character(projectile_entity, dmg)
-                        }
+                        // // Slammed against a wall
+                        // if self.realtime_components.movement.contains(projectile_entity)
+                        //     && self.components.character.contains(projectile_entity)
+                        // {
+                        //     let from_coord = self.components.pushed_from.get(projectile_entity).unwrap();
+                        //     let distance = current_coord.manhattan_distance(*from_coord);
+                        //     let dmg = if distance >= 2 { 2 } else { distance };
+                        //     self.damage_character(projectile_entity, dmg)
+                        // }
 
                         if stop {
                             self.projectile_stop(projectile_entity);
@@ -67,7 +69,7 @@ impl World {
     }
 
     pub fn projectile_stop(&mut self, projectile_entity: Entity) {
-        if let Some(_current_coord) = self.spatial_table.coord_of(projectile_entity) {
+        if let Some(current_coord) = self.spatial_table.coord_of(projectile_entity) {
             if let Some(on_collision) = self.components.on_collision.get(projectile_entity) {
                 match on_collision {
                     OnCollision::Remove => {
@@ -79,6 +81,13 @@ impl World {
                     OnCollision::RemoveRealtime => {
                         self.realtime_components.remove_entity(projectile_entity);
                         self.components.realtime.remove(projectile_entity);
+                    }
+                    OnCollision::Explode(explosion_spec) => {
+                        explosion::explode(self, current_coord, *explosion_spec);
+                        self.spatial_table.remove(projectile_entity);
+                        self.components.remove_entity(projectile_entity);
+                        self.entity_allocator.free(projectile_entity);
+                        self.realtime_components.remove_entity(projectile_entity);
                     }
                 }
             }

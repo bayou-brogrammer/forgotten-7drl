@@ -20,7 +20,6 @@ pub enum Tile {
     Player,
     Npc(NpcType),
     Weapon(WeaponType),
-    Laser,
     Bullet,
 
     Wall,

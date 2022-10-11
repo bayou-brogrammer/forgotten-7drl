@@ -16,6 +16,11 @@ pub enum GameLoopState {
     Playing(state::GameState),
 }
 
+pub struct ScreenShake {
+    pub direction: Direction,
+    pub remaining: Duration,
+}
+
 pub struct GameLoopData {
     pub config: AppConfig,
     pub controls: Controls,
@@ -24,6 +29,7 @@ pub struct GameLoopData {
 
     pub audio_state: AudioState,
     pub game_config: GameConfig,
+    pub screen_shake: Option<ScreenShake>,
     pub instance: Option<GameInstance>,
     pub context_message: Option<StyledString>,
     pub examine_message: Option<StyledString>,
@@ -91,6 +97,7 @@ impl GameLoopData {
             game_config,
             cursor: None,
             rng_seed_source,
+            screen_shake: None,
             context_message: None,
             examine_message: None,
             duration: Duration::from_millis(0),
@@ -125,11 +132,11 @@ impl GameLoopData {
                     self.audio_state.play_once(Audio::SoundEffect(sound_effect), self.config.sfx_volume);
                 }
                 ExternalEvent::Explosion(_coord) => {
-                    // self.screen_shake = Some(ScreenShake {
-                    //     direction: self.effect_rng.gen(),
-                    //     remaining: Duration::from_millis(100),
-                    // });
-                    // self.audio_state.play_once(Audio::Explosion, self.config.sfx_volume);
+                    self.screen_shake = Some(ScreenShake {
+                        direction: self.effect_rng.gen(),
+                        remaining: Duration::from_millis(100),
+                    });
+                    self.audio_state.play_once(Audio::Explosion, self.config.sfx_volume);
                 }
             }
         }
@@ -172,6 +179,12 @@ impl GameLoopData {
 
 impl GameLoopData {
     pub fn render(&self, cursor_colour: Rgba32, ctx: Ctx, fb: &mut FrameBuffer) {
+        let ctx = if let Some(ScreenShake { direction, .. }) = self.screen_shake.as_ref() {
+            ctx.add_offset(direction.coord())
+        } else {
+            ctx
+        };
+
         let instance = self.instance.as_ref().unwrap();
         instance.render(ctx, fb);
 
@@ -190,12 +203,14 @@ impl GameLoopData {
         self.render_text(ctx, fb);
     }
 
-    pub fn render_stars(&self, ctx: Ctx, fb: &mut FrameBuffer) {}
-
     fn render_text(&self, ctx: Ctx, fb: &mut FrameBuffer) {
         let instance = self.instance.as_ref().unwrap();
         if let Some(context_message) = self.context_message.as_ref() {
-            context_message.render(&(), ctx.set_width(GAME_VIEW_SIZE.width()).add_y(1), fb);
+            context_message.clone().wrap_word().cf().set_width(GAME_VIEW_SIZE.width()).render(
+                &(),
+                ctx.add_y(1),
+                fb,
+            )
         }
 
         if let Some(top_text) = self.examine_message.as_ref() {

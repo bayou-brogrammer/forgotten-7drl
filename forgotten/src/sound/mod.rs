@@ -9,15 +9,20 @@ pub enum Music {
 
 #[derive(Serialize, Deserialize, Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub enum SoundEffect {
-    Shotgun,
-    Rifle,
-    Railgun,
-    GausCannon,
-    LifeStealer,
-    Oxidiser,
-    Chainsaw,
-    Punch,
+    // Terrain
     DoorOpen,
+    DoorClose,
+
+    // Actions
     Heal,
     Die,
+
+    // Weapon
+    Punch,
+    Rifle,
+    Railgun,
+    FiftyCal,
+    Chainsaw,
+    CattleProd,
+    LifeStealer,
 }

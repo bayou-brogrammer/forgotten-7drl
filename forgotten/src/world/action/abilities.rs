@@ -4,6 +4,7 @@ impl World {
     pub fn apply_stun(&mut self, entity: Entity, stun_percentage: u8) -> bool {
         if crate::rng::range(0..100) < stun_percentage {
             self.components.stunned.insert(entity, Stunned { turns: 1 });
+            crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::CattleProd));
             true
         } else {
             false
@@ -18,14 +19,5 @@ impl World {
                 self.components.stunned.remove(entity);
             }
         }
-    }
-
-    pub fn fire_laser(&mut self, character: Entity, target: Coord) {
-        let character_coord = self.spatial_table.coord_of(character).unwrap();
-        if character_coord == target {
-            return;
-        }
-
-        self.spawn_laser(character_coord, target)
     }
 }

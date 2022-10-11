@@ -52,19 +52,27 @@ impl VisibleCellData {
 
         let tile_component = &world.components.tile;
         let spatial_table = &world.spatial_table;
+        let realtime_fade_component = &world.realtime_components.fade;
+        let colour_hint_component = &world.components.colour_hint;
+        let particle_component = &world.components.particle;
         let realtime_component = &world.components.realtime;
+
         self.realtime = realtime_component
             .iter()
             .filter_map(move |(entity, &())| {
-                if let Some(location) = spatial_table.location_of(entity) {
+                let location = spatial_table.location_of(entity)?;
+                if location.coord == coord {
+                    let fade = realtime_fade_component.get(entity).and_then(|f| f.fading());
                     let tile = tile_component.get(entity).cloned();
+                    let colour_hint = colour_hint_component.get(entity).cloned();
+                    let particle = particle_component.contains(entity);
                     Some(RealTimeEntity {
-                        tile,
                         coord: location.coord,
                         layer: location.layer,
-                        fade: None,
-                        colour_hint: None,
-                        particle: false,
+                        tile,
+                        fade,
+                        colour_hint,
+                        particle,
                     })
                 } else {
                     None

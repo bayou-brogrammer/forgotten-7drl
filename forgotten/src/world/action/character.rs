@@ -70,10 +70,10 @@ impl World {
 
             let weapon = weapon.clone();
             let sound_effect = match weapon.name {
-                WeaponType::BareHands | WeaponType::CattleProd | WeaponType::Chainsaw => None,
                 WeaponType::Railgun => Some(SoundEffect::Railgun),
+                WeaponType::FiftyCal => Some(SoundEffect::FiftyCal),
                 WeaponType::LifeStealer => Some(SoundEffect::LifeStealer),
-                WeaponType::FiftyCal => todo!(),
+                WeaponType::BareHands | WeaponType::CattleProd | WeaponType::Chainsaw => None,
             };
 
             if let Some(sound_effect) = sound_effect {

@@ -18,6 +18,7 @@ pub fn game_music_to_audio(music: Music) -> Audio {
 pub enum Audio {
     Menu,
     Gameplay0,
+    Explosion,
     SoundEffect(SoundEffect),
 }
 
@@ -32,6 +33,18 @@ impl AudioTable {
             hashmap![
                 Audio::Menu => audio_player.load_sound(MENU),
                 Audio::Gameplay0 => audio_player.load_sound(GAMEPLAY0),
+
+                Audio::Explosion => audio_player.load_sound(EXPLOSION),
+                Audio::SoundEffect(SoundEffect::DoorOpen) => audio_player.load_sound(DOOR_OPEN),
+                Audio::SoundEffect(SoundEffect::Heal) => audio_player.load_sound(HEAL),
+                Audio::SoundEffect(SoundEffect::Die) => audio_player.load_sound(DIE),
+
+                // Wpns
+                Audio::SoundEffect(SoundEffect::Punch) => audio_player.load_sound(PUNCH),
+                Audio::SoundEffect(SoundEffect::CattleProd) => audio_player.load_sound(ZAP),
+                Audio::SoundEffect(SoundEffect::FiftyCal) => audio_player.load_sound(SHOTGUN),
+                Audio::SoundEffect(SoundEffect::Chainsaw) => audio_player.load_sound(CHAINSAW),
+                Audio::SoundEffect(SoundEffect::LifeStealer) => audio_player.load_sound(LIFE_STEALER),
             ]
         });
 

@@ -61,13 +61,18 @@ impl World {
                     );
                 }
                 Shock => {
-                    self.apply_stun(victim, stun);
+                    if self.apply_stun(victim, stun) {
+                        if let Some(npc) = self.components.npc.get(victim) {
+                            crate::log::append_entry(Message::EnemyStunend(npc.npc_type));
+                        }
+                    }
+
                     self.spawn_flash(
                         self.spatial_table.coord_of(victim).unwrap(),
                         Some(Rgb24 { r: 255, g: 255, b: 0 }),
                     );
                 }
-                LifeSteal => todo!(),
+                _ => (),
             }
         }
 

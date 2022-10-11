@@ -107,7 +107,6 @@ enum Behaviour {
 pub enum NpcAction {
     Walk(CardinalDirection),
     Wait,
-    FireLaser(CardinalDirection),
 }
 
 struct Wander<'a> {

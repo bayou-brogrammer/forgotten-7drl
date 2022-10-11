@@ -40,7 +40,7 @@ impl Component for GameExamineComponent {
 pub fn game_examine_component() -> AppCF<()> {
     on_state_then(|state: &mut State| {
         state.context_message = Some(StyledString {
-            string: "Examining (escape/start to return to game)".to_string(),
+            string: "Examining (escape to return to game)".to_string(),
             style: Style::plain_text(),
         });
 

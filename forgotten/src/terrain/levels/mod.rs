@@ -33,7 +33,7 @@ pub fn spawn_terrain(grid: Grid<LevelCell>, world: &mut World) -> (Entity, Vec<C
             PlayerSpawn => {
                 world.spawn_floor(coord);
                 player_entity = Some(world.spawn_player(coord));
-                world.spawn_weapon(coord, WeaponType::LifeStealer)
+                world.spawn_weapon(coord, WeaponType::FiftyCal)
             }
         }
     }

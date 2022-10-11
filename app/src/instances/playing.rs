@@ -57,7 +57,16 @@ impl GameInstanceComponent {
                     running.into_witness()
                 }
             }
-            Event::Tick(since_previous) => running.tick(&mut instance.scope, since_previous),
+            Event::Tick(since_previous) => {
+                if let Some(mut screen_shake) = state.screen_shake.take() {
+                    if let Some(remaining) = screen_shake.remaining.checked_sub(since_previous) {
+                        screen_shake.remaining = remaining;
+                        state.screen_shake = Some(screen_shake);
+                    }
+                }
+
+                running.tick(&mut instance.scope, since_previous)
+            }
             _ => GameState::Running(running),
         };
 

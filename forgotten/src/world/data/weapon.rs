@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, world::explosion};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Ammo {
@@ -59,12 +59,12 @@ impl ToString for WeaponType {
             WeaponType::Chainsaw => "Chainsaw".to_string(),
             WeaponType::Railgun => "Railgun".to_string(),
             WeaponType::LifeStealer => "Life Stealer".to_string(),
-            WeaponType::FiftyCal => "Laser Gun".to_string(),
+            WeaponType::FiftyCal => "Fifty Cal".to_string(),
         }
     }
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Weapon {
     pub pen: u32,
     pub dmg: u32,
@@ -75,6 +75,8 @@ pub struct Weapon {
     pub stun_percent: Option<u8>,
     pub light_colour: Option<Rgb24>,
     pub abilities: Vec<WeaponAbility>,
+    pub on_collision: Option<OnCollision>,
+    pub collides_with: Option<CollidesWith>,
 }
 
 impl Weapon {
@@ -92,9 +94,11 @@ impl Weapon {
             dmg: 1,
             ammo: None,
             bright: false,
+            on_collision: None,
             light_colour: None,
             stun_percent: None,
             hull_pen_percent: 0,
+            collides_with: None,
             name: WeaponType::BareHands,
             abilities: vec![WeaponAbility::KnockBack],
         }
@@ -108,6 +112,8 @@ impl Weapon {
             abilities: vec![],
             light_colour: None,
             stun_percent: None,
+            on_collision: None,
+            collides_with: None,
             hull_pen_percent: 0,
             name: WeaponType::Chainsaw,
             ammo: Some(Ammo::new_full(6)),
@@ -119,8 +125,10 @@ impl Weapon {
             pen: 5,
             dmg: 3,
             bright: false,
+            on_collision: None,
             light_colour: None,
             hull_pen_percent: 0,
+            collides_with: None,
             stun_percent: Some(30),
             name: WeaponType::CattleProd,
             ammo: Some(Ammo::new_full(10)),
@@ -139,7 +147,9 @@ impl Weapon {
             hull_pen_percent: 75,
             name: WeaponType::Railgun,
             ammo: Some(Ammo::new_full(4)),
+            on_collision: Some(OnCollision::Remove),
             light_colour: Some(Rgb24::new(0, 255, 255)),
+            collides_with: Some(CollidesWith::default()),
         }
     }
 
@@ -152,8 +162,10 @@ impl Weapon {
             hull_pen_percent: 0,
             name: WeaponType::LifeStealer,
             ammo: Some(Ammo::new_full(10)),
+            on_collision: Some(OnCollision::Remove),
             light_colour: Some(Rgb24::new(255, 0, 0)),
             abilities: vec![WeaponAbility::LifeSteal],
+            collides_with: Some(CollidesWith::default()),
         }
     }
 
@@ -162,12 +174,23 @@ impl Weapon {
             dmg: 50,
             pen: 100,
             bright: true,
+            abilities: vec![],
             hull_pen_percent: 100,
             stun_percent: Some(100),
             name: WeaponType::FiftyCal,
             ammo: Some(Ammo::new_full(2)),
-            light_colour: Some(Rgb24::new(255, 0, 0)),
-            abilities: vec![WeaponAbility::LifeSteal],
+            light_colour: Some(Rgb24::new(127, 0, 255)),
+            collides_with: Some(CollidesWith { solid: true, character: true }),
+            on_collision: Some(OnCollision::Explode(explosion::spec::Explosion {
+                mechanics: explosion::spec::Mechanics(20),
+                particle_emitter: explosion::spec::ParticleEmitter {
+                    num_particles_per_frame: 50,
+                    min_step: Duration::from_millis(10),
+                    max_step: Duration::from_millis(30),
+                    duration: Duration::from_millis(250),
+                    fade_duration: Duration::from_millis(250),
+                },
+            })),
         }
     }
 }

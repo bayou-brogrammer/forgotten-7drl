@@ -8,7 +8,7 @@ pub fn try_get_ranged_weapon(ranged_witness: GetRangedWeapon) -> AppCF<GameState
     on_state_then(move |state: &mut State| {
         let num_weapon_slots = if state.player_has_third_weapon_slot() { 3 } else { 2 };
         state.context_message = Some(StyledString {
-            string: format!("Choose a weapon slot: (press 1-{} or escape/start to cancel)", num_weapon_slots),
+            string: format!("Choose a weapon slot: (press 1-{} or escape to cancel)", num_weapon_slots),
             style: Style::plain_text().with_bold(true).with_foreground(Rgba32::hex_rgb(0xFF0000)),
         });
 

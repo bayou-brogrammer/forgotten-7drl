@@ -107,14 +107,14 @@ fn render_cell(
             fb.set_cell_relative_to_ctx(ctx, screen_coord, 1, render_cell);
         }
 
-        // if entity.particle {
-        //     if let Some(fade) = entity.fade {
-        //         let alpha = (255 - fade) / 10;
-        //         let cell = RenderCell::BLANK
-        //             .with_background(Rgb24::new_grey(187).normalised_mul(light_colour).to_rgba32(alpha));
-        //         fb.set_cell_relative_to_ctx(ctx, screen_coord, 1, cell);
-        //     }
-        // }
+        if entity.particle {
+            if let Some(fade) = entity.fade {
+                let alpha = (255 - fade) / 10;
+                let cell = RenderCell::BLANK
+                    .with_background(Rgb24::new_grey(187).normalised_mul(light_colour).to_rgba32(alpha));
+                fb.set_cell_relative_to_ctx(ctx, screen_coord, 1, cell);
+            }
+        }
     });
 }
 
@@ -134,7 +134,6 @@ fn render_cell_from_tile(scope: &StateScope, tile: Tile, coord: Coord, remembere
 
         // Entity
         Tile::Player | Tile::Npc(_) | Tile::Weapon(_) => npc_renderable(tile, remembered),
-        Tile::Laser => RenderCell::BLANK.with_character('*').with_foreground(RED),
         Tile::Bullet => RenderCell::BLANK.with_character('*').with_background(color::BULLET),
     }
 }

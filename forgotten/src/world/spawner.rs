@@ -182,16 +182,6 @@ impl World {
     }
 
     // Effects
-    pub fn spawn_laser(&mut self, start: Coord, target: Coord) {
-        let entity = self.entity_allocator.alloc();
-        self.spatial_table.update(entity, Location { coord: start, layer: None }).unwrap();
-
-        self.components.insert_entity_data(
-            entity,
-            entity_data!(realtime: (), on_collision: OnCollision::Remove, tile: Tile::Laser,),
-        );
-    }
-
     pub fn spawn_flash(&mut self, coord: Coord, colour: Option<Rgb24>) -> Entity {
         let entity = self.entity_allocator.alloc();
         self.spatial_table.update(entity, Location { coord, layer: None }).unwrap();
@@ -294,7 +284,7 @@ impl World {
             entity,
             entity_data!(
                 realtime: (),
-                on_collision: OnCollision::Remove,
+                on_collision: weapon.on_collision.unwrap_or_default(),
                 collides_with: CollidesWith {
                     solid: true,
                     character: false,
@@ -337,7 +327,7 @@ impl World {
                     particle: Particle {
                         tile: None,
                         movement: None,
-                        fade_duration: Some(Duration::from_millis(1000)),
+                        fade_duration: Some(Duration::from_millis(200)),
                         possible_light: Some(Possible {
                             chance: rational::Rational { numerator: 1, denominator: 1 },
                             value: Light {
@@ -356,13 +346,13 @@ impl World {
                     particle: Particle {
                         tile: None,
                         movement: None,
-                        fade_duration: Some(Duration::from_millis(75)),
+                        fade_duration: Some(Duration::from_millis(100)),
                         possible_light: Some(Possible {
                             chance: rational::Rational { numerator: 1, denominator: 1 },
                             value: Light {
                                 colour: light_colour,
                                 vision_distance: vision_distance::Circle::new_squared(7),
-                                diminish: Rational { numerator: 1, denominator: 1 },
+                                diminish: Rational { numerator: 100, denominator: 1 },
                             },
                         }),
                         ..Default::default()

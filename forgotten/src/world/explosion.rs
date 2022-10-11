@@ -3,7 +3,6 @@ use crate::{
     Entity,
 };
 use gridbugs::{coord_2d::Coord, direction::Direction, line_2d::LineSegment};
-use rand::Rng;
 use std::time::Duration;
 
 pub mod spec {
@@ -21,9 +20,7 @@ pub mod spec {
     }
 
     #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-    pub struct Mechanics {
-        pub range: u32,
-    }
+    pub struct Mechanics(pub u32); // Range
 
     #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
     pub struct Explosion {
@@ -32,9 +29,33 @@ pub mod spec {
     }
 }
 
-fn apply_indirect_hit(world: &mut World, character_entity: Entity, explosion_to_character: LineSegment) {
-    let push_back = 2;
-    let damage = 2;
+struct CharacterEffect {
+    push_back: u32,
+    damage: u32,
+}
+
+fn character_effect_indirect_hit(
+    mechanics: &spec::Mechanics,
+    explosion_to_character: LineSegment,
+) -> CharacterEffect {
+    let character_to_explosion_distance_squared = explosion_to_character.delta().magnitude2();
+    let push_back = 1 + (mechanics.0 / (2 * (character_to_explosion_distance_squared + 1)));
+    CharacterEffect { push_back, damage: push_back }
+}
+
+fn character_effect_direct_hit(mechanics: &spec::Mechanics) -> CharacterEffect {
+    let push_back = mechanics.0 / 3;
+    CharacterEffect { push_back, damage: mechanics.0 * 2 }
+}
+
+fn apply_indirect_hit(
+    world: &mut World,
+    mechanics: &spec::Mechanics,
+    character_entity: Entity,
+    explosion_to_character: LineSegment,
+) {
+    let CharacterEffect { push_back, damage } =
+        character_effect_indirect_hit(mechanics, explosion_to_character);
 
     world.components.realtime.insert(character_entity, ());
     world.realtime_components.movement.insert(
@@ -50,7 +71,12 @@ fn apply_indirect_hit(world: &mut World, character_entity: Entity, explosion_to_
     world.damage_character(character_entity, damage);
 }
 
-fn apply_direct_hit(world: &mut World, explosion_coord: Coord, character_entity: Entity) {
+fn apply_direct_hit(
+    world: &mut World,
+    mechanics: &spec::Mechanics,
+    explosion_coord: Coord,
+    character_entity: Entity,
+) {
     let mut solid_neighbour_vector = Coord::new(0, 0);
     for direction in Direction::all() {
         let neighbour_coord = explosion_coord + direction.coord();
@@ -60,8 +86,9 @@ fn apply_direct_hit(world: &mut World, explosion_coord: Coord, character_entity:
             }
         }
     }
-    let push_back = 2;
-    let damage = 2;
+
+    let CharacterEffect { push_back, damage } = character_effect_direct_hit(mechanics);
+
     if solid_neighbour_vector.is_zero() {
         log::warn!("Direct hit with no solid neighbours shouldn't be possible.");
     } else {
@@ -81,23 +108,25 @@ fn apply_direct_hit(world: &mut World, explosion_coord: Coord, character_entity:
 }
 
 fn is_in_explosion_range(explosion_coord: Coord, mechanics: &spec::Mechanics, coord: Coord) -> bool {
-    explosion_coord.distance2(coord) <= mechanics.range.pow(2)
+    explosion_coord.distance2(coord) <= mechanics.0.pow(2)
 }
 
 fn apply_mechanics(world: &mut World, explosion_coord: Coord, mechanics: &spec::Mechanics) {
     for character_entity in world.components.character.entities().collect::<Vec<_>>() {
         if let Some(character_coord) = world.spatial_table.coord_of(character_entity) {
             if character_coord == explosion_coord {
-                apply_direct_hit(world, explosion_coord, character_entity);
+                apply_direct_hit(world, mechanics, explosion_coord, character_entity);
             } else {
                 if !is_in_explosion_range(explosion_coord, mechanics, character_coord) {
                     continue;
                 }
+
                 let explosion_to_character = LineSegment::new(explosion_coord, character_coord);
-                apply_indirect_hit(world, character_entity, explosion_to_character);
+                apply_indirect_hit(world, mechanics, character_entity, explosion_to_character);
             }
         }
     }
+
     for destructible_entity in world.components.destructible.entities().collect::<Vec<_>>() {
         if let Some(coord) = world.spatial_table.coord_of(destructible_entity) {
             if is_in_explosion_range(explosion_coord, mechanics, coord) {
@@ -107,7 +136,7 @@ fn apply_mechanics(world: &mut World, explosion_coord: Coord, mechanics: &spec::
     }
 }
 
-pub fn explode<R: Rng>(world: &mut World, coord: Coord, explosion: spec::Explosion) {
+pub fn explode(world: &mut World, coord: Coord, explosion: spec::Explosion) {
     world.spawn_explosion_emitter(coord, &explosion.particle_emitter);
     apply_mechanics(world, coord, &explosion.mechanics);
     crate::event::add_event(ExternalEvent::Explosion(coord));

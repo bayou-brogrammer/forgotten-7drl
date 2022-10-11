@@ -23,10 +23,10 @@ impl ActionError {
     }
 
     pub fn no_weapon_in_slot<T>(slot: RangedWeaponSlot) -> Result<T, Self> {
-        Self::err_msg(&format!("There is no weapon in slot {}!", slot.index()))
+        Self::err_msg(&format!("There is no weapon in slot {}!", slot.index() + 1))
     }
 
     pub fn out_of_ammo<T>(name: WeaponType) -> Result<T, Self> {
-        Self::wpn_err("{} is out of ammo!", name)
+        Self::err_msg(&format!("{} is out of ammo!", name.to_string()))
     }
 }

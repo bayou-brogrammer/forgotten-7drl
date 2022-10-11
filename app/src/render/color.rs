@@ -33,13 +33,12 @@ pub const ROBOCOP: Rgba32 = Rgba32::new_rgb(187, 0, 0);
 pub const DOOMBOT: Rgba32 = Rgba32::new_rgb(187, 0, 0);
 
 // Ability Colors
-pub const LASER: Rgba32 = Rgba32::new_rgb(0, 255, 0);
 pub const HEALTH: Rgba32 = Rgba32::new_rgb(255, 0, 0);
 pub const SHOCK: Rgba32 = Rgba32::new_rgb(255, 255, 31);
 
 // Weapon Colors
 pub const BULLET: Rgba32 = Rgba32::new_grey(0);
-pub const GUN_METAL: Rgba32 = Rgba32::new_rgb(150, 75, 0);
+pub const GAUS: Rgba32 = Rgba32::new_rgb(127, 0, 255);
 pub const PLASMA: Rgba32 = Rgba32::new_rgb(0x00, 0xFF, 0xFF);
 pub const CHAINSAW: Rgba32 = Rgba32::new_rgb(0x7a, 0x6a, 0x00);
 pub const CREDIT_FOREGROUND: Rgba32 = Rgba32::new_rgb(0, 127, 127);

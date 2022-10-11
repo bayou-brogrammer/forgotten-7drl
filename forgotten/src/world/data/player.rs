@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Player {
     pub credit: u32,
     pub melee_weapon: Weapon,
@@ -14,12 +14,15 @@ impl Player {
             credit: 0,
             ranged_weapons: [None, None],
             traits: Default::default(),
-            // melee_weapon: Weapon::new_cattle_prod(),
             melee_weapon: Weapon::new_bare_hands(),
         }
     }
 
     pub fn weapon_in_slot(&self, slot: RangedWeaponSlot) -> Option<&Weapon> {
+        if slot.index() >= self.ranged_weapons.len() {
+            return None;
+        }
+
         self.ranged_weapons[slot.index()].as_ref()
     }
 
