@@ -44,6 +44,7 @@ impl GameInstanceComponent {
                         AppInput::Wait => (running.player_wait(&mut instance.scope), Ok(())),
                         AppInput::Slot(slot) => running.player_fire_weapon(&instance.scope, slot),
                         AppInput::Direction(direction) => running.player_walk(&mut instance.scope, direction),
+                        AppInput::Descend => running.player_descend(&mut instance.scope),
                     };
 
                     if let Err(action_error) = action_result {

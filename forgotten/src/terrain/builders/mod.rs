@@ -26,6 +26,7 @@ pub fn print_map(grid: &Grid<LevelCell>) {
                 Grass => '"',
                 Water => '~',
                 PlayerSpawn => '@',
+                Stairs => '>',
             };
             print!("{}", ch);
         }
@@ -50,6 +51,7 @@ pub enum LevelCell {
     Grass,
     Water,
     PlayerSpawn,
+    Stairs,
 }
 
 impl LevelCell {
@@ -85,6 +87,7 @@ pub fn combine_rooms_and_corridors_level_with_cave(
                     LevelCell::Wall
                 }
             }
+            RoomsAndCorridorsCell::Stairs => LevelCell::Stairs,
         },
     })
 }
@@ -170,7 +173,7 @@ pub fn add_grass(map: &mut Grid<LevelCell>) {
     std::mem::drop(rng);
 }
 
-// Returns a grid of booleans, where a true value indicates that grass can spawn at that location.
+// Returns a grid of booleans, where a true value indicates that water can spawn at that location.
 // The grid is populated using perlin noise.
 pub fn make_water_map(size: Size) -> Grid<bool> {
     let mut rng = crate::rng::RNG.lock();

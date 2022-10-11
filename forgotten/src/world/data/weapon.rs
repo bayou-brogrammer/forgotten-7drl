@@ -21,8 +21,10 @@ pub enum WeaponType {
     Chainsaw,
 
     // Ranged
+    Pistol,
+    Rifle,
     Railgun,
-    LifeStealer,
+    Leecher,
     FiftyCal,
 }
 
@@ -30,10 +32,12 @@ impl WeaponType {
     pub fn tile(self) -> Tile {
         use WeaponType::*;
         match self {
+            Pistol => todo!(),
+            Rifle => todo!(),
             CattleProd => Tile::Weapon(CattleProd),
             Chainsaw => Tile::Weapon(Chainsaw),
             Railgun => Tile::Weapon(Railgun),
-            LifeStealer => Tile::Weapon(LifeStealer),
+            Leecher => Tile::Weapon(Leecher),
             BareHands => Tile::Weapon(BareHands),
             FiftyCal => Tile::Weapon(FiftyCal),
         }
@@ -46,7 +50,9 @@ impl WeaponType {
             WeaponType::Chainsaw => Weapon::new_chainsaw(),
             WeaponType::BareHands => Weapon::new_bare_hands(),
             WeaponType::CattleProd => Weapon::new_cattle_prod(),
-            WeaponType::LifeStealer => Weapon::new_life_stealer(),
+            WeaponType::Leecher => Weapon::new_leecher(),
+            WeaponType::Pistol => Weapon::new_pistol(),
+            WeaponType::Rifle => Weapon::new_rifle(),
         }
     }
 }
@@ -58,8 +64,10 @@ impl ToString for WeaponType {
             WeaponType::CattleProd => "Cattle Prod".to_string(),
             WeaponType::Chainsaw => "Chainsaw".to_string(),
             WeaponType::Railgun => "Railgun".to_string(),
-            WeaponType::LifeStealer => "Life Stealer".to_string(),
+            WeaponType::Leecher => "Leecher".to_string(),
             WeaponType::FiftyCal => "Fifty Cal".to_string(),
+            WeaponType::Pistol => "Pistol".to_string(),
+            WeaponType::Rifle => "Rifle".to_string(),
         }
     }
 }
@@ -81,7 +89,14 @@ pub struct Weapon {
 
 impl Weapon {
     pub fn is_ranged(&self) -> bool {
-        matches!(self.name, WeaponType::Railgun | WeaponType::FiftyCal | WeaponType::LifeStealer)
+        matches!(
+            self.name,
+            WeaponType::Railgun
+                | WeaponType::FiftyCal
+                | WeaponType::Leecher
+                | WeaponType::Pistol
+                | WeaponType::Rifle
+        )
     }
 
     pub fn is_melee(&self) -> bool {
@@ -137,6 +152,55 @@ impl Weapon {
     }
 
     // Ranged
+
+    pub fn new_leecher() -> Self {
+        Self {
+            dmg: 4,
+            pen: 3,
+            bright: false,
+            stun_percent: None,
+            hull_pen_percent: 0,
+            name: WeaponType::Leecher,
+            ammo: Some(Ammo::new_full(10)),
+            on_collision: Some(OnCollision::Remove),
+            light_colour: Some(Rgb24::new(75, 255, 0)),
+            abilities: vec![WeaponAbility::LifeSteal],
+            collides_with: Some(CollidesWith::default()),
+        }
+    }
+
+    pub fn new_pistol() -> Self {
+        Self {
+            dmg: 2,
+            pen: 3,
+            bright: false,
+            abilities: vec![],
+            light_colour: None,
+            hull_pen_percent: 40,
+            stun_percent: Some(10),
+            name: WeaponType::Pistol,
+            ammo: Some(Ammo::new_full(10)),
+            on_collision: Some(OnCollision::Remove),
+            collides_with: Some(CollidesWith::default()),
+        }
+    }
+
+    pub fn new_rifle() -> Self {
+        Self {
+            dmg: 4,
+            pen: 6,
+            bright: false,
+            abilities: vec![],
+            light_colour: None,
+            hull_pen_percent: 40,
+            stun_percent: Some(25),
+            name: WeaponType::Rifle,
+            ammo: Some(Ammo::new_full(4)),
+            on_collision: Some(OnCollision::Remove),
+            collides_with: Some(CollidesWith::default()),
+        }
+    }
+
     pub fn new_railgun() -> Self {
         Self {
             dmg: 10,
@@ -149,22 +213,6 @@ impl Weapon {
             ammo: Some(Ammo::new_full(4)),
             on_collision: Some(OnCollision::Remove),
             light_colour: Some(Rgb24::new(0, 255, 255)),
-            collides_with: Some(CollidesWith::default()),
-        }
-    }
-
-    pub fn new_life_stealer() -> Self {
-        Self {
-            dmg: 4,
-            pen: 2,
-            bright: false,
-            stun_percent: None,
-            hull_pen_percent: 0,
-            name: WeaponType::LifeStealer,
-            ammo: Some(Ammo::new_full(10)),
-            on_collision: Some(OnCollision::Remove),
-            light_colour: Some(Rgb24::new(255, 0, 0)),
-            abilities: vec![WeaponAbility::LifeSteal],
             collides_with: Some(CollidesWith::default()),
         }
     }

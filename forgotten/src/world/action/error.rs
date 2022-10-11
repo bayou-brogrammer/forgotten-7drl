@@ -29,4 +29,8 @@ impl ActionError {
     pub fn out_of_ammo<T>(name: WeaponType) -> Result<T, Self> {
         Self::err_msg(&format!("{} is out of ammo!", name.to_string()))
     }
+
+    pub fn can_not_descend<T>() -> Result<T, Self> {
+        Self::err_msg("You can't descend here!")
+    }
 }

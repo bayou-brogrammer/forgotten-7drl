@@ -11,6 +11,7 @@ pub enum AppInput {
     Get,
     Wait,
     Examine,
+    Descend,
     Slot(RangedWeaponSlot),
     Direction(CardinalDirection),
 }
@@ -24,9 +25,11 @@ pub struct Controls {
 impl Default for Controls {
     fn default() -> Self {
         let keys = btreemap![
-            KeyboardInput::Char('x') => AppInput::Examine,
+            // Action Keys
             KeyboardInput::Char('g') => AppInput::Get,
             KeyboardInput::Char(' ') => AppInput::Wait,
+            KeyboardInput::Char('x') => AppInput::Examine,
+            KeyboardInput::Char('.') => AppInput::Descend,
 
             // Movement Keys
             KeyboardInput::Up => AppInput::Direction(CardinalDirection::North),
@@ -41,6 +44,8 @@ impl Default for Controls {
             KeyboardInput::Char('l') => AppInput::Direction(CardinalDirection::East),
             KeyboardInput::Char('k') => AppInput::Direction(CardinalDirection::North),
             KeyboardInput::Char('j') => AppInput::Direction(CardinalDirection::South),
+
+            // Slot Keys
             KeyboardInput::Char('1') => AppInput::Slot(RangedWeaponSlot::Slot1),
             KeyboardInput::Char('2') => AppInput::Slot(RangedWeaponSlot::Slot2),
             KeyboardInput::Char('3') => AppInput::Slot(RangedWeaponSlot::Slot3),

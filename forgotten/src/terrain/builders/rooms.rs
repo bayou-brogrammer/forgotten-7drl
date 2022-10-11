@@ -1,11 +1,10 @@
+use super::FloorOrWall;
 use gridbugs::{
     coord_2d::{Axis, Coord, Size},
     direction::CardinalDirection,
     grid_2d::Grid,
 };
 use std::collections::HashSet;
-
-use super::FloorOrWall;
 
 // An axis-aligned rectangle
 #[derive(Clone, Copy)]
@@ -227,6 +226,7 @@ pub enum RoomsAndCorridorsCell {
     Floor,
     Wall,
     Door,
+    Stairs,
 }
 
 // Represents a level made up of rooms and corridors

@@ -8,13 +8,16 @@ lazy_static! {
 
 #[derive(Serialize, Deserialize, Clone, Copy, Debug)]
 pub enum Message {
+    Heal,
     Intro,
+    Descend,
     PlayerDies,
     PlayerStunned,
     EnemyDies(NpcType),
     EnemyStunend(NpcType),
     EnemyHitPlayer(NpcType),
     EquipWeapon(WeaponType),
+    EnemySlammedIntoWall(NpcType),
     PlayerHitEnemy { enemy: NpcType, weapon: WeaponType },
 }
 

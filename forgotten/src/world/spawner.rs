@@ -93,6 +93,16 @@ impl World {
         );
     }
 
+    pub fn spawn_stairs(&mut self, coord: Coord) {
+        self.spawn_entity(
+            (coord, Layer::Feature),
+            entity_data! {
+                tile: Tile::Stairs,
+                stairs: (),
+            },
+        );
+    }
+
     // Entities
 
     pub fn spawn_player(&mut self, coord: Coord) -> Entity {
@@ -181,6 +191,16 @@ impl World {
         );
     }
 
+    pub fn spawn_medkit(&mut self, coord: Coord) {
+        self.spawn_entity(
+            (coord, Layer::Item),
+            entity_data! {
+                tile: Tile::Medkit,
+                item: Item::Medkit,
+            },
+        );
+    }
+
     // Effects
     pub fn spawn_flash(&mut self, coord: Coord, colour: Option<Rgb24>) -> Entity {
         let entity = self.entity_allocator.alloc();
@@ -212,11 +232,13 @@ impl World {
 
         self.components.insert_entity_data(
             emitter_entity,
-            entity_data!(realtime: (), light: Light {
-                colour: Rgb24::new(255, 187, 63),
-                diminish: Rational {numerator: 1, denominator: 100},
-                vision_distance: vision_distance::Circle::new_squared(420),
-            }),
+            entity_data!(realtime: (),
+                light: Light {
+                    colour: Rgb24::new(255, 187, 63),
+                    diminish: Rational {numerator: 1, denominator: 100},
+                    vision_distance: vision_distance::Circle::new_squared(420),
+                }
+            ),
         );
 
         self.realtime_components.fade.insert(emitter_entity, FadeState::new(spec.duration));
@@ -268,7 +290,7 @@ impl World {
             emitter_entity,
             realtime::light_colour_fade::LightColourFadeState {
                 fade_state: realtime::fade::FadeState::new(spec.fade_duration),
-                from: Rgb24::new(255, 187, 63),
+                from: Rgb24::new(255, 75, 100),
                 to: Rgb24::new(0, 0, 0),
             },
         );

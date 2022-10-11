@@ -26,6 +26,11 @@ impl World {
             // If the player bumps into a door, open the door
             if let Some(DoorState::Closed) = self.components.door_state.get(feature_entity) {
                 self.open_door(feature_entity);
+
+                if self.components.player.contains(character) {
+                    crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::DoorOpen));
+                }
+
                 return Ok(None);
             }
 
@@ -33,6 +38,11 @@ impl World {
             if self.components.solid.contains(feature_entity) {
                 if let Some(open_door_entity) = self.open_door_entity_adjacent_to_coord(target_coord) {
                     self.close_door(open_door_entity);
+
+                    if self.components.player.contains(character) {
+                        crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::DoorClose));
+                    }
+
                     return Ok(None);
                 }
                 return ActionError::err_cant_walk_there();
@@ -72,8 +82,10 @@ impl World {
             let sound_effect = match weapon.name {
                 WeaponType::Railgun => Some(SoundEffect::Railgun),
                 WeaponType::FiftyCal => Some(SoundEffect::FiftyCal),
-                WeaponType::LifeStealer => Some(SoundEffect::LifeStealer),
+                WeaponType::Leecher => Some(SoundEffect::Leecher),
                 WeaponType::BareHands | WeaponType::CattleProd | WeaponType::Chainsaw => None,
+                WeaponType::Pistol => todo!(),
+                WeaponType::Rifle => todo!(),
             };
 
             if let Some(sound_effect) = sound_effect {

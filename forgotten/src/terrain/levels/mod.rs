@@ -35,6 +35,10 @@ pub fn spawn_terrain(grid: Grid<LevelCell>, world: &mut World) -> (Entity, Vec<C
                 player_entity = Some(world.spawn_player(coord));
                 world.spawn_weapon(coord, WeaponType::FiftyCal)
             }
+            Stairs => {
+                world.spawn_floor(coord);
+                world.spawn_stairs(coord);
+            }
         }
     }
 
@@ -45,7 +49,7 @@ pub fn first_floor(mut terrain_state: TerrainState) -> Terrain {
     const LEVEL: u8 = 0;
     const SIZE: Size = Size::new_u16(10, 10);
 
-    let grid = procgen::generate(SIZE);
+    let grid = procgen::generate(SIZE, 0);
     let mut world = World::new(SIZE, 0);
 
     let mut agents = ComponentTable::default();

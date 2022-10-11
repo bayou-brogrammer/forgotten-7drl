@@ -26,6 +26,9 @@ impl Component for Log {
                 Message::EnemyStunend(npc_type) => {
                     vec![plain("The "), enemy_text(*npc_type), plain(" is stunned.")]
                 }
+                Message::EnemySlammedIntoWall(npc_type) => {
+                    vec![plain("The "), enemy_text(*npc_type), plain(" is slammed into the wall.")]
+                }
 
                 // Player
                 Message::PlayerHitEnemy { enemy, weapon } => {
@@ -41,6 +44,10 @@ impl Component for Log {
                 Message::PlayerStunned => vec![plain("You have been stunned!")],
                 Message::EquipWeapon(weapon) => {
                     vec![plain("You equip the "), weapon_name_text(*weapon), plain(".")]
+                }
+                Message::Heal => vec![plain("Health restored.")],
+                Message::Descend => {
+                    vec![plain("You descend further into the compound... Your ammo has been refilled!")]
                 }
             };
 

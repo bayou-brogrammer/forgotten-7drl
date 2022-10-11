@@ -13,8 +13,10 @@ pub fn weapon_name_text(weapon_name: WeaponType) -> StyledString {
         WeaponType::CattleProd => color::SHOCK.saturating_scalar_mul_div(3, 2),
         WeaponType::Chainsaw => color::CHAINSAW.saturating_scalar_mul_div(3, 2),
         WeaponType::Railgun => color::PLASMA,
-        WeaponType::LifeStealer => color::HEALTH,
+        WeaponType::Leecher => color::HEALTH,
         WeaponType::FiftyCal => color::GAUS.saturating_scalar_mul_div(3, 2),
+        WeaponType::Pistol => color::OXYGEN,
+        WeaponType::Rifle => color::LASER,
     };
 
     t(name.as_str(), color)

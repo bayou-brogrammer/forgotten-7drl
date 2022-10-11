@@ -49,7 +49,7 @@ impl Running {
             None => self.into_witness(),
             Some(control_flow) => match control_flow {
                 ControlFlow::Win => GameState::Win,
-                ControlFlow::LevelChange => todo!(),
+                ControlFlow::LevelChange => self.into_witness(),
                 ControlFlow::GameOver => GameState::GameOver,
                 ControlFlow::GetMelee => self.into_melee_witness(),
                 ControlFlow::GetRanged => self.into_ranged_witness(),
@@ -103,5 +103,9 @@ impl Running {
         slot: RangedWeaponSlot,
     ) -> (GameState, Result<(), ActionError>) {
         self.handle_control_flow_result(game.0.player_fire(slot))
+    }
+
+    pub fn player_descend(self, game: &mut StateScope) -> (GameState, Result<(), ActionError>) {
+        self.handle_control_flow_result(game.0.player_descend())
     }
 }

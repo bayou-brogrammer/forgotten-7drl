@@ -55,4 +55,8 @@ impl World {
     pub fn animation_tick(&mut self, animation_context: &mut AnimationContext) {
         animation_context.tick(self);
     }
+
+    pub fn clone_entity_data(&self, entity: Entity) -> EntityData {
+        self.components.clone_entity_data(entity)
+    }
 }

@@ -5,3 +5,5 @@ name    = "audio_data"
 version = "0.1.0"
 
 [dependencies]
+include_dir = "0.7"
+lazy_static = "1.4"

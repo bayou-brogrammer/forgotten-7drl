@@ -184,4 +184,12 @@ impl World {
             }
         }
     }
+
+    pub fn heal_fully(&mut self, entity: Entity) {
+        if let Some(hit_points) = self.components.hp.get_mut(entity) {
+            crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::Heal));
+            crate::log::append_entry(Message::Heal);
+            hit_points.current = hit_points.max;
+        }
+    }
 }

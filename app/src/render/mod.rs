@@ -130,10 +130,12 @@ fn render_cell_from_tile(scope: &StateScope, tile: Tile, coord: Coord, remembere
         | Tile::Grass
         | Tile::GrassCrushed
         | Tile::DoorClosed
-        | Tile::DoorOpen => terrain_renderable(scope, tile, coord),
+        | Tile::DoorOpen
+        | Tile::Reactor
+        | Tile::Stairs => terrain_renderable(scope, tile, coord),
 
         // Entity
-        Tile::Player | Tile::Npc(_) | Tile::Weapon(_) => npc_renderable(tile, remembered),
+        Tile::Player | Tile::Npc(_) | Tile::Weapon(_) | Tile::Medkit => npc_renderable(tile, remembered),
         Tile::Bullet => RenderCell::BLANK.with_character('*').with_background(color::BULLET),
     }
 }

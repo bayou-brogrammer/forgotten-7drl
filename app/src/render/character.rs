@@ -18,21 +18,33 @@ pub fn npc_renderable(tile: Tile, remembered: bool) -> RenderCell {
             Tile::Weapon(weapon_type) => match weapon_type {
                 forgotten_game::WeaponType::BareHands => RenderCell::BLANK,
                 forgotten_game::WeaponType::CattleProd => {
-                    RenderCell::BLANK.with_character('|').with_foreground(SHOCK).with_bold(true)
+                    RenderCell::BLANK.with_character('Δ').with_foreground(SHOCK).with_bold(true)
                 }
                 forgotten_game::WeaponType::Chainsaw => {
-                    RenderCell::BLANK.with_character('Δ').with_foreground(YELLOW).with_bold(true)
+                    RenderCell::BLANK.with_character('Э').with_foreground(YELLOW).with_bold(true)
                 }
                 forgotten_game::WeaponType::Railgun => {
-                    RenderCell::BLANK.with_character('r').with_foreground(PLASMA).with_bold(true)
+                    RenderCell::BLANK.with_character('Я').with_foreground(PLASMA).with_bold(true)
                 }
-                forgotten_game::WeaponType::LifeStealer => {
+                forgotten_game::WeaponType::Leecher => {
                     RenderCell::BLANK.with_character('ł').with_foreground(HEALTH).with_bold(true)
                 }
                 forgotten_game::WeaponType::FiftyCal => {
                     RenderCell::BLANK.with_character('£').with_foreground(PLASMA).with_bold(true)
                 }
+                forgotten_game::WeaponType::Pistol => {
+                    RenderCell::BLANK.with_character('√').with_foreground(GUN_METAL).with_bold(true)
+                }
+                forgotten_game::WeaponType::Rifle => {
+                    RenderCell::BLANK.with_character('∕').with_foreground(GUN_METAL).with_bold(true)
+                }
             },
+
+            Tile::Medkit => RenderCell::BLANK
+                .with_character('†')
+                .with_foreground(HEALTH)
+                .with_background(LIGHT_RED)
+                .with_bold(true),
             _ => unreachable!("npc_renderable called with non-npc tile"),
         }
     }
@@ -52,6 +64,12 @@ pub fn terrain_renderable(scope: &StateScope, tile: Tile, coord: Coord) -> Rende
         Tile::Wall | Tile::CaveWall => {
             let is_wall_below = scope.0.is_wall_known_at(coord + Coord::new(0, 1));
             wall_renderable(tile, is_wall_below)
+        }
+        Tile::Reactor => {
+            RenderCell::BLANK.with_character('₪').with_background(LIGHT_GREY).with_foreground(REACTOR)
+        }
+        Tile::Stairs => {
+            RenderCell::BLANK.with_character('>').with_background(LIGHT_GREY).with_foreground(STAIRS)
         }
         _ => unreachable!("Tried to render a non-terrain tile as terrain"),
     }

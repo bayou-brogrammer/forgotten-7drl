@@ -2,7 +2,8 @@ use crate::{
     world::{realtime, ExternalEvent, World},
     Entity,
 };
-use gridbugs::{coord_2d::Coord, direction::Direction, line_2d::LineSegment};
+use crate::{EntityData, Layers};
+use gridbugs::{coord_2d::Coord, direction::Direction, entity_table::entity_data, line_2d::LineSegment};
 use std::time::Duration;
 
 pub mod spec {
@@ -57,7 +58,11 @@ fn apply_indirect_hit(
     let CharacterEffect { push_back, damage } =
         character_effect_indirect_hit(mechanics, explosion_to_character);
 
-    world.components.realtime.insert(character_entity, ());
+    world.components.insert_entity_data(
+        character_entity,
+        entity_data!(realtime: (), pushed_from: world.spatial_table.coord_of(character_entity).unwrap()),
+    );
+
     world.realtime_components.movement.insert(
         character_entity,
         realtime::movement::spec::Movement {
@@ -80,8 +85,8 @@ fn apply_direct_hit(
     let mut solid_neighbour_vector = Coord::new(0, 0);
     for direction in Direction::all() {
         let neighbour_coord = explosion_coord + direction.coord();
-        if let Some(spatial_cell) = world.spatial_table.layers_at(neighbour_coord) {
-            if spatial_cell.feature.is_some() || spatial_cell.character.is_some() {
+        if let Some(&Layers { feature, character, .. }) = world.spatial_table.layers_at(neighbour_coord) {
+            if feature.is_some() || character.is_some() {
                 solid_neighbour_vector += direction.coord();
             }
         }
@@ -93,7 +98,12 @@ fn apply_direct_hit(
         log::warn!("Direct hit with no solid neighbours shouldn't be possible.");
     } else {
         let travel_vector = -solid_neighbour_vector;
-        world.components.realtime.insert(character_entity, ());
+
+        world.components.insert_entity_data(
+            character_entity,
+            entity_data!(realtime: (), pushed_from: world.spatial_table.coord_of(character_entity).unwrap()),
+        );
+
         world.realtime_components.movement.insert(
             character_entity,
             realtime::movement::spec::Movement {
@@ -104,6 +114,7 @@ fn apply_direct_hit(
             .build(),
         );
     }
+
     world.damage_character(character_entity, damage);
 }
 

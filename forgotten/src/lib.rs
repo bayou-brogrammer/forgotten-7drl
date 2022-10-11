@@ -46,6 +46,7 @@ pub mod prelude {
 
 use gridbugs::visible_area_detection::VisibilityGrid;
 pub use prelude::*;
+use rand::seq::SliceRandom;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub struct GameConfig {
@@ -96,6 +97,7 @@ impl Game {
             since_last_frame: Duration::from_millis(0),
             animation_context: AnimationContext::default(),
         };
+        game.set_new_music();
         game.update_visibility();
         game.prime_npcs();
         game
@@ -111,6 +113,33 @@ impl Game {
 
     pub fn current_level(&self) -> u8 {
         self.world.level
+    }
+
+    pub fn run_systems(&mut self) {
+        if self.turn_state == TurnState::EnemyTurn {
+            self.npc_turn();
+            self.turn_state = TurnState::PlayerTurn;
+
+            // Pickup Events
+            if let Some(&Layers { item: Some(item_entity), .. }) =
+                self.world.spatial_table.layers_at(self.player_coord())
+            {
+                if let Some(item) = self.world.components.item.get(item_entity) {
+                    match item {
+                        Item::Weapon(_) => {}
+                        Item::Credit(_) => todo!(),
+                        Item::Medkit => {
+                            self.world.heal_fully(self.player_entity);
+                            self.world.components.dead.insert(item_entity, ());
+                        }
+                    }
+                }
+            }
+        }
+
+        self.world.cull_dead(&mut self.agents);
+        self.world.animation_tick(&mut self.animation_context);
+        self.update_visibility();
     }
 }
 
@@ -132,7 +161,21 @@ impl Game {
         }
     }
 
-    pub fn player(&self) -> Option<&Player> {
-        self.world.entity_player(self.player_entity)
+    pub fn stairs_under_player(&self) -> bool {
+        self.world
+            .spatial_table
+            .layers_at(self.player_coord())
+            .and_then(|cell| cell.feature)
+            .map(|feature| self.world.components.stairs.contains(feature))
+            .unwrap_or(false)
+    }
+
+    pub fn set_new_music(&self) {
+        let mut gameplay_music = crate::sound::GAME_MUSIC.lock();
+        let mut rng = crate::rng::RNG.lock();
+        gameplay_music.shuffle(&mut *rng);
+        crate::event::add_event(ExternalEvent::LoopMusic(
+            gameplay_music[self.world.level as usize % gameplay_music.len()],
+        ));
     }
 }

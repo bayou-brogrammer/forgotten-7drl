@@ -1,4 +1,10 @@
+use lazy_static::lazy_static;
+use parking_lot::Mutex;
 use serde::{Deserialize, Serialize};
+
+lazy_static! {
+    pub static ref GAME_MUSIC: Mutex<Vec<Music>> = Mutex::new(vec![Music::Gameplay0]);
+}
 
 #[derive(Serialize, Deserialize, Clone, Copy)]
 pub enum Music {
@@ -24,5 +30,5 @@ pub enum SoundEffect {
     FiftyCal,
     Chainsaw,
     CattleProd,
-    LifeStealer,
+    Leecher,
 }

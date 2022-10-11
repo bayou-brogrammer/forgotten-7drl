@@ -8,6 +8,10 @@ pub enum Input {
 }
 
 impl Game {
+    pub fn player(&self) -> Option<&Player> {
+        self.world.entity_player(self.player_entity)
+    }
+
     pub fn player_coord(&self) -> Coord {
         self.world.spatial_table.coord_of(self.player_entity).expect("can't find coord of player")
     }
@@ -69,5 +73,14 @@ impl Game {
         }
 
         ActionError::no_weapon_in_slot(slot)
+    }
+
+    pub fn player_descend(&mut self) -> Result<Option<ControlFlow>, ActionError> {
+        if self.stairs_under_player() {
+            self.generate_level();
+            return Ok(Some(ControlFlow::LevelChange));
+        }
+
+        ActionError::can_not_descend()
     }
 }

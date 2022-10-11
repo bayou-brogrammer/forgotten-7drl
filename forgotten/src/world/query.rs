@@ -27,9 +27,10 @@ impl World {
         }
     }
 
+    #[allow(clippy::collapsible_match)]
     pub fn is_npc_at_coord(&self, coord: Coord) -> bool {
-        if let Some(spatial_cell) = self.spatial_table.layers_at(coord) {
-            if let Some(entity) = spatial_cell.character {
+        if let Some(&Layers { character, .. }) = self.spatial_table.layers_at(coord) {
+            if let Some(entity) = character {
                 self.components.npc.contains(entity)
             } else {
                 false
@@ -49,9 +50,9 @@ impl World {
 // Visibility
 impl World {
     pub fn can_npc_see_through_feature_at_coord(&self, coord: Coord) -> bool {
-        if let Some(spatial_cell) = self.spatial_table.layers_at(coord) {
-            if let Some(feature) = spatial_cell.feature {
-                self.components.opacity.get(feature).cloned().unwrap_or(0) < 127
+        if let Some(Layers { feature, .. }) = self.spatial_table.layers_at(coord) {
+            if let Some(feature) = feature {
+                self.components.opacity.get(*feature).cloned().unwrap_or(0) < 127
             } else {
                 true
             }

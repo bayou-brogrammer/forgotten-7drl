@@ -2,7 +2,23 @@ use super::builders;
 use crate::prelude::*;
 use gridbugs::grid_2d::Grid;
 
-pub fn generate(size: Size) -> Grid<LevelCell> {
+const DISTANCE_FOR_STAIRS: u32 = 125;
+
+fn choose_stairs_coord(map: &mut Grid<LevelCell>, player_coord: Coord) {
+    let mut possible_stairs = map
+        .enumerate()
+        .filter(|(_, cell)| **cell == LevelCell::Floor || **cell == LevelCell::CaveFloor)
+        .filter_map(
+            |(coord, _)| if coord.distance2(player_coord) > DISTANCE_FOR_STAIRS { Some(coord) } else { None },
+        )
+        .collect::<Vec<_>>();
+
+    crate::rng::shuffle(&mut possible_stairs);
+    let stairs_coord = possible_stairs.pop().expect("No stairs spots");
+    *map.get_checked_mut(stairs_coord) = LevelCell::Stairs;
+}
+
+pub fn generate(size: Size, level: u8) -> Grid<LevelCell> {
     let RoomsAndCorridorsLevel { map: rooms_and_corridors_map, player_spawn } =
         RoomsAndCorridorsLevel::generate(size);
     let cave_map = builders::generate_cave_map(size);
@@ -14,6 +30,10 @@ pub fn generate(size: Size) -> Grid<LevelCell> {
     remove_unreachable_floor(&mut combined_map, &mut water_map, player_spawn);
     remove_invalid_doors(&mut combined_map);
     add_grass(&mut combined_map);
+
+    if level != FINAL_LEVEL {
+        choose_stairs_coord(&mut combined_map, player_spawn);
+    }
 
     for (coord, cell) in combined_map.enumerate_mut() {
         use LevelCell::*;
@@ -29,6 +49,7 @@ pub fn generate(size: Size) -> Grid<LevelCell> {
                         *cell = Water
                     }
                 }
+                Stairs => todo!(),
             }
         }
     }
@@ -50,10 +71,32 @@ pub fn generate_items(
 ) {
     crate::rng::shuffle(empty_coords);
 
+    // for _ in 0..2 {
+    //     if let Some(coord) = empty_coords.pop() {
+    //         world.spawn_credit(coord, 2);
+    //     }
+    // }
+    // for _ in 0..4 {
+    //     if let Some(coord) = empty_coords.pop() {
+    //         world.spawn_credit(coord, 1);
+    //     }
+    // }
+    for _ in 0..1 {
+        if let Some(coord) = empty_coords.pop() {
+            world.spawn_medkit(coord);
+        }
+    }
+
     for _ in 0..2 {
         if let Some(coord) = empty_coords.pop() {
             let wpn = terrain_state.ranged_weapons.pop().unwrap();
             world.spawn_weapon(coord, wpn);
+        }
+    }
+
+    if terrain_state.cattle_prod_floors.contains(&level) {
+        if let Some(coord) = empty_coords.pop() {
+            world.spawn_weapon(coord, WeaponType::CattleProd);
         }
     }
 

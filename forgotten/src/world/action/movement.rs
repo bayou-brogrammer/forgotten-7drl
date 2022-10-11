@@ -42,15 +42,21 @@ impl World {
                             }
                         }
 
-                        // // Slammed against a wall
-                        // if self.realtime_components.movement.contains(projectile_entity)
-                        //     && self.components.character.contains(projectile_entity)
-                        // {
-                        //     let from_coord = self.components.pushed_from.get(projectile_entity).unwrap();
-                        //     let distance = current_coord.manhattan_distance(*from_coord);
-                        //     let dmg = if distance >= 2 { 2 } else { distance };
-                        //     self.damage_character(projectile_entity, dmg)
-                        // }
+                        // Slammed against a wall
+                        if self.realtime_components.movement.contains(projectile_entity)
+                            && self.components.character.contains(projectile_entity)
+                        {
+                            if let Some(from_coord) = self.components.pushed_from.get(projectile_entity) {
+                                let distance = current_coord.manhattan_distance(*from_coord);
+                                let dmg = if distance >= 2 { 2 } else { distance };
+
+                                if let Some(npc) = self.components.npc.get_mut(projectile_entity) {
+                                    crate::log::append_entry(Message::EnemySlammedIntoWall(npc.npc_type));
+                                }
+
+                                self.damage_character(projectile_entity, dmg)
+                            }
+                        }
 
                         if stop {
                             self.projectile_stop(projectile_entity);

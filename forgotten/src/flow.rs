@@ -1,4 +1,5 @@
-use crate::{prelude::*, prompt, TurnState};
+use crate::{prelude::*, prompt, terrain};
+use gridbugs::visible_area_detection::VisibilityGrid;
 
 pub enum ControlFlow {
     Win,
@@ -32,13 +33,7 @@ impl Game {
     }
 
     pub fn handle_tick_inner(&mut self, since_previous: Duration) -> Option<ControlFlow> {
-        if self.turn_state == TurnState::EnemyTurn {
-            self.npc_turn();
-            self.turn_state = TurnState::PlayerTurn;
-        }
-
-        self.world.run_systems(&mut self.agents, &mut self.animation_context);
-        self.update_visibility();
+        self.run_systems();
 
         if self.is_game_over() {
             Some(ControlFlow::GameOver)
@@ -47,5 +42,33 @@ impl Game {
         } else {
             None
         }
+    }
+
+    pub fn generate_level(&mut self) {
+        crate::log::append_entry(Message::Descend);
+
+        let mut player_data = self.world.clone_entity_data(self.player_entity);
+        for weapon in player_data.player.as_mut().unwrap().ranged_weapons.iter_mut() {
+            if let Some(weapon) = weapon.as_mut() {
+                if let Some(ammo) = weapon.ammo.as_mut() {
+                    ammo.current = ammo.max;
+                }
+            }
+        }
+
+        if let Some(ammo) = player_data.player.as_mut().unwrap().melee_weapon.ammo.as_mut() {
+            ammo.current = ammo.max;
+        }
+
+        let Terrain { world, agents, player_entity } = terrain::build_station(self.world.level + 1);
+        self.visibility_grid = VisibilityGrid::new(world.size());
+
+        self.world = world;
+        self.agents = agents;
+        self.player_entity = player_entity;
+
+        self.prime_npcs();
+        self.update_visibility();
+        self.set_new_music();
     }
 }

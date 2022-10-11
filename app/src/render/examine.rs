@@ -64,9 +64,10 @@ fn tile_str(tile: Tile) -> Option<TileLabel> {
             | Tile::Grass
             | Tile::GrassCrushed
             | Tile::Water
+            | Tile::Stairs
     )
     .then(|| TileLabel::Name(desc.clone()))
-    .or_else(|| matches!(tile, Tile::Weapon(..)).then(|| TileLabel::Literal(desc.clone())))
+    .or_else(|| matches!(tile, Tile::Weapon(..) | Tile::Reactor).then(|| TileLabel::Literal(desc.clone())))
 }
 
 fn default_tile_str(tile: Tile) -> Option<&'static str> {
@@ -78,14 +79,19 @@ fn default_tile_str(tile: Tile) -> Option<&'static str> {
         Tile::Grass => "dense patch of grass",
         Tile::GrassCrushed => "crushed grass",
         Tile::Water => "some lovely cave water",
+        Tile::Reactor => "core reactor that powers all robots",
+        Tile::Stairs => "an elevator down...",
+        Tile::Medkit => "a medkit",
 
         Tile::Weapon(wpn) => match wpn {
             WeaponType::BareHands => return None,
             WeaponType::CattleProd => "A cattle prod - can stun low-level enemies",
             WeaponType::Chainsaw => "A chainsaw - melee weapon with high DMG and limited uses.",
             WeaponType::Railgun => "A railgun - it can shoot through almost anything!",
-            WeaponType::LifeStealer => "A life stealer - converts the recently deceased into health",
+            WeaponType::Leecher => "A life stealer - converts the recently deceased into health",
             WeaponType::FiftyCal => "A 50 Cal Sniper - 1 shot is all you need",
+            WeaponType::Pistol => "A pistol - a good all-rounder",
+            WeaponType::Rifle => "A rifle - strong, steady, bolt action rifle",
         },
 
         Tile::Npc(npc_type) => match npc_type {

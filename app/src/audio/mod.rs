@@ -31,20 +31,22 @@ impl AudioTable {
         use audio_data::*;
         let map = audio_player.as_ref().map(|audio_player| {
             hashmap![
-                Audio::Menu => audio_player.load_sound(MENU),
-                Audio::Gameplay0 => audio_player.load_sound(GAMEPLAY0),
+                Audio::Menu => audio_player.load_sound(&MENU),
+                Audio::Gameplay0 => audio_player.load_sound(&GAMEPLAY0),
 
-                Audio::Explosion => audio_player.load_sound(EXPLOSION),
-                Audio::SoundEffect(SoundEffect::DoorOpen) => audio_player.load_sound(DOOR_OPEN),
-                Audio::SoundEffect(SoundEffect::Heal) => audio_player.load_sound(HEAL),
-                Audio::SoundEffect(SoundEffect::Die) => audio_player.load_sound(DIE),
+                Audio::Explosion => audio_player.load_sound(&EXPLOSION),
+                Audio::SoundEffect(SoundEffect::Die) => audio_player.load_sound(&DIE),
+                Audio::SoundEffect(SoundEffect::Heal) => audio_player.load_sound(&HEAL),
+                Audio::SoundEffect(SoundEffect::DoorOpen) => audio_player.load_sound(&DOOR_OPEN),
+                Audio::SoundEffect(SoundEffect::DoorClose) => audio_player.load_sound(&DOOR_CLOSE),
 
                 // Wpns
-                Audio::SoundEffect(SoundEffect::Punch) => audio_player.load_sound(PUNCH),
-                Audio::SoundEffect(SoundEffect::CattleProd) => audio_player.load_sound(ZAP),
-                Audio::SoundEffect(SoundEffect::FiftyCal) => audio_player.load_sound(SHOTGUN),
-                Audio::SoundEffect(SoundEffect::Chainsaw) => audio_player.load_sound(CHAINSAW),
-                Audio::SoundEffect(SoundEffect::LifeStealer) => audio_player.load_sound(LIFE_STEALER),
+                Audio::SoundEffect(SoundEffect::Railgun) => audio_player.load_sound(&RAILGUN),
+                Audio::SoundEffect(SoundEffect::Punch) => audio_player.load_sound(&PUNCH),
+                Audio::SoundEffect(SoundEffect::CattleProd) => audio_player.load_sound(&ZAP),
+                Audio::SoundEffect(SoundEffect::FiftyCal) => audio_player.load_sound(&SHOTGUN),
+                Audio::SoundEffect(SoundEffect::Chainsaw) => audio_player.load_sound(&CHAINSAW),
+                Audio::SoundEffect(SoundEffect::Leecher) => audio_player.load_sound(&LIFE_STEALER),
             ]
         });
 

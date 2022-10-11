@@ -17,11 +17,6 @@ pub use weapon::*;
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub enum Tile {
-    Player,
-    Npc(NpcType),
-    Weapon(WeaponType),
-    Bullet,
-
     Wall,
     DoorOpen,
     DoorClosed,
@@ -31,6 +26,17 @@ pub enum Tile {
     Grass,
     GrassCrushed,
     Water,
+    Reactor,
+    Stairs,
+
+    // Entity
+    Player,
+    Bullet,
+    Npc(NpcType),
+
+    // Items
+    Weapon(WeaponType),
+    Medkit,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -60,6 +66,7 @@ entity_table::declare_entity_module! {
         destructible: (),
         grass_state: GrassState,
         door_state: DoorState,
+        stairs: (),
 
         //Entity
         npc: Npc,

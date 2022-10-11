@@ -42,6 +42,10 @@ struct Cli {
     delete_save: bool,
     #[clap(long, action, default_value_t = false)]
     delete_config: bool,
+    #[clap(long, action, default_value_t = false)]
+    delete_controls: bool,
+    #[clap(long, action, default_value_t = false)]
+    delete_all_configs: bool,
 
     #[clap(short, long, action, default_value_t = false)]
     new_game: bool,
@@ -72,6 +76,8 @@ fn main() {
         new_game,
         omniscient,
         delete_config,
+        delete_controls,
+        delete_all_configs,
         config_file,
         mute,
     } = Cli::parse();
@@ -89,16 +95,19 @@ fn main() {
             }
         });
 
-    if delete_save {
-        let result = file_storage.remove(&save_file);
-        if result.is_err() {
-            log::warn!("couldn't find save file to delete");
+    if delete_all_configs {
+        delete_file(&mut file_storage, &save_file);
+        delete_file(&mut file_storage, &config_file);
+        delete_file(&mut file_storage, &controls_file);
+    } else {
+        if delete_save {
+            delete_file(&mut file_storage, &save_file);
         }
-    }
-    if delete_config {
-        let result = file_storage.remove(&config_file);
-        if result.is_err() {
-            log::warn!("couldn't find config file to delete");
+        if delete_config {
+            delete_file(&mut file_storage, &config_file);
+        }
+        if delete_controls {
+            delete_file(&mut file_storage, &controls_file);
         }
     }
 
@@ -108,6 +117,7 @@ fn main() {
         config_key: config_file,
         controls_key: controls_file,
     };
+
     let audio_player = if mute {
         None
     } else {
@@ -124,5 +134,12 @@ fn main() {
     match frontend.unwrap_or_else(|| FrontEnd::Wgpu(Wgpu::default())) {
         FrontEnd::Wgpu(wgpu) => wgpu.run(forgotten_app::run_app(args)),
         FrontEnd::Ansi(ansi) => ansi.run(forgotten_app::run_app(args)),
+    }
+}
+
+fn delete_file<K: AsRef<str>>(file_storage: &mut Storage, file: K) {
+    let result = file_storage.remove(&file);
+    if result.is_err() {
+        log::warn!("couldn't find file to delete");
     }
 }
