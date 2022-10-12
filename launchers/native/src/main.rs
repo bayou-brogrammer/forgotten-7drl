@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use clap::*;
+use clap::{Parser, Subcommand};
 use forgotten_app::{AppArgs, AppStorage, InitialRngSeed};
 use gridbugs::{
     audio::{AudioPlayer, NativeAudioError, NativeAudioPlayer},

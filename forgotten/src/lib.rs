@@ -1,3 +1,5 @@
+#![warn(clippy::all, clippy::nursery)]
+
 mod ai;
 mod behavior;
 mod flow;
@@ -110,14 +112,15 @@ impl Game {
     }
 
     pub fn is_won(&self) -> bool {
-        if let Some(reactor) = self.world.components.reactor.entities().next() {
-            self.world.components.dead.get(reactor).is_some()
-        } else {
-            false
-        }
+        self.world
+            .components
+            .reactor
+            .entities()
+            .next()
+            .map_or(false, |reactor| self.world.components.dead.get(reactor).is_some())
     }
 
-    pub fn current_level(&self) -> u8 {
+    pub const fn current_level(&self) -> u8 {
         self.world.level
     }
 
@@ -160,11 +163,9 @@ impl Game {
 
     /// Returns true iff a wall has been seen by the player at the given coord
     pub fn is_wall_known_at(&self, coord: Coord) -> bool {
-        if let Some(data) = self.visibility_grid.get_data(coord) {
-            data.tiles.feature.map(|tile| tile.is_wall()).unwrap_or(false)
-        } else {
-            false
-        }
+        self.visibility_grid
+            .get_data(coord)
+            .map_or(false, |data| data.tiles.feature.map(|tile| tile.is_wall()).unwrap_or(false))
     }
 
     pub fn stairs_under_player(&self) -> bool {

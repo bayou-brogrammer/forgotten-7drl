@@ -1,4 +1,7 @@
-use crate::{prelude::*, world::realtime};
+use crate::{
+    prelude::*,
+    world::{explosion, realtime},
+};
 
 const KNOCKBACK: usize = 3;
 
@@ -125,6 +128,26 @@ impl World {
         }
 
         self.components.dead.insert(character, ());
+
+        if self.components.explodes_on_death.contains(character) {
+            if let Some(coord) = self.spatial_table.coord_of(character) {
+                self.components.explodes_on_death.remove(character);
+
+                use explosion::spec::*;
+                let spec = Explosion {
+                    mechanics: Mechanics(2),
+                    particle_emitter: ParticleEmitter {
+                        duration: Duration::from_millis(400),
+                        num_particles_per_frame: 100,
+                        min_step: Duration::from_millis(100),
+                        max_step: Duration::from_millis(300),
+                        fade_duration: Duration::from_millis(500),
+                    },
+                };
+                crate::log::append_entry(Message::DoomBotExplodes);
+                explosion::explode(self, coord, spec);
+            }
+        }
     }
 }
 
@@ -139,7 +162,7 @@ impl World {
     ) {
         if let Some(armour) = self.components.armour.get(entity_to_damage).cloned() {
             if let Some(remaining_pen) = projectile_damage.pen.checked_sub(armour.value) {
-                if let Some(&enemy) = self.components.npc.get(entity_to_damage) {
+                if let Some(enemy) = self.components.npc.get(entity_to_damage) {
                     if let Some(weapon) = projectile_damage.weapon_name {
                         crate::log::append_entry(Message::PlayerHitEnemy { enemy: enemy.npc_type, weapon })
                     }

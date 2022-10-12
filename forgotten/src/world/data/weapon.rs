@@ -7,7 +7,7 @@ pub struct Ammo {
 }
 
 impl Ammo {
-    pub fn new_full(max: u32) -> Self {
+    pub const fn new_full(max: u32) -> Self {
         Self { current: max, max }
     }
 }
@@ -29,7 +29,7 @@ pub enum WeaponType {
 }
 
 impl WeaponType {
-    pub fn tile(self) -> Tile {
+    pub const fn tile(self) -> Tile {
         use WeaponType::*;
         match self {
             Pistol => Tile::Weapon(Pistol),
@@ -45,14 +45,14 @@ impl WeaponType {
 
     pub fn new_weapon(self) -> Weapon {
         match self {
-            WeaponType::FiftyCal => Weapon::new_fiftycal(),
-            WeaponType::Railgun => Weapon::new_railgun(),
-            WeaponType::Chainsaw => Weapon::new_chainsaw(),
-            WeaponType::BareHands => Weapon::new_bare_hands(),
-            WeaponType::CattleProd => Weapon::new_cattle_prod(),
-            WeaponType::Leecher => Weapon::new_leecher(),
-            WeaponType::Pistol => Weapon::new_pistol(),
-            WeaponType::Rifle => Weapon::new_rifle(),
+            Self::FiftyCal => Weapon::new_fiftycal(),
+            Self::Railgun => Weapon::new_railgun(),
+            Self::Chainsaw => Weapon::new_chainsaw(),
+            Self::BareHands => Weapon::new_bare_hands(),
+            Self::CattleProd => Weapon::new_cattle_prod(),
+            Self::Leecher => Weapon::new_leecher(),
+            Self::Pistol => Weapon::new_pistol(),
+            Self::Rifle => Weapon::new_rifle(),
         }
     }
 }
@@ -60,14 +60,14 @@ impl WeaponType {
 impl ToString for WeaponType {
     fn to_string(&self) -> String {
         match self {
-            WeaponType::BareHands => "Bare Hands".to_string(),
-            WeaponType::CattleProd => "Cattle Prod".to_string(),
-            WeaponType::Chainsaw => "Chainsaw".to_string(),
-            WeaponType::Railgun => "Railgun".to_string(),
-            WeaponType::Leecher => "Leecher".to_string(),
-            WeaponType::FiftyCal => "Fifty Cal".to_string(),
-            WeaponType::Pistol => "Pistol".to_string(),
-            WeaponType::Rifle => "Rifle".to_string(),
+            Self::BareHands => "Bare Hands".to_string(),
+            Self::CattleProd => "Cattle Prod".to_string(),
+            Self::Chainsaw => "Chainsaw".to_string(),
+            Self::Railgun => "Railgun".to_string(),
+            Self::Leecher => "Leecher".to_string(),
+            Self::FiftyCal => "Fifty Cal".to_string(),
+            Self::Pistol => "Pistol".to_string(),
+            Self::Rifle => "Rifle".to_string(),
         }
     }
 }
@@ -88,7 +88,7 @@ pub struct Weapon {
 }
 
 impl Weapon {
-    pub fn is_ranged(&self) -> bool {
+    pub const fn is_ranged(&self) -> bool {
         matches!(
             self.name,
             WeaponType::Railgun
@@ -99,7 +99,7 @@ impl Weapon {
         )
     }
 
-    pub fn is_melee(&self) -> bool {
+    pub const fn is_melee(&self) -> bool {
         matches!(self.name, WeaponType::BareHands | WeaponType::CattleProd | WeaponType::Chainsaw)
     }
 
@@ -119,7 +119,7 @@ impl Weapon {
         }
     }
 
-    pub fn new_chainsaw() -> Self {
+    pub const fn new_chainsaw() -> Self {
         Self {
             dmg: 5,
             pen: 10,
@@ -137,7 +137,7 @@ impl Weapon {
 
     pub fn new_cattle_prod() -> Self {
         Self {
-            pen: 5,
+            pen: 4,
             dmg: 3,
             bright: false,
             on_collision: None,
@@ -153,31 +153,15 @@ impl Weapon {
 
     // Ranged
 
-    pub fn new_leecher() -> Self {
-        Self {
-            dmg: 4,
-            pen: 3,
-            bright: false,
-            stun_percent: None,
-            hull_pen_percent: 0,
-            name: WeaponType::Leecher,
-            ammo: Some(Ammo::new_full(10)),
-            on_collision: Some(OnCollision::Remove),
-            light_colour: Some(Rgb24::new(75, 255, 0)),
-            abilities: vec![WeaponAbility::LifeSteal],
-            collides_with: Some(CollidesWith::default()),
-        }
-    }
-
     pub fn new_pistol() -> Self {
         Self {
             dmg: 2,
-            pen: 3,
+            pen: 4,
             bright: false,
             abilities: vec![],
             light_colour: None,
             hull_pen_percent: 40,
-            stun_percent: Some(10),
+            stun_percent: Some(12),
             name: WeaponType::Pistol,
             ammo: Some(Ammo::new_full(10)),
             on_collision: Some(OnCollision::Remove),
@@ -201,6 +185,22 @@ impl Weapon {
         }
     }
 
+    pub fn new_leecher() -> Self {
+        Self {
+            dmg: 4,
+            pen: 3,
+            bright: false,
+            stun_percent: None,
+            hull_pen_percent: 0,
+            name: WeaponType::Leecher,
+            ammo: Some(Ammo::new_full(5)),
+            on_collision: Some(OnCollision::Remove),
+            light_colour: Some(Rgb24::new(75, 255, 0)),
+            abilities: vec![WeaponAbility::LifeSteal],
+            collides_with: Some(CollidesWith::default()),
+        }
+    }
+
     pub fn new_railgun() -> Self {
         Self {
             dmg: 10,
@@ -217,7 +217,7 @@ impl Weapon {
         }
     }
 
-    pub fn new_fiftycal() -> Self {
+    pub const fn new_fiftycal() -> Self {
         Self {
             dmg: 50,
             pen: 100,
@@ -258,14 +258,14 @@ pub enum RangedWeaponSlot {
 }
 
 impl RangedWeaponSlot {
-    pub fn number(self) -> u32 {
+    pub const fn number(self) -> u32 {
         match self {
             Self::Slot1 => 1,
             Self::Slot2 => 2,
             Self::Slot3 => 3,
         }
     }
-    pub fn index(self) -> usize {
+    pub const fn index(self) -> usize {
         match self {
             Self::Slot1 => 0,
             Self::Slot2 => 1,

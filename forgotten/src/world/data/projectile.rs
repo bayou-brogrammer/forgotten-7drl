@@ -7,7 +7,7 @@ pub struct CollidesWith {
 }
 
 impl CollidesWith {
-    pub fn all() -> Self {
+    pub const fn all() -> Self {
         Self { solid: true, character: true }
     }
 }

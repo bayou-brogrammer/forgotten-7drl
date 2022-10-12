@@ -48,3 +48,8 @@ where
 {
     RNG.lock().gen::<T>()
 }
+
+pub fn roll_dice(dice: u32, sides: u32) -> u32 {
+    let mut rng = RNG.lock();
+    (0..dice).map(|_| rng.gen_range(1..=sides)).sum()
+}

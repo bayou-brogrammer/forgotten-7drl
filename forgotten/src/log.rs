@@ -13,6 +13,7 @@ pub enum Message {
     Descend,
     PlayerDies,
     PlayerStunned,
+    DoomBotExplodes,
     EnemyDies(NpcType),
     EnemyStunend(NpcType),
     EnemyHitPlayer(NpcType),

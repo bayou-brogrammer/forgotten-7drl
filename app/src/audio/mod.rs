@@ -9,16 +9,24 @@ pub type AppAudioPlayer = Option<AudioPlayer>;
 pub fn game_music_to_audio(music: Music) -> Audio {
     match music {
         Music::Gameplay0 => Audio::Gameplay0,
-        //     Music::Gameplay1 => Audio::Gameplay1,
-        //     Music::Gameplay2 => Audio::Gameplay2,
+        Music::Gameplay1 => Audio::Gameplay1,
+        Music::Gameplay2 => Audio::Gameplay2,
+        Music::Gameplay3 => Audio::Gameplay3,
+        Music::Gameplay4 => Audio::Gameplay4,
     }
 }
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq, Debug)]
 pub enum Audio {
     Menu,
-    Gameplay0,
     Explosion,
+    Gameplay0,
+    Gameplay1,
+    Gameplay2,
+    Gameplay3,
+    Gameplay4,
+    EndTextSad,
+    EndTextHappy,
     SoundEffect(SoundEffect),
 }
 
@@ -33,6 +41,13 @@ impl AudioTable {
             hashmap![
                 Audio::Menu => audio_player.load_sound(&MENU),
                 Audio::Gameplay0 => audio_player.load_sound(&GAMEPLAY0),
+                Audio::Gameplay1 => audio_player.load_sound(&GAMEPLAY1),
+                Audio::Gameplay2 => audio_player.load_sound(&GAMEPLAY2),
+                Audio::Gameplay3 => audio_player.load_sound(&GAMEPLAY3),
+                Audio::Gameplay4 => audio_player.load_sound(&GAMEPLAY4),
+
+                Audio::EndTextSad => audio_player.load_sound(&END_TEXT_SAD),
+                Audio::EndTextHappy => audio_player.load_sound(&END_TEXT_HAPPY),
 
                 Audio::Explosion => audio_player.load_sound(&EXPLOSION),
                 Audio::SoundEffect(SoundEffect::Die) => audio_player.load_sound(&DIE),

@@ -35,7 +35,7 @@ pub struct MovementState {
     ordinal_step_duration: Duration,
 }
 
-fn ordinal_duration_from_cardinal_duration(duration: Duration) -> Duration {
+const fn ordinal_duration_from_cardinal_duration(duration: Duration) -> Duration {
     const SQRT_2_X_1_000_000: u64 = 1_414_214;
     let ordinal_micros = (duration.as_micros() as u64 * SQRT_2_X_1_000_000) / 1_000_000;
     Duration::from_micros(ordinal_micros)
@@ -58,7 +58,7 @@ impl spec::Movement {
 }
 
 impl MovementState {
-    pub fn cardinal_step_duration(&self) -> Duration {
+    pub const fn cardinal_step_duration(&self) -> Duration {
         self.cardinal_step_duration
     }
 }
@@ -71,12 +71,10 @@ impl RealtimeComponent for MovementState {
             Path::Forever(ref mut path) => path.next(),
             Path::Once(ref mut path) => path.next(),
             Path::Steps { ref mut infinite_step_iter, ref mut remaining_steps } => {
-                if let Some(next_remaining_steps) = remaining_steps.checked_sub(1) {
+                remaining_steps.checked_sub(1).and_then(|next_remaining_steps| {
                     *remaining_steps = next_remaining_steps;
                     infinite_step_iter.next()
-                } else {
-                    None
-                }
+                })
             }
         };
 

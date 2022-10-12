@@ -10,13 +10,13 @@ pub enum FadeProgress {
 }
 
 impl FadeProgress {
-    fn fading(self) -> Option<u8> {
+    const fn fading(self) -> Option<u8> {
         match self {
             Self::Fading(progress) => Some(progress),
             Self::Complete => None,
         }
     }
-    fn is_complete(self) -> bool {
+    const fn is_complete(self) -> bool {
         match self {
             Self::Fading(_) => false,
             Self::Complete => true,
@@ -44,7 +44,7 @@ impl FadeState {
         let period = full_duration / 256;
         Self { progress, period }
     }
-    pub fn fading(self) -> Option<u8> {
+    pub const fn fading(self) -> Option<u8> {
         self.progress.fading()
     }
 }

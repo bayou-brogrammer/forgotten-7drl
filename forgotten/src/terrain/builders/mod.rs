@@ -61,11 +61,11 @@ pub enum LevelCell {
 }
 
 impl LevelCell {
-    fn is_wall(&self) -> bool {
+    const fn is_wall(&self) -> bool {
         matches!(self, Self::Wall | Self::CaveWall)
     }
 
-    fn is_floor(&self) -> bool {
+    const fn is_floor(&self) -> bool {
         matches!(self, Self::Floor | Self::CaveFloor)
     }
 }
@@ -201,10 +201,8 @@ pub fn make_water_map(size: Size) -> Grid<bool> {
     while let Some(coord) = to_visit.pop() {
         for direction in CardinalDirection::all() {
             let neighbour_coord = coord + direction.coord();
-            if let Some(true) = map.get(neighbour_coord) {
-                if seen.insert(neighbour_coord) {
-                    to_visit.push(neighbour_coord);
-                }
+            if map.get(neighbour_coord) == Some(&true) && seen.insert(neighbour_coord) {
+                to_visit.push(neighbour_coord);
             }
         }
     }
@@ -212,5 +210,6 @@ pub fn make_water_map(size: Size) -> Grid<bool> {
     for coord in seen {
         *map.get_checked_mut(coord) = false;
     }
+
     map
 }

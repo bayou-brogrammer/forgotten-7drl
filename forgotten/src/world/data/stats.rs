@@ -6,7 +6,7 @@ pub struct Armour {
 }
 
 impl Armour {
-    pub fn new(value: u32) -> Self {
+    pub const fn new(value: u32) -> Self {
         Self { value }
     }
 }
@@ -18,7 +18,7 @@ pub struct HitPoints {
 }
 
 impl HitPoints {
-    pub fn new_full(max: u32) -> Self {
+    pub const fn new_full(max: u32) -> Self {
         Self { current: max, max }
     }
 }

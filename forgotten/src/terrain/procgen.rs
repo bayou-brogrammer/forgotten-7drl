@@ -89,7 +89,7 @@ pub fn generate(size: Size, level: u8) -> Grid<LevelCell> {
                 CaveFloor | CaveWall => *cell = Water,
                 Reactor | Stairs | Water | PlayerSpawn => (),
                 Wall => {
-                    if crate::rng::range(0..=100) > 75 {
+                    if crate::rng::range(0..=100) < 75 {
                         *cell = Water
                     }
                 }

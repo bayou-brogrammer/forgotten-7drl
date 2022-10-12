@@ -66,7 +66,7 @@ mod game_interface {
         //////////////////////////////
         // Visibility
         //////////////////////////////
-        pub fn visibility_grid(&self) -> &VisibilityGrid<VisibleCellData> {
+        pub const fn visibility_grid(&self) -> &VisibilityGrid<VisibleCellData> {
             &self.0.visibility_grid
         }
 
@@ -81,7 +81,7 @@ mod game_interface {
             self.0.world.components.player.get(self.0.player_entity).expect("Player not found")
         }
 
-        pub fn current_level(&self) -> u8 {
+        pub const fn current_level(&self) -> u8 {
             self.0.current_level()
         }
 

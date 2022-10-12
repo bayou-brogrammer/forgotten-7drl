@@ -108,6 +108,7 @@ pub enum NpcAction {
     Wait,
     Walk(CardinalDirection),
     Alert(CardinalDirection),
+    FireBullet(CardinalDirection),
 }
 
 struct Wander<'a> {
@@ -150,15 +151,13 @@ impl<'a> BestSearch for Wander<'a> {
                 }
 
                 let last_seen_count = last_seen_cell.count;
-                if last_seen_count < self.min_last_seen_count {
+                if last_seen_count <= self.min_last_seen_count {
                     self.min_last_seen_count = last_seen_count;
                     self.min_last_seen_coord = Some(coord);
                 }
-
-                true
-            } else {
-                false
             }
+
+            true
         } else {
             false
         }
@@ -212,9 +211,27 @@ impl Agent {
         }
     }
 
-    pub fn check_action(&self, cardinal_direction: CardinalDirection) -> NpcAction {
+    pub fn check_action(
+        &self,
+        entity: Entity,
+        world: &World,
+        cardinal_direction: CardinalDirection,
+        coord: Coord,
+        last_seen_player_coord: Coord,
+    ) -> NpcAction {
         match self.npc_type {
             NpcType::RoboCop => return NpcAction::Alert(cardinal_direction),
+            NpcType::DoomBot => {
+                // 45% chance to fire
+                if world.entity_has_ammo(entity, RangedWeaponSlot::Slot1) && crate::rng::range(0..=100) < 45 {
+                    let line = LineSegment::new(coord, last_seen_player_coord);
+                    if line.num_steps() == line.num_cardinal_steps() {
+                        return NpcAction::FireBullet(cardinal_direction);
+                    }
+                } else {
+                    return NpcAction::Walk(cardinal_direction);
+                }
+            }
             _ => {}
         }
 
@@ -285,13 +302,18 @@ impl Agent {
         match self.behaviour {
             Behaviour::Flee => NpcAction::Wait,
             Behaviour::Wander { avoid } => {
+                // let (coord, _) = self
+                //     .last_seen_grid
+                //     .enumerate()
+                //     .filter(|(_, c)| *c == CellVisibility::Never)
+                //     .choose(&mut rand::thread_rng())
+                //     .unwrap();
+
                 let mut path_node = behaviour_context.wander_path.pop();
-                let need_new_path = if let Some(path_node) = path_node {
+                let need_new_path = path_node.map_or(true, |path_node| {
                     let implied_current_coord = path_node.to_coord - path_node.in_direction.coord();
                     implied_current_coord != coord
-                } else {
-                    true
-                };
+                });
 
                 if need_new_path {
                     behaviour_context.best_search_context.best_search_path(
@@ -310,31 +332,10 @@ impl Agent {
                     path_node = behaviour_context.wander_path.pop();
                 }
 
-                if let Some(path_node) = path_node {
-                    NpcAction::Walk(path_node.in_direction)
-                } else {
-                    NpcAction::Wait
-                }
+                path_node.map_or(NpcAction::Wait, |path_node| NpcAction::Walk(path_node.in_direction))
             }
             Behaviour::Chase { last_seen_player_coord, accurate } => {
                 if accurate {
-                    // if self.npc_type == NpcType::MiniBot {
-                    //     let line = LineSegment::new(coord, last_seen_player_coord);
-                    //     if line.num_steps() == 2 && line.num_steps() == line.num_cardinal_steps() {
-                    //         let direction = match last_seen_player_coord.x.cmp(&coord.x) {
-                    //             Ordering::Equal => match last_seen_player_coord.y.cmp(&coord.y) {
-                    //                 Ordering::Equal => unreachable!(),
-                    //                 Ordering::Less => CardinalDirection::North,
-                    //                 Ordering::Greater => CardinalDirection::South,
-                    //             },
-                    //             Ordering::Less => CardinalDirection::West,
-                    //             Ordering::Greater => CardinalDirection::East,
-                    //         };
-
-                    //         return NpcAction::FireLaser(direction);
-                    //     }
-                    // }
-
                     let maybe_cardinal_direction =
                         behaviour_context.distance_map_search_context.search_first(
                             &WorldCanEnterAvoidNpcs { world },
@@ -348,7 +349,13 @@ impl Agent {
                             self.behaviour = Behaviour::Wander { avoid: true };
                             NpcAction::Wait
                         }
-                        Some(cardinal_direction) => self.check_action(cardinal_direction),
+                        Some(cardinal_direction) => self.check_action(
+                            entity,
+                            world,
+                            cardinal_direction,
+                            coord,
+                            last_seen_player_coord,
+                        ),
                     }
                 } else {
                     let result = behaviour_context.point_to_point_search_context.point_to_point_search_first(
@@ -363,7 +370,13 @@ impl Agent {
                             self.behaviour = Behaviour::Wander { avoid: true };
                             NpcAction::Wait
                         }
-                        Ok(Some(cardinal_direction)) => self.check_action(cardinal_direction),
+                        Ok(Some(cardinal_direction)) => self.check_action(
+                            entity,
+                            world,
+                            cardinal_direction,
+                            coord,
+                            last_seen_player_coord,
+                        ),
                     }
                 }
             }

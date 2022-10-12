@@ -7,7 +7,7 @@ pub struct Prompt {
 }
 
 impl Prompt {
-    pub fn into_witness(self) -> GameState {
+    pub const fn into_witness(self) -> GameState {
         GameState::Prompt(self)
     }
 

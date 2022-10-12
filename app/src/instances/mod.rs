@@ -18,7 +18,7 @@ pub use menus::*;
 pub use playing::*;
 pub use weapon::*;
 
-pub fn popup_delay(string: String) -> AppCF<()> {
+pub fn _popup_delay(string: String) -> AppCF<()> {
     popup_style(
         StyledString {
             string: string.clone(),

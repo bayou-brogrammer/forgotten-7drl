@@ -79,7 +79,7 @@ fn remove_disconnected_walls(map: &mut Grid<FloorOrWall>) {
     *seen.get_checked_mut(Coord::new(0, 0)) = true;
     while let Some(coord) = walls_to_visit.pop() {
         for neighbour_coord in CardinalDirection::all().map(|d| coord + d.coord()) {
-            if let Some(FloorOrWall::Wall) = map.get(neighbour_coord) {
+            if map.get(neighbour_coord) == Some(&FloorOrWall::Wall) {
                 let seen = seen.get_checked_mut(neighbour_coord);
                 if !*seen {
                     *seen = true;

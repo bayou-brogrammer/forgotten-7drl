@@ -44,7 +44,7 @@ fn character_effect_indirect_hit(
     CharacterEffect { push_back, damage: push_back * 2 }
 }
 
-fn character_effect_direct_hit(mechanics: &spec::Mechanics) -> CharacterEffect {
+const fn character_effect_direct_hit(mechanics: &spec::Mechanics) -> CharacterEffect {
     let push_back = mechanics.0 / 3;
     CharacterEffect { push_back, damage: mechanics.0 * 3 }
 }
@@ -118,7 +118,7 @@ fn apply_direct_hit(
     world.damage_character(character_entity, damage);
 }
 
-fn is_in_explosion_range(explosion_coord: Coord, mechanics: &spec::Mechanics, coord: Coord) -> bool {
+const fn is_in_explosion_range(explosion_coord: Coord, mechanics: &spec::Mechanics, coord: Coord) -> bool {
     explosion_coord.distance2(coord) <= mechanics.0.pow(2)
 }
 

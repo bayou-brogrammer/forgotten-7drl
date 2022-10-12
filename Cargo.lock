@@ -415,13 +415,28 @@ checksum = "86447ad904c7fb335a790c9d7fe3d0d971dc523b8ccd1561a520de9a85302750"
 dependencies = [
  "atty",
  "bitflags",
- "clap_derive",
- "clap_lex",
+ "clap_derive 3.2.18",
+ "clap_lex 0.2.4",
  "indexmap",
  "once_cell",
  "strsim",
  "termcolor",
  "textwrap",
+]
+
+[[package]]
+name = "clap"
+version = "4.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ea54a38e4bce14ff6931c72e5b3c43da7051df056913d4e7e1fcdb1c03df69d"
+dependencies = [
+ "atty",
+ "bitflags",
+ "clap_derive 4.0.13",
+ "clap_lex 0.3.0",
+ "once_cell",
+ "strsim",
+ "termcolor",
 ]
 
 [[package]]
@@ -438,10 +453,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "clap_derive"
+version = "4.0.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c42f169caba89a7d512b5418b09864543eeb4d497416c917d7137863bd2076ad"
+dependencies = [
+ "heck",
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "clap_lex"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2850f2f5a82cbf437dd5af4d49848fbdfc27c157c3d010345776f952765261c5"
+dependencies = [
+ "os_str_bytes",
+]
+
+[[package]]
+name = "clap_lex"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d4198f73e42b4936b35b5bb248d81d2b595ecb170da0bac7655c54eedfa8da8"
 dependencies = [
  "os_str_bytes",
 ]
@@ -944,7 +981,7 @@ name = "forgotten"
 version = "0.1.0"
 dependencies = [
  "audio_data",
- "clap",
+ "clap 3.2.22",
  "forgotten_app",
  "getrandom",
  "gridbugs 0.2.1",
@@ -1452,6 +1489,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aa72e60725e8e0ae6c680774c195000618aa51acbf2b074eb0724bd1154f8f57"
 dependencies = [
  "chargrid",
+ "chargrid_ansi_terminal",
+ "chargrid_wgpu",
  "coord_2d",
  "direction",
  "entity_table",
@@ -1827,9 +1866,9 @@ dependencies = [
 name = "native-launcher"
 version = "0.1.0"
 dependencies = [
- "clap",
+ "clap 4.0.14",
  "forgotten_app",
- "gridbugs 0.2.1",
+ "gridbugs 0.4.0",
  "log",
 ]
 

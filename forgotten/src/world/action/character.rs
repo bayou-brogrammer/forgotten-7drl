@@ -13,11 +13,12 @@ impl World {
         }
 
         let spatial_table = &mut self.spatial_table;
-        let current_coord = if let Some(coord) = spatial_table.coord_of(character) {
-            coord
-        } else {
-            panic!("failed to find coord for {:?}", character);
-        };
+        let current_coord = spatial_table.coord_of(character).map_or_else(
+            || {
+                panic!("failed to find coord for {:?}", character);
+            },
+            |coord| coord,
+        );
 
         let target_coord = current_coord + direction.coord();
         if let Some(&Layers { feature: Some(feature_entity), .. }) =
@@ -68,8 +69,15 @@ impl World {
             return;
         }
 
-        let player = self.components.player.get_mut(character).unwrap();
-        if let Some(weapon) = player.ranged_weapons[slot.index()].as_mut() {
+        let weapon = if let Some(player) = self.components.player.get_mut(character) {
+            player.ranged_weapons[slot.index()].as_mut()
+        } else if let Some(npc) = self.components.npc.get_mut(character) {
+            npc.weapon.as_mut()
+        } else {
+            return;
+        };
+
+        if let Some(weapon) = weapon {
             if let Some(ammo) = weapon.ammo.as_mut() {
                 if ammo.current == 0 {
                     return;

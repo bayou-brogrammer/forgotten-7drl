@@ -9,7 +9,7 @@ pub struct FireWeapon {
 }
 
 impl FireWeapon {
-    pub fn slot(&self) -> RangedWeaponSlot {
+    pub const fn slot(&self) -> RangedWeaponSlot {
         self.slot
     }
 
@@ -24,7 +24,7 @@ impl FireWeapon {
         GameState::Running(Running(self.private))
     }
 
-    pub fn cancel(self) -> GameState {
+    pub const fn cancel(self) -> GameState {
         GameState::Running(Running(self.private))
     }
 }

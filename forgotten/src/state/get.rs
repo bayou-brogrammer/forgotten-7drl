@@ -12,7 +12,7 @@ impl GetRangedWeapon {
         GameState::Running(Running(self.0))
     }
 
-    pub fn cancel(self) -> GameState {
+    pub const fn cancel(self) -> GameState {
         GameState::Running(Running(self.0))
     }
 }
@@ -27,7 +27,7 @@ impl GetMeleeWeapon {
         GameState::Running(Running(self.0))
     }
 
-    pub fn cancel(self) -> GameState {
+    pub const fn cancel(self) -> GameState {
         GameState::Running(Running(self.0))
     }
 }

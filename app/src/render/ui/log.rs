@@ -14,7 +14,7 @@ impl Component for Log {
         let start = messages.len().saturating_sub(N);
         for (i, message) in messages[start..].iter().enumerate() {
             let text = match message {
-                Message::Intro => vec![b("Have I been forgotten?")],
+                Message::Intro => vec![bold("Have I been forgotten?")],
 
                 // AI
                 Message::EnemyHitPlayer(enemy) => {
@@ -28,6 +28,9 @@ impl Component for Log {
                 }
                 Message::EnemySlammedIntoWall(npc_type) => {
                     vec![plain("The "), enemy_text(*npc_type), plain(" is slammed into the wall.")]
+                }
+                Message::DoomBotExplodes => {
+                    vec![plain("The "), enemy_text(NpcType::DoomBot), plain(" self destructs!")]
                 }
 
                 // Player

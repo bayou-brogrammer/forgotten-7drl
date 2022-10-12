@@ -38,11 +38,9 @@ impl Game {
                 if timer.as_millis() == 0 {
                     self.world.components.blocks_gameplay.remove(e);
                 } else {
-                    *timer = if let Some(remaining) = timer.checked_sub(since_previous) {
-                        remaining
-                    } else {
-                        Duration::from_millis(0)
-                    }
+                    *timer = timer
+                        .checked_sub(since_previous)
+                        .map_or_else(|| Duration::from_millis(0), |remaining| remaining)
                 }
             }
         }

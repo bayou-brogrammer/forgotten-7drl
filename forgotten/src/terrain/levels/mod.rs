@@ -63,7 +63,6 @@ pub fn spawn_terrain(
 }
 
 pub fn first_floor() -> Terrain {
-    println!("Generating first floor");
     const LEVEL: u8 = 0;
 
     let grid = procgen::generate_from_str(include_str!("first_floor.txt"));

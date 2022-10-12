@@ -130,6 +130,7 @@ impl World {
                 solid: (),
                 reactor: (),
                 tile: Tile::Reactor,
+                armour: Armour::new(0),
                 hp: HitPoints::new_full(30)
             },
         );
@@ -144,6 +145,7 @@ impl World {
                 character: (),
                 tile: Tile::Player,
                 player: Player::new(),
+                armour: Armour::new(3),
                 hp: HitPoints::new_full(100),
                 vision: vision_distance::Circle::new(200),
                 light: Light {
@@ -164,7 +166,7 @@ impl World {
                 armour: Armour::new(1),
                 hp: HitPoints::new_full(4),
                 tile: Tile::Npc(NpcType::MiniBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::MiniBot, move_to: None  },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::MiniBot, move_to: None, weapon: None    },
             },
         )
     }
@@ -178,7 +180,7 @@ impl World {
                 armour: Armour::new(3),
                 hp: HitPoints::new_full(5),
                 tile: Tile::Npc(NpcType::SecBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::SecBot , move_to: None },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::SecBot , move_to: None, weapon: None   },
             },
         )
     }
@@ -187,26 +189,41 @@ impl World {
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                damage: 3,
+                damage: 2,
                 character: (),
-                armour: Armour::new(5),
+                armour: Armour::new(4),
                 hp: HitPoints::new_full(10),
                 tile: Tile::Npc(NpcType::RoboCop),
-                npc: Npc {disposition:Disposition::Hostile,npc_type:NpcType::RoboCop, move_to: None },
+                npc: Npc {disposition:Disposition::Hostile,npc_type:NpcType::RoboCop, move_to: None, weapon: None   },
             },
         )
     }
 
     pub fn spawn_doombot(&mut self, coord: Coord) -> Entity {
+        let weapon_roll = crate::rng::roll_dice(1, 4);
+        let weapon = match weapon_roll {
+            0 => Some(Weapon::new_railgun()),
+            1 => Some(Weapon::new_rifle()),
+            2 => {
+                if crate::rng::range(0..=100) < 15 {
+                    Some(Weapon::new_fiftycal())
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        };
+
         self.spawn_entity(
             (coord, Layer::Character),
             entity_data! {
-                damage: 5,
+                damage: 4,
                 character: (),
-                armour: Armour::new(10),
-                hp: HitPoints::new_full(30),
+                explodes_on_death: (),
+                armour: Armour::new(6),
+                hp: HitPoints::new_full(20),
                 tile: Tile::Npc(NpcType::DoomBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::DoomBot, move_to: None  },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::DoomBot, move_to: None, weapon  },
             },
         )
     }
@@ -369,70 +386,75 @@ impl World {
             .build(),
         );
 
-        let particle_emitter_ = if let Some(light_colour) = weapon.light_colour {
-            use realtime::particle::spec::*;
+        let particle_emitter_ = weapon
+            .light_colour
+            .map_or_else(
+                || {
+                    use realtime::particle::spec::*;
 
-            if weapon.bright {
-                ParticleEmitter {
-                    emit_particle_every_period: Duration::from_millis(8),
-                    fade_out_duration: None,
-                    particle: Particle {
-                        tile: None,
-                        movement: None,
-                        fade_duration: Some(Duration::from_millis(200)),
-                        possible_light: Some(Possible {
-                            chance: rational::Rational { numerator: 1, denominator: 1 },
-                            value: Light {
-                                colour: light_colour,
-                                vision_distance: vision_distance::Circle::new_squared(50),
-                                diminish: Rational { numerator: 10, denominator: 1 },
-                            },
-                        }),
-                        ..Default::default()
-                    },
-                }
-            } else {
-                ParticleEmitter {
-                    emit_particle_every_period: Duration::from_millis(1),
-                    fade_out_duration: None,
-                    particle: Particle {
-                        tile: None,
-                        movement: None,
-                        fade_duration: Some(Duration::from_millis(100)),
-                        possible_light: Some(Possible {
-                            chance: rational::Rational { numerator: 1, denominator: 1 },
-                            value: Light {
-                                colour: light_colour,
-                                vision_distance: vision_distance::Circle::new_squared(7),
-                                diminish: Rational { numerator: 100, denominator: 1 },
-                            },
-                        }),
-                        ..Default::default()
-                    },
-                }
-            }
-        } else {
-            use realtime::particle::spec::*;
-
-            ParticleEmitter {
-                emit_particle_every_period: Duration::from_micros(2000),
-                fade_out_duration: None,
-                particle: Particle {
-                    tile: None,
-                    movement: Some(Movement {
-                        angle_range: Radians::uniform_range_all(),
-                        cardinal_period_range: UniformInclusiveRange {
-                            low: Duration::from_millis(200),
-                            high: Duration::from_millis(500),
+                    ParticleEmitter {
+                        emit_particle_every_period: Duration::from_micros(2000),
+                        fade_out_duration: None,
+                        particle: Particle {
+                            tile: None,
+                            movement: Some(Movement {
+                                angle_range: Radians::uniform_range_all(),
+                                cardinal_period_range: UniformInclusiveRange {
+                                    low: Duration::from_millis(200),
+                                    high: Duration::from_millis(500),
+                                },
+                            }),
+                            fade_duration: Some(Duration::from_millis(1000)),
+                            possible_light: None,
+                            ..Default::default()
                         },
-                    }),
-                    fade_duration: Some(Duration::from_millis(1000)),
-                    possible_light: None,
-                    ..Default::default()
+                    }
                 },
-            }
-        }
-        .build();
+                |light_colour| {
+                    use realtime::particle::spec::*;
+
+                    if weapon.bright {
+                        ParticleEmitter {
+                            emit_particle_every_period: Duration::from_millis(8),
+                            fade_out_duration: None,
+                            particle: Particle {
+                                tile: None,
+                                movement: None,
+                                fade_duration: Some(Duration::from_millis(200)),
+                                possible_light: Some(Possible {
+                                    chance: rational::Rational { numerator: 1, denominator: 1 },
+                                    value: Light {
+                                        colour: light_colour,
+                                        vision_distance: vision_distance::Circle::new_squared(50),
+                                        diminish: Rational { numerator: 10, denominator: 1 },
+                                    },
+                                }),
+                                ..Default::default()
+                            },
+                        }
+                    } else {
+                        ParticleEmitter {
+                            emit_particle_every_period: Duration::from_millis(1),
+                            fade_out_duration: None,
+                            particle: Particle {
+                                tile: None,
+                                movement: None,
+                                fade_duration: Some(Duration::from_millis(100)),
+                                possible_light: Some(Possible {
+                                    chance: rational::Rational { numerator: 1, denominator: 1 },
+                                    value: Light {
+                                        colour: light_colour,
+                                        vision_distance: vision_distance::Circle::new_squared(7),
+                                        diminish: Rational { numerator: 100, denominator: 1 },
+                                    },
+                                }),
+                                ..Default::default()
+                            },
+                        }
+                    }
+                },
+            )
+            .build();
 
         self.realtime_components.particle_emitter.insert(entity, particle_emitter_);
     }

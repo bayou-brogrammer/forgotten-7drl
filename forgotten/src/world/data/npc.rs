@@ -14,9 +14,10 @@ pub enum Disposition {
     Afraid,
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Npc {
     pub npc_type: NpcType,
+    pub weapon: Option<Weapon>,
     pub move_to: Option<Coord>,
     pub disposition: Disposition,
 }

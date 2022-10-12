@@ -15,13 +15,11 @@ impl World {
             if spatial_cell.floor.is_none() {
                 return false;
             }
-            if let Some(feature) = spatial_cell.feature {
+            spatial_cell.feature.map_or(true, |feature| {
                 self.components.door_state.contains(feature)
                     || self.components.grass_state.contains(feature)
                     || !(self.components.solid.contains(feature))
-            } else {
-                true
-            }
+            })
         } else {
             false
         }
@@ -30,11 +28,7 @@ impl World {
     #[allow(clippy::collapsible_match)]
     pub fn is_npc_at_coord(&self, coord: Coord) -> bool {
         if let Some(&Layers { character, .. }) = self.spatial_table.layers_at(coord) {
-            if let Some(entity) = character {
-                self.components.npc.contains(entity)
-            } else {
-                false
-            }
+            character.map_or(false, |entity| self.components.npc.contains(entity))
         } else {
             false
         }
@@ -51,11 +45,7 @@ impl World {
 impl World {
     pub fn can_npc_see_through_feature_at_coord(&self, coord: Coord) -> bool {
         if let Some(Layers { feature, .. }) = self.spatial_table.layers_at(coord) {
-            if let Some(feature) = feature {
-                self.components.opacity.get(*feature).cloned().unwrap_or(0) < 127
-            } else {
-                true
-            }
+            feature.map_or(true, |feature| self.components.opacity.get(feature).cloned().unwrap_or(0) < 127)
         } else {
             false
         }
@@ -84,18 +74,29 @@ impl World {
     }
 
     pub fn check_movement_blocked(&self, entity: Entity) -> bool {
-        let is_blocked_mov = if let Some(coord) = self.entity_coord(entity) {
-            if let Some(from) = self.components.pushed_from.get(entity) {
-                from.distance2(coord) > 1
-            } else {
-                false
-            }
-        } else {
-            false
-        };
+        let is_blocked_mov = self.entity_coord(entity).map_or(false, |coord| {
+            self.components.pushed_from.get(entity).map_or(false, |from| from.manhattan_distance(coord) > 1)
+        });
 
         (is_blocked_mov && self.components.realtime.get(entity).is_some())
             || self.components.stunned.get(entity).is_some()
+    }
+
+    pub fn entity_has_ammo(&self, entity: Entity, slot: RangedWeaponSlot) -> bool {
+        self.entity_player(entity).map_or_else(
+            || {
+                self.components.npc.get(entity).map_or(false, |npc| {
+                    npc.weapon.as_ref().map_or(false, |weapon| {
+                        weapon.ammo.unwrap_or(Ammo { current: 0, max: 0 }).current > 0
+                    })
+                })
+            },
+            |player| {
+                player
+                    .weapon_in_slot(slot)
+                    .map_or(false, |weapon| weapon.ammo.unwrap_or(Ammo { current: 0, max: 0 }).current > 0)
+            },
+        )
     }
 }
 

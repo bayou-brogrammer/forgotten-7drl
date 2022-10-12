@@ -18,7 +18,7 @@ impl Player {
         }
     }
 
-    pub fn weapon_in_slot(&self, slot: RangedWeaponSlot) -> Option<&Weapon> {
+    pub const fn weapon_in_slot(&self, slot: RangedWeaponSlot) -> Option<&Weapon> {
         if slot.index() >= self.ranged_weapons.len() {
             return None;
         }
@@ -30,11 +30,11 @@ impl Player {
         self.melee_weapon.stun_percent.unwrap_or(0)
     }
 
-    pub fn melee_dmg(&self) -> u32 {
+    pub const fn melee_dmg(&self) -> u32 {
         self.melee_weapon.dmg
     }
 
-    pub fn melee_pen(&self) -> u32 {
+    pub const fn melee_pen(&self) -> u32 {
         self.melee_weapon.pen
     }
 }

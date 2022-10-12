@@ -7,10 +7,10 @@ workspace = "../.."
 [dependencies]
 forgotten_app = { path = "../../app" }
 
-clap = { version = "3", features = ["derive", "cargo"] }
+clap = { version = "4", features = ["derive"] }
 log  = "0.4"
 
-gridbugs = { version = "0.2", features = [
+gridbugs = { version = "0.4", features = [
   "chargrid_wgpu",
   "chargrid_ansi_terminal",
   "storage_backend_file",

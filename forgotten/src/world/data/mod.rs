@@ -47,7 +47,7 @@ pub enum Item {
 }
 
 impl Tile {
-    pub fn is_wall(&self) -> bool {
+    pub const fn is_wall(&self) -> bool {
         matches!(self, Self::Wall | Self::DoorClosed | Self::DoorOpen | Self::CaveWall)
     }
 }
@@ -88,6 +88,7 @@ entity_table::declare_entity_module! {
         realtime: (),
         animating: (),
         pushed_from: Coord,
+        explodes_on_death: (),
         blocks_gameplay: Duration,
         on_collision: OnCollision,
         collides_with: CollidesWith,

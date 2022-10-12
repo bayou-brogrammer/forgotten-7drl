@@ -1,4 +1,4 @@
-use super::*;
+use clap::Args;
 
 #[derive(Default, Args)]
 pub struct Wgpu {

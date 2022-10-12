@@ -1,8 +1,8 @@
-use super::*;
+use clap::{Args, ValueEnum};
 
 #[derive(Args)]
 pub struct AnsiTerminal {
-    #[clap(short, long, action)]
+    #[clap(value_enum)]
     encode: ColEncodeChoice,
 }
 

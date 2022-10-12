@@ -26,6 +26,15 @@ impl Game {
                 NpcAction::Walk(direction) => {
                     let _ = self.world.character_walk_in_direction(entity, direction);
                 }
+                NpcAction::FireBullet(direction) => {
+                    let agent_coord = self.world.entity_coord(entity).unwrap();
+
+                    self.world.character_fire_bullet(
+                        entity,
+                        agent_coord + (direction.coord() * 100),
+                        RangedWeaponSlot::Slot1,
+                    );
+                }
             }
         }
     }
