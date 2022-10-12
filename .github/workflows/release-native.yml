@@ -30,8 +30,7 @@ jobs:
         run: |
           cd ./launchers/native
           cargo build --release
-      -
-       name: Rename
+      - name: Rename
         run: |
           mv ./target/release/native-launcher.exe ./${{ env.RELEASE_NAME }}.exe
       
