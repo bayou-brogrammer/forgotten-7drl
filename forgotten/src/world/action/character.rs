@@ -83,9 +83,9 @@ impl World {
                 WeaponType::Railgun => Some(SoundEffect::Railgun),
                 WeaponType::FiftyCal => Some(SoundEffect::FiftyCal),
                 WeaponType::Leecher => Some(SoundEffect::Leecher),
+                WeaponType::Pistol => Some(SoundEffect::Pistol),
+                WeaponType::Rifle => Some(SoundEffect::Rifle),
                 WeaponType::BareHands | WeaponType::CattleProd | WeaponType::Chainsaw => None,
-                WeaponType::Pistol => todo!(),
-                WeaponType::Rifle => todo!(),
             };
 
             if let Some(sound_effect) = sound_effect {
@@ -93,7 +93,7 @@ impl World {
             }
 
             self.spawn_bullet(character_coord, target, &weapon);
-            self.spawn_flash(character_coord, None);
+            self.spawn_flash(character_coord, weapon.light_colour);
         }
     }
 }

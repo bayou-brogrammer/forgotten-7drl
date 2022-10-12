@@ -20,6 +20,9 @@ impl Game {
 
             match agent.act(entity, &self.world, self.player_entity, &mut self.behavior_context) {
                 NpcAction::Wait => (),
+                NpcAction::Alert(direction) => {
+                    self.world.alert_nearby_entities(entity, direction, self.player_entity)
+                }
                 NpcAction::Walk(direction) => {
                     let _ = self.world.character_walk_in_direction(entity, direction);
                 }

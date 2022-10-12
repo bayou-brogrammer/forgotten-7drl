@@ -84,6 +84,24 @@ impl World {
     }
 
     pub fn check_movement_blocked(&self, entity: Entity) -> bool {
-        self.components.realtime.get(entity).is_some() || self.components.stunned.get(entity).is_some()
+        let is_blocked_mov = if let Some(coord) = self.entity_coord(entity) {
+            if let Some(from) = self.components.pushed_from.get(entity) {
+                from.distance2(coord) > 1
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
+        (is_blocked_mov && self.components.realtime.get(entity).is_some())
+            || self.components.stunned.get(entity).is_some()
+    }
+}
+
+// Gameplay
+impl World {
+    pub fn is_gameplay_blocked(&self) -> bool {
+        !self.components.blocks_gameplay.is_empty()
     }
 }

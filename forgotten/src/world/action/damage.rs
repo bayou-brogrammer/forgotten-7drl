@@ -20,11 +20,11 @@ impl World {
             false
         };
 
-        if player.melee_weapon.name == WeaponType::Chainsaw {
-            crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::Chainsaw));
-        } else {
-            crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::Punch));
-        }
+        crate::event::add_event(ExternalEvent::SoundEffect(match player.melee_weapon.name {
+            WeaponType::CattleProd => SoundEffect::CattleProd,
+            WeaponType::Chainsaw => SoundEffect::Chainsaw,
+            _ => SoundEffect::Punch,
+        }));
 
         if let Some(enemy) = self.components.npc.get(victim) {
             crate::log::append_entry(Message::PlayerHitEnemy {

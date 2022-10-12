@@ -52,7 +52,7 @@ impl GameInstance {
         if current_floor == 0 {
             StyledString {
                 style: Style::new().with_foreground(Rgba32::new_grey(255)).with_bold(true),
-                string: format!("Gotta get to the fuel bay on the {}th floor...", final_floor),
+                string: "Gotta get to the reactor ...".to_string(),
             }
         } else {
             StyledString {

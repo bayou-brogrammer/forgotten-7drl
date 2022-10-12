@@ -19,7 +19,27 @@ impl World {
         entity
     }
 
+    pub fn insert_entity_data(&mut self, location: Location, entity_data: EntityData) -> Entity {
+        let entity = self.entity_allocator.alloc();
+        self.spatial_table.update(entity, location).unwrap();
+        self.components.insert_entity_data(entity, entity_data);
+        entity
+    }
+
     // Terrain
+    pub fn spawn_light(&mut self, coord: Coord, colour: Rgb24) {
+        let entity = self.entity_allocator.alloc();
+        self.spatial_table.update(entity, Location { coord, layer: None }).unwrap();
+
+        self.components.light.insert(
+            entity,
+            Light {
+                colour,
+                vision_distance: vision_distance::Circle::new_squared(200),
+                diminish: Rational { numerator: 1, denominator: 10 },
+            },
+        );
+    }
 
     pub fn spawn_wall(&mut self, coord: Coord) {
         self.spawn_entity(
@@ -103,6 +123,18 @@ impl World {
         );
     }
 
+    pub fn spawn_reactor(&mut self, coord: Coord) {
+        self.spawn_entity(
+            (coord, Layer::Feature),
+            entity_data! {
+                solid: (),
+                reactor: (),
+                tile: Tile::Reactor,
+                hp: HitPoints::new_full(30)
+            },
+        );
+    }
+
     // Entities
 
     pub fn spawn_player(&mut self, coord: Coord) -> Entity {
@@ -132,7 +164,7 @@ impl World {
                 armour: Armour::new(1),
                 hp: HitPoints::new_full(4),
                 tile: Tile::Npc(NpcType::MiniBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::MiniBot },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::MiniBot, move_to: None  },
             },
         )
     }
@@ -146,7 +178,7 @@ impl World {
                 armour: Armour::new(3),
                 hp: HitPoints::new_full(5),
                 tile: Tile::Npc(NpcType::SecBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::SecBot },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::SecBot , move_to: None },
             },
         )
     }
@@ -160,7 +192,7 @@ impl World {
                 armour: Armour::new(5),
                 hp: HitPoints::new_full(10),
                 tile: Tile::Npc(NpcType::RoboCop),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::RoboCop },
+                npc: Npc {disposition:Disposition::Hostile,npc_type:NpcType::RoboCop, move_to: None },
             },
         )
     }
@@ -174,7 +206,7 @@ impl World {
                 armour: Armour::new(10),
                 hp: HitPoints::new_full(30),
                 tile: Tile::Npc(NpcType::DoomBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::DoomBot },
+                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::DoomBot, move_to: None  },
             },
         )
     }
@@ -306,25 +338,23 @@ impl World {
             entity,
             entity_data!(
                 realtime: (),
-                on_collision: weapon.on_collision.unwrap_or_default(),
-                collides_with: CollidesWith {
-                    solid: true,
-                    character: false,
-                },
                 tile: Tile::Bullet,
+                blocks_gameplay: Duration::from_millis(100),
+                on_collision: weapon.on_collision.unwrap_or_default(),
+                collides_with: weapon.collides_with.unwrap_or_default(),
                 projectile_damage: ProjectileDamage {
+                    pen: weapon.pen,
                     hit_points: weapon.dmg,
+                    weapon_name: Some(weapon.name),
+                    hull_pen_percent: weapon.hull_pen_percent,
                     push_back: weapon
                         .abilities
                         .iter()
                         .any(|a| *a ==WeaponAbility::KnockBack),
-                    pen: weapon.pen,
-                    hull_pen_percent: weapon.hull_pen_percent,
                     life_steal: weapon
                         .abilities
                         .iter()
                         .any(|a| *a == WeaponAbility::LifeSteal),
-                    weapon_name: Some(weapon.name),
                 },
             ),
         );
@@ -333,7 +363,7 @@ impl World {
             entity,
             realtime::movement::spec::Movement {
                 path: target - start,
-                cardinal_step_duration: Duration::from_millis(25),
+                cardinal_step_duration: Duration::from_millis(15),
                 repeat: realtime::movement::spec::Repeat::Once,
             }
             .build(),

@@ -30,7 +30,6 @@ pub struct TerrainState {
 impl TerrainState {
     pub fn new() -> Self {
         use crate::WeaponType::*;
-
         let mut rng = crate::rng::RNG.lock();
 
         let mut ranged_weapons = vec![
@@ -55,11 +54,13 @@ impl TerrainState {
     }
 }
 
-pub fn build_station(level: u8) -> Terrain {
+pub fn build_station(level: u8, player_data: Option<EntityData>) -> Terrain {
     let mut terrain_state = TerrainState::new();
 
     if level == 0 {
-        return first_floor(terrain_state);
+        return first_floor();
+    } else if level == FINAL_LEVEL {
+        return last_floor(&mut terrain_state, player_data);
     }
 
     const STATION_SIZE: Size = Size::new_u16(40, 40);
@@ -67,7 +68,7 @@ pub fn build_station(level: u8) -> Terrain {
     let grid = procgen::generate(STATION_SIZE, level);
     let mut agents = ComponentTable::default();
     let mut world = World::new(STATION_SIZE, level);
-    let (player_entity, mut empty_coords) = spawn_terrain(grid, &mut world);
+    let (player_entity, mut empty_coords) = spawn_terrain(grid, &mut world, player_data);
 
     generate_items(level, &mut world, &mut terrain_state, &mut empty_coords);
     generate_npcs(level, &mut world, &mut empty_coords, &mut agents);

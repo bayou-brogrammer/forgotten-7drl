@@ -105,17 +105,18 @@ enum Behaviour {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum NpcAction {
-    Walk(CardinalDirection),
     Wait,
+    Walk(CardinalDirection),
+    Alert(CardinalDirection),
 }
 
 struct Wander<'a> {
-    world: &'a World,
-    last_seen_grid: &'a VisibilityGrid<LastSeenCell>,
-    min_last_seen_coord: Option<Coord>,
-    min_last_seen_count: u64,
-    entity: Entity,
     avoid: bool,
+    entity: Entity,
+    world: &'a World,
+    min_last_seen_count: u64,
+    min_last_seen_coord: Option<Coord>,
+    last_seen_grid: &'a VisibilityGrid<LastSeenCell>,
 }
 
 impl<'a> BestSearch for Wander<'a> {
@@ -211,6 +212,15 @@ impl Agent {
         }
     }
 
+    pub fn check_action(&self, cardinal_direction: CardinalDirection) -> NpcAction {
+        match self.npc_type {
+            NpcType::RoboCop => return NpcAction::Alert(cardinal_direction),
+            _ => {}
+        }
+
+        NpcAction::Walk(cardinal_direction)
+    }
+
     pub fn act(
         &mut self,
         entity: Entity,
@@ -245,6 +255,8 @@ impl Agent {
                         }
                     }
                 }
+            } else if let Some(player_coord) = world.components.npc.get(entity).unwrap().move_to {
+                Behaviour::Chase { last_seen_player_coord: player_coord, accurate: false }
             } else {
                 match self.behaviour {
                     Behaviour::Chase { last_seen_player_coord, .. } => {
@@ -282,21 +294,14 @@ impl Agent {
                 };
 
                 if need_new_path {
-                    // let (coord, _) = self
-                    //     .last_seen_grid
-                    //     .enumerate()
-                    //     .filter(|(_, c)| *c != CellVisibility::Never)
-                    //     .choose(&mut rand::thread_rng())
-                    //     .unwrap();
-
                     behaviour_context.best_search_context.best_search_path(
                         Wander {
-                            world,
-                            last_seen_grid: &self.last_seen_grid,
-                            min_last_seen_coord: None,
-                            min_last_seen_count: self.last_seen_grid.get_data(coord).unwrap().count,
-                            entity,
                             avoid,
+                            world,
+                            entity,
+                            min_last_seen_coord: None,
+                            last_seen_grid: &self.last_seen_grid,
+                            min_last_seen_count: self.last_seen_grid.get_data(coord).unwrap().count,
                         },
                         coord,
                         &mut behaviour_context.wander_path,
@@ -343,7 +348,7 @@ impl Agent {
                             self.behaviour = Behaviour::Wander { avoid: true };
                             NpcAction::Wait
                         }
-                        Some(cardinal_direction) => NpcAction::Walk(cardinal_direction),
+                        Some(cardinal_direction) => self.check_action(cardinal_direction),
                     }
                 } else {
                     let result = behaviour_context.point_to_point_search_context.point_to_point_search_first(
@@ -358,7 +363,7 @@ impl Agent {
                             self.behaviour = Behaviour::Wander { avoid: true };
                             NpcAction::Wait
                         }
-                        Ok(Some(cardinal_direction)) => NpcAction::Walk(cardinal_direction),
+                        Ok(Some(cardinal_direction)) => self.check_action(cardinal_direction),
                     }
                 }
             }

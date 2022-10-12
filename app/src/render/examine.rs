@@ -64,10 +64,12 @@ fn tile_str(tile: Tile) -> Option<TileLabel> {
             | Tile::Grass
             | Tile::GrassCrushed
             | Tile::Water
-            | Tile::Stairs
     )
     .then(|| TileLabel::Name(desc.clone()))
-    .or_else(|| matches!(tile, Tile::Weapon(..) | Tile::Reactor).then(|| TileLabel::Literal(desc.clone())))
+    .or_else(|| {
+        matches!(tile, Tile::Weapon(..) | Tile::Reactor | Tile::Stairs)
+            .then(|| TileLabel::Literal(desc.clone()))
+    })
 }
 
 fn default_tile_str(tile: Tile) -> Option<&'static str> {

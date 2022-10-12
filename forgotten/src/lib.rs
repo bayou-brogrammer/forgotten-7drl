@@ -62,6 +62,7 @@ pub enum TurnState {
 
 #[derive(Serialize, Deserialize)]
 pub struct Game {
+    won: bool,
     start: bool,
     pub config: GameConfig,
     pub world: World,
@@ -81,13 +82,14 @@ impl Game {
     pub fn new<R: Rng>(config: &GameConfig, base_rng: &mut R) -> Self {
         crate::rng::reseed_from_rng(base_rng);
 
-        let Terrain { player_entity, world, agents } = terrain::build_station(1);
+        let Terrain { player_entity, world, agents } = terrain::build_station(0, None);
         let visibility_grid = VisibilityGrid::new(world.size());
         let behavior_context = BehaviourContext::new(world.size());
 
         let mut game = Self {
             world,
             agents,
+            won: false,
             start: true,
             player_entity,
             config: *config,
@@ -108,7 +110,11 @@ impl Game {
     }
 
     pub fn is_won(&self) -> bool {
-        false
+        if let Some(reactor) = self.world.components.reactor.entities().next() {
+            self.world.components.dead.get(reactor).is_some()
+        } else {
+            false
+        }
     }
 
     pub fn current_level(&self) -> u8 {
@@ -116,7 +122,7 @@ impl Game {
     }
 
     pub fn run_systems(&mut self) {
-        if self.turn_state == TurnState::EnemyTurn {
+        if !self.world.is_gameplay_blocked() && self.turn_state == TurnState::EnemyTurn {
             self.npc_turn();
             self.turn_state = TurnState::PlayerTurn;
 

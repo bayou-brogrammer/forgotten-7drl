@@ -11,6 +11,7 @@ pub const BLACK: Rgba32 = Rgba32::new_grey(0);
 pub const YELLOW: Rgba32 = Rgba32::new_rgb(255, 255, 0);
 pub const LIGHT_GREY: Rgba32 = Rgba32::new_grey(127);
 pub const WHITE: Rgba32 = Rgba32::new_grey(255);
+pub const BLUE_VIOLET: Rgba32 = Rgba32::new_rgb(138, 43, 226);
 pub const LIGHT_RED: Rgba32 = HEALTH.saturating_scalar_mul_div(2, 3);
 
 // Terrain Colors
@@ -26,7 +27,7 @@ pub const ROOM_WALL_BG: Rgba32 = LIGHT_GREY;
 pub const WATER_FG: Rgba32 = Rgba32::new_rgb(0, 127, 187);
 pub const WATER_BG: Rgba32 = Rgba32::new_rgb(0, 63, 127);
 pub const REACTOR: Rgba32 = Rgba32::new_rgb(255, 132, 0);
-pub const STAIRS: Rgba32 = Rgba32::new_rgb(0, 100, 225);
+pub const STAIRS: Rgba32 = Rgba32::new_rgb(0, 255, 0);
 
 // Entity Colors
 pub const PLAYER: Rgba32 = YELLOW;
@@ -41,9 +42,9 @@ pub const HEALTH: Rgba32 = Rgba32::new_rgb(255, 0, 0);
 pub const SHOCK: Rgba32 = Rgba32::new_rgb(255, 255, 31);
 
 // Weapon Colors
+pub const LEECH: Rgba32 = Rgba32::new_rgb(75, 255, 0);
 pub const OXYGEN: Rgba32 = Rgba32::new_rgb(127, 127, 255);
 pub const BULLET: Rgba32 = Rgba32::new_grey(0);
-pub const GUN_METAL: Rgba32 = Rgba32::new_grey(125);
 pub const GAUS: Rgba32 = Rgba32::new_rgb(127, 0, 255);
 pub const PLASMA: Rgba32 = Rgba32::new_rgb(0x00, 0xFF, 0xFF);
 pub const CHAINSAW: Rgba32 = Rgba32::new_rgb(0x7a, 0x6a, 0x00);

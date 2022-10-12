@@ -4,6 +4,7 @@ use gridbugs::{
     grid_2d::Grid,
     line_2d::Direction,
     perlin2::Perlin2,
+    rgb_int::Rgb24,
 };
 use rand::Rng;
 use std::collections::HashSet;
@@ -27,6 +28,8 @@ pub fn print_map(grid: &Grid<LevelCell>) {
                 Water => '~',
                 PlayerSpawn => '@',
                 Stairs => '>',
+                Light(..) => 'L',
+                Reactor => '*',
             };
             print!("{}", ch);
         }
@@ -41,10 +44,11 @@ pub enum FloorOrWall {
 }
 
 // A cell of the game world
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Clone, Copy, PartialEq, Eq)]
 pub enum LevelCell {
-    Floor,
+    #[default]
     Wall,
+    Floor,
     Door,
     CaveFloor,
     CaveWall,
@@ -52,6 +56,8 @@ pub enum LevelCell {
     Water,
     PlayerSpawn,
     Stairs,
+    Light(Rgb24),
+    Reactor,
 }
 
 impl LevelCell {

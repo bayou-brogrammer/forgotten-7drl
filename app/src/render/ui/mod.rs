@@ -45,7 +45,7 @@ impl Component for Hud {
                     format!("Ranged {}:", i + 1).as_str(),
                     weapon,
                     player,
-                    ctx.add_y(i as i32 * 7),
+                    ctx.add_y(i as i32 * 6),
                     fb,
                 );
             } else {

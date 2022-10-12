@@ -26,6 +26,7 @@ pub fn try_get_ranged_weapon(ranged_witness: GetRangedWeapon) -> AppCF<GameState
         .and_then(|slot_or_err| {
             on_state_then(move |state: &mut State| {
                 state.context_message = None;
+
                 match slot_or_err {
                     Err(_escape_or_start) => val_once(ranged_witness.cancel()),
                     Ok(slot) => {

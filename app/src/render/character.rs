@@ -10,33 +10,41 @@ pub fn npc_renderable(tile: Tile, remembered: bool) -> RenderCell {
         match tile {
             Tile::Player => RenderCell::BLANK.with_character('@').with_foreground(PLAYER).with_bold(true),
             Tile::Npc(npc_type) => match npc_type {
-                NpcType::MiniBot => RenderCell::BLANK.with_character('c').with_bold(true),
-                NpcType::SecBot => RenderCell::BLANK.with_character('Č').with_bold(true),
-                NpcType::RoboCop => RenderCell::BLANK.with_character('Ĝ').with_bold(true),
-                NpcType::DoomBot => RenderCell::BLANK.with_character('Œ').with_bold(true),
+                NpcType::MiniBot => {
+                    RenderCell::BLANK.with_character('c').with_foreground(MINIBOT).with_bold(true)
+                }
+                NpcType::SecBot => {
+                    RenderCell::BLANK.with_character('Č').with_foreground(SECBOT).with_bold(true)
+                }
+                NpcType::RoboCop => {
+                    RenderCell::BLANK.with_character('Ĝ').with_foreground(ROBOCOP).with_bold(true)
+                }
+                NpcType::DoomBot => {
+                    RenderCell::BLANK.with_character('Œ').with_foreground(DOOMBOT).with_bold(true)
+                }
             },
             Tile::Weapon(weapon_type) => match weapon_type {
                 forgotten_game::WeaponType::BareHands => RenderCell::BLANK,
                 forgotten_game::WeaponType::CattleProd => {
-                    RenderCell::BLANK.with_character('Δ').with_foreground(SHOCK).with_bold(true)
+                    RenderCell::BLANK.with_character('Δ').with_foreground(YELLOW).with_bold(true)
                 }
                 forgotten_game::WeaponType::Chainsaw => {
-                    RenderCell::BLANK.with_character('Э').with_foreground(YELLOW).with_bold(true)
+                    RenderCell::BLANK.with_character('Э').with_foreground(CHAINSAW).with_bold(true)
                 }
                 forgotten_game::WeaponType::Railgun => {
                     RenderCell::BLANK.with_character('Я').with_foreground(PLASMA).with_bold(true)
                 }
                 forgotten_game::WeaponType::Leecher => {
-                    RenderCell::BLANK.with_character('ł').with_foreground(HEALTH).with_bold(true)
+                    RenderCell::BLANK.with_character('ł').with_foreground(LEECH).with_bold(true)
                 }
                 forgotten_game::WeaponType::FiftyCal => {
-                    RenderCell::BLANK.with_character('£').with_foreground(PLASMA).with_bold(true)
+                    RenderCell::BLANK.with_character('£').with_foreground(GAUS).with_bold(true)
                 }
                 forgotten_game::WeaponType::Pistol => {
-                    RenderCell::BLANK.with_character('√').with_foreground(GUN_METAL).with_bold(true)
+                    RenderCell::BLANK.with_character('√').with_foreground(OXYGEN).with_bold(true)
                 }
                 forgotten_game::WeaponType::Rifle => {
-                    RenderCell::BLANK.with_character('∕').with_foreground(GUN_METAL).with_bold(true)
+                    RenderCell::BLANK.with_character('∕').with_foreground(LASER).with_bold(true)
                 }
             },
 
@@ -69,7 +77,7 @@ pub fn terrain_renderable(scope: &StateScope, tile: Tile, coord: Coord) -> Rende
             RenderCell::BLANK.with_character('₪').with_background(LIGHT_GREY).with_foreground(REACTOR)
         }
         Tile::Stairs => {
-            RenderCell::BLANK.with_character('>').with_background(LIGHT_GREY).with_foreground(STAIRS)
+            RenderCell::BLANK.with_character('>').with_foreground(STAIRS).with_background(BLUE_VIOLET)
         }
         _ => unreachable!("Tried to render a non-terrain tile as terrain"),
     }

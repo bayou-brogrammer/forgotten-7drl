@@ -31,4 +31,5 @@ pub enum SoundEffect {
     Chainsaw,
     CattleProd,
     Leecher,
+    Pistol,
 }

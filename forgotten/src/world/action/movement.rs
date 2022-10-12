@@ -87,6 +87,7 @@ impl World {
                     OnCollision::RemoveRealtime => {
                         self.realtime_components.remove_entity(projectile_entity);
                         self.components.realtime.remove(projectile_entity);
+                        self.components.blocks_gameplay.remove(projectile_entity);
                     }
                     OnCollision::Explode(explosion_spec) => {
                         explosion::explode(self, current_coord, *explosion_spec);
@@ -102,5 +103,25 @@ impl World {
         // TODO: This might cause issues?
         self.components.realtime.remove(projectile_entity);
         self.realtime_components.movement.remove(projectile_entity);
+    }
+
+    pub fn alert_nearby_entities(
+        &mut self,
+        entity: Entity,
+        direction: CardinalDirection,
+        player_entity: Entity,
+    ) {
+        let robo_cop_coord = self.entity_coord(entity).unwrap();
+        let spatial = &self.spatial_table;
+        for (e, npc) in self.components.npc.iter_mut() {
+            let current_coord = spatial.coord_of(e).unwrap();
+            if current_coord.distance2(robo_cop_coord) <= 150 {
+                npc.move_to = Some(spatial.coord_of(player_entity).unwrap());
+            } else {
+                npc.move_to = None;
+            }
+        }
+
+        let _ = self.character_walk_in_direction(entity, direction);
     }
 }

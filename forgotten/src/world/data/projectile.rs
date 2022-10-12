@@ -6,6 +6,12 @@ pub struct CollidesWith {
     pub character: bool,
 }
 
+impl CollidesWith {
+    pub fn all() -> Self {
+        Self { solid: true, character: true }
+    }
+}
+
 impl Default for CollidesWith {
     fn default() -> Self {
         Self { solid: true, character: false }

@@ -33,6 +33,20 @@ impl Game {
     }
 
     pub fn handle_tick_inner(&mut self, since_previous: Duration) -> Option<ControlFlow> {
+        if self.world.is_gameplay_blocked() {
+            if let Some((e, timer)) = self.world.components.blocks_gameplay.iter_mut().next() {
+                if timer.as_millis() == 0 {
+                    self.world.components.blocks_gameplay.remove(e);
+                } else {
+                    *timer = if let Some(remaining) = timer.checked_sub(since_previous) {
+                        remaining
+                    } else {
+                        Duration::from_millis(0)
+                    }
+                }
+            }
+        }
+
         self.run_systems();
 
         if self.is_game_over() {
@@ -60,8 +74,11 @@ impl Game {
             ammo.current = ammo.max;
         }
 
-        let Terrain { world, agents, player_entity } = terrain::build_station(self.world.level + 1);
+        let Terrain { world, agents, player_entity } =
+            terrain::build_station(self.world.level + 1, Some(player_data));
+
         self.visibility_grid = VisibilityGrid::new(world.size());
+        self.behavior_context = BehaviourContext::new(world.size());
 
         self.world = world;
         self.agents = agents;

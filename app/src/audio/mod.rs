@@ -41,8 +41,10 @@ impl AudioTable {
                 Audio::SoundEffect(SoundEffect::DoorClose) => audio_player.load_sound(&DOOR_CLOSE),
 
                 // Wpns
-                Audio::SoundEffect(SoundEffect::Railgun) => audio_player.load_sound(&RAILGUN),
+                Audio::SoundEffect(SoundEffect::Rifle) => audio_player.load_sound(&RIFLE),
+                Audio::SoundEffect(SoundEffect::Pistol) => audio_player.load_sound(&PISTOL),
                 Audio::SoundEffect(SoundEffect::Punch) => audio_player.load_sound(&PUNCH),
+                Audio::SoundEffect(SoundEffect::Railgun) => audio_player.load_sound(&RAILGUN),
                 Audio::SoundEffect(SoundEffect::CattleProd) => audio_player.load_sound(&ZAP),
                 Audio::SoundEffect(SoundEffect::FiftyCal) => audio_player.load_sound(&SHOTGUN),
                 Audio::SoundEffect(SoundEffect::Chainsaw) => audio_player.load_sound(&CHAINSAW),

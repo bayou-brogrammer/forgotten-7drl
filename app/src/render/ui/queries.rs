@@ -10,10 +10,10 @@ pub fn weapon_name_text(weapon_name: WeaponType) -> StyledString {
     let name = weapon_name.to_string();
     let color = match weapon_name {
         WeaponType::BareHands => Rgba32::new_grey(255),
-        WeaponType::CattleProd => color::SHOCK.saturating_scalar_mul_div(3, 2),
+        WeaponType::CattleProd => color::YELLOW,
         WeaponType::Chainsaw => color::CHAINSAW.saturating_scalar_mul_div(3, 2),
         WeaponType::Railgun => color::PLASMA,
-        WeaponType::Leecher => color::HEALTH,
+        WeaponType::Leecher => color::LEECH,
         WeaponType::FiftyCal => color::GAUS.saturating_scalar_mul_div(3, 2),
         WeaponType::Pistol => color::OXYGEN,
         WeaponType::Rifle => color::LASER,
@@ -81,7 +81,7 @@ pub fn weapon_ability_text(weapon_ability: WeaponAbility) -> StyledString {
         },
         WeaponAbility::Shock => StyledString {
             string: "Chance to stun".to_string(),
-            style: Style::new().with_foreground(color::SHOCK),
+            style: Style::new().with_foreground(color::BLUE_VIOLET),
         },
         WeaponAbility::LifeSteal => StyledString {
             string: "Restores Health".to_string(),

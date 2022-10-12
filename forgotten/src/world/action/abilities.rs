@@ -4,7 +4,6 @@ impl World {
     pub fn apply_stun(&mut self, entity: Entity, stun_percentage: u8) -> bool {
         if crate::rng::range(0..100) < stun_percentage {
             self.components.stunned.insert(entity, Stunned { turns: 1 });
-            crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::CattleProd));
             true
         } else {
             false

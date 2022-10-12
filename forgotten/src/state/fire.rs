@@ -1,3 +1,5 @@
+use crate::TurnState;
+
 use super::*;
 
 #[derive(Debug)]
@@ -18,6 +20,7 @@ impl FireWeapon {
             self.slot,
         );
 
+        scope.0.turn_state = TurnState::EnemyTurn;
         GameState::Running(Running(self.private))
     }
 

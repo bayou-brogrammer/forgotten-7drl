@@ -18,6 +18,48 @@ fn choose_stairs_coord(map: &mut Grid<LevelCell>, player_coord: Coord) {
     *map.get_checked_mut(stairs_coord) = LevelCell::Stairs;
 }
 
+fn choose_reactor_coord(map: &mut Grid<LevelCell>, player_coord: Coord) {
+    let mut possible_reactors = map
+        .enumerate()
+        .filter(|(_, cell)| **cell == LevelCell::Floor || **cell == LevelCell::CaveFloor)
+        .filter_map(
+            |(coord, _)| if coord.distance2(player_coord) > DISTANCE_FOR_STAIRS { Some(coord) } else { None },
+        )
+        .collect::<Vec<_>>();
+
+    crate::rng::shuffle(&mut possible_reactors);
+    let reactor_coord = possible_reactors.pop().expect("No reactor spots");
+    *map.get_checked_mut(reactor_coord) = LevelCell::Reactor;
+}
+
+pub fn generate_from_str(s: &str) -> Grid<LevelCell> {
+    let rows = s.split('\n').filter(|s| !s.is_empty()).collect::<Vec<_>>();
+    let size = Size::new_u16(rows[0].len() as u16, rows.len() as u16);
+
+    let mut map: Grid<LevelCell> = Grid::new_default(size);
+    for (y, row) in rows.iter().enumerate() {
+        for (x, ch) in row.chars().enumerate() {
+            if ch.is_control() {
+                continue;
+            }
+
+            let coord = Coord::new(x as i32, y as i32);
+            let tile = match ch {
+                '.' => LevelCell::Floor,
+                '#' => LevelCell::Wall,
+                '>' => LevelCell::Stairs,
+                '@' => LevelCell::PlayerSpawn,
+                'R' => LevelCell::Light(Rgb24 { r: 255, g: 0, b: 0 }),
+                _ => unreachable!("Unknown tile: {}", ch),
+            };
+
+            *map.get_checked_mut(coord) = tile;
+        }
+    }
+
+    map
+}
+
 pub fn generate(size: Size, level: u8) -> Grid<LevelCell> {
     let RoomsAndCorridorsLevel { map: rooms_and_corridors_map, player_spawn } =
         RoomsAndCorridorsLevel::generate(size);
@@ -33,6 +75,8 @@ pub fn generate(size: Size, level: u8) -> Grid<LevelCell> {
 
     if level != FINAL_LEVEL {
         choose_stairs_coord(&mut combined_map, player_spawn);
+    } else {
+        choose_reactor_coord(&mut combined_map, player_spawn);
     }
 
     for (coord, cell) in combined_map.enumerate_mut() {
@@ -40,16 +84,18 @@ pub fn generate(size: Size, level: u8) -> Grid<LevelCell> {
 
         if *water_map.get_checked(coord) {
             match cell {
-                Water | PlayerSpawn => (),
                 Grass => *cell = Water,
                 Floor | Door => *cell = Water,
                 CaveFloor | CaveWall => *cell = Water,
+                Reactor | Stairs | Water | PlayerSpawn => (),
                 Wall => {
                     if crate::rng::range(0..=100) > 75 {
                         *cell = Water
                     }
                 }
-                Stairs => todo!(),
+                Light(..) => {
+                    *cell = Light(Rgb24 { r: 0, g: 0, b: 200 });
+                }
             }
         }
     }
@@ -156,16 +202,14 @@ pub fn generate_npcs(
     }
     for _ in 0..enemy_count.sentry[index] {
         if let Some(coord) = npc_candidates.pop() {
-            println!("Spawning sentry at {:?}", coord);
-            // let sentry = world.spawn_sentry(coord);
-            // agents.insert(sentry, Agent::new(world.size()));
+            let sentry = world.spawn_robocop(coord);
+            agents.insert(sentry, Agent::new(world.size(), NpcType::RoboCop));
         }
     }
     for _ in 0..enemy_count.doom[index] {
         if let Some(coord) = npc_candidates.pop() {
-            println!("Spawning doom at {:?}", coord);
-            // let doom = world.spawn_doom(coord);
-            // agents.insert(doom, Agent::new(world.size()));
+            let doom = world.spawn_doombot(coord);
+            agents.insert(doom, Agent::new(world.size(), NpcType::DoomBot));
         }
     }
 }

@@ -41,12 +41,12 @@ fn character_effect_indirect_hit(
 ) -> CharacterEffect {
     let character_to_explosion_distance_squared = explosion_to_character.delta().magnitude2();
     let push_back = 1 + (mechanics.0 / (2 * (character_to_explosion_distance_squared + 1)));
-    CharacterEffect { push_back, damage: push_back }
+    CharacterEffect { push_back, damage: push_back * 2 }
 }
 
 fn character_effect_direct_hit(mechanics: &spec::Mechanics) -> CharacterEffect {
     let push_back = mechanics.0 / 3;
-    CharacterEffect { push_back, damage: mechanics.0 * 2 }
+    CharacterEffect { push_back, damage: mechanics.0 * 3 }
 }
 
 fn apply_indirect_hit(

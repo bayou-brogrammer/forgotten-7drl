@@ -32,8 +32,8 @@ impl WeaponType {
     pub fn tile(self) -> Tile {
         use WeaponType::*;
         match self {
-            Pistol => todo!(),
-            Rifle => todo!(),
+            Pistol => Tile::Weapon(Pistol),
+            Rifle => Tile::Weapon(Rifle),
             CattleProd => Tile::Weapon(CattleProd),
             Chainsaw => Tile::Weapon(Chainsaw),
             Railgun => Tile::Weapon(Railgun),
@@ -230,7 +230,7 @@ impl Weapon {
             light_colour: Some(Rgb24::new(127, 0, 255)),
             collides_with: Some(CollidesWith { solid: true, character: true }),
             on_collision: Some(OnCollision::Explode(explosion::spec::Explosion {
-                mechanics: explosion::spec::Mechanics(20),
+                mechanics: explosion::spec::Mechanics(10),
                 particle_emitter: explosion::spec::ParticleEmitter {
                     num_particles_per_frame: 50,
                     min_step: Duration::from_millis(10),

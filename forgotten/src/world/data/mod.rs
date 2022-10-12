@@ -75,6 +75,7 @@ entity_table::declare_entity_module! {
         stunned: Stunned,
         character: (),
         weapon: Weapon,
+        reactor: (),
 
         // Stats
         dead: (),
@@ -87,6 +88,7 @@ entity_table::declare_entity_module! {
         realtime: (),
         animating: (),
         pushed_from: Coord,
+        blocks_gameplay: Duration,
         on_collision: OnCollision,
         collides_with: CollidesWith,
         projectile_damage: ProjectileDamage,
