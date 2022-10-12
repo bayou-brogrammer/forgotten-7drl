@@ -1,0 +1,24 @@
+{
+  "name": "orbital_decay_web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "webpack serve --mode development",
+    "serve:prod": "webpack serve --mode production",
+    "build": "webpack --mode development",
+    "build-production": "webpack --mode production"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@wasm-tool/wasm-pack-plugin": "^1.6.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-plugin": "^5.5.0",
+    "text-encoding": "^0.7.0",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1"
+  }
+}

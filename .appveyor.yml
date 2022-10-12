@@ -58,13 +58,8 @@ for:
 
           copy extras\windows\* tmp\%FULL_NAME%
 
-          cargo build %RELEASE_FLAG% --manifest-path=wgpu/Cargo.toml
-
-          copy target\%TARGET_DIR%\forgotten_wgpu.exe tmp\%FULL_NAME%\%BIN_NAME%.exe
-
-          cargo build %RELEASE_FLAG% --manifest-path=ggez/Cargo.toml
-
-          copy target\%TARGET_DIR%\forgotten_ggez.exe tmp\%FULL_NAME%\%BIN_NAME_COMPAT%.exe
+          cargo build $RELEASE_FLAG --manifest-path=launchers/native/Cargo.toml
+          copy target\%TARGET_DIR%\native-launcher.exe tmp\%FULL_NAME%\%BIN_NAME%.exe
 
           powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('tmp', '%FULL_NAME%.zip'); }"
 
@@ -107,17 +102,8 @@ for:
             NAME_SUFFIX="-debug"
           fi
 
-          cargo build $RELEASE_FLAG --manifest-path=wgpu/Cargo.toml
-
-          cargo build $RELEASE_FLAG --manifest-path=ggez/Cargo.toml
-
-          cargo build $RELEASE_FLAG --manifest-path=ansi-terminal/Cargo.toml
-
-          strip -v target/$TARGET_DIR/forgotten_wgpu
-
-          strip -v target/$TARGET_DIR/forgotten_ggez
-
-          strip -v target/$TARGET_DIR/forgotten_ansi_terminal
+          cargo build $RELEASE_FLAG --manifest-path=launchers/native/Cargo.toml
+          strip -v target/$TARGET_DIR/native-launcher
 
           MODE=$MODE ZIP_NAME=forgotten-linux-x86_64$NAME_SUFFIX-$APPVEYOR_REPO_BRANCH scripts/make_zip_unix.sh
 
@@ -213,17 +199,8 @@ for:
             NAME_SUFFIX="-debug"
           fi
 
-          cargo build $RELEASE_FLAG --manifest-path=wgpu/Cargo.toml
-
-          cargo build $RELEASE_FLAG --manifest-path=ggez/Cargo.toml
-
-          cargo build $RELEASE_FLAG --manifest-path=ansi-terminal/Cargo.toml
-
-          strip -v target/$TARGET_DIR/forgotten_wgpu
-
-          strip -v target/$TARGET_DIR/forgotten_ggez
-
-          strip -v target/$TARGET_DIR/forgotten_ansi_terminal
+          cargo build $RELEASE_FLAG --manifest-path=launchers/native/Cargo.toml
+          strip -v target/$TARGET_DIR/native-launcher
 
           MODE=$MODE ZIP_NAME=forgotten-macos-x86_64$NAME_SUFFIX-$APPVEYOR_REPO_BRANCH scripts/make_zip_unix.sh
 

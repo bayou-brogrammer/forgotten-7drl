@@ -10,7 +10,7 @@ pub const MENU_FADE_SPEC: menu::identifier::fade_spec::FadeSpec = {
             to: To {
                 bold: true,
                 underline: false,
-                rgba32: Layers { foreground: color::LIGHT_GREY, background: color::STRIPE },
+                rgba32: Layers { foreground: color::WHITE, background: color::STRIPE },
             },
             from: From::current(),
             durations: Layers {

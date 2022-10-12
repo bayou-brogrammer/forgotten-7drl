@@ -106,6 +106,7 @@ impl AudioState {
 
     pub fn loop_music(&mut self, audio: Audio, volume: f32) {
         log::info!("Looping audio {:?} at volume {:?}", audio, volume);
+
         if let Some(sound) = self.audio_table.get(audio) {
             if let Some(audio_player) = self.audio_player.as_ref() {
                 let handle = audio_player.play_loop(sound);

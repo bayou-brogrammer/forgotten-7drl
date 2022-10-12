@@ -67,6 +67,8 @@ pub(crate) fn render_game_with_visibility(
                 );
             }
             CellVisibility::Current { data, light_colour } => {
+                log::info!("rendering");
+
                 let light_colour = light_colour.unwrap_or(AMBIENT_COL);
                 render_cell(
                     scope,
