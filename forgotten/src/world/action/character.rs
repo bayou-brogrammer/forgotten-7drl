@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, world::explosion};
 
 impl World {
     pub fn character_walk_in_direction(
@@ -99,7 +99,7 @@ impl World {
                 }
             }
 
-            let weapon = weapon.clone();
+            let mut weapon = weapon.clone();
             let sound_effect = match weapon.name {
                 WeaponType::Railgun => Some(SoundEffect::Railgun),
                 WeaponType::FiftyCal => Some(SoundEffect::FiftyCal),
@@ -111,6 +111,21 @@ impl World {
 
             if let Some(sound_effect) = sound_effect {
                 crate::event::add_event(ExternalEvent::SoundEffect(sound_effect));
+            }
+
+            if let Some(player) = self.components.player.get_mut(character) {
+                if player.traits.explosive_damage {
+                    weapon.on_collision = Some(OnCollision::Explode(explosion::spec::Explosion {
+                        mechanics: explosion::spec::Mechanics(10),
+                        particle_emitter: explosion::spec::ParticleEmitter {
+                            num_particles_per_frame: 50,
+                            min_step: Duration::from_millis(10),
+                            max_step: Duration::from_millis(30),
+                            duration: Duration::from_millis(250),
+                            fade_duration: Duration::from_millis(250),
+                        },
+                    }));
+                }
             }
 
             self.spawn_bullet(character_coord, target, &weapon);

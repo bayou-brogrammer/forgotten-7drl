@@ -7,7 +7,6 @@ on:
 
 env:
   RELEASE_NAME: forgotten
-  PUBLIC_URL: /bevy-shell-template/
 
 jobs:
   setup:
@@ -107,7 +106,7 @@ jobs:
           files: assets/ ./${{ env.RELEASE_NAME }}
           recursive: false
           dest: ./${{ env.RELEASE_NAME }}-${{ needs.setup.outputs.version }}-ubuntu.zip
-          
+
       - name: Upload
         uses: softprops/action-gh-release@v1
         with:

@@ -1,5 +1,5 @@
 [package]
-authors = ["Stephen Sherratt <stephen@sherra.tt>"]
+authors = ["Jacob LeCoq <lecoqjacob@gmail.com>"]
 edition = "2021"
 name    = "rand_range"
 version = "0.1.0"

@@ -14,6 +14,8 @@ mod rooms;
 pub use cave::*;
 pub use rooms::*;
 
+use crate::WeaponType;
+
 pub fn print_map(grid: &Grid<LevelCell>) {
     for row in grid.rows() {
         for &cell in row {
@@ -30,6 +32,16 @@ pub fn print_map(grid: &Grid<LevelCell>) {
                 Stairs => '>',
                 Light(..) => 'L',
                 Reactor => '*',
+                Weapon(wpn) => match wpn {
+                    WeaponType::CattleProd => '!',
+                    WeaponType::Chainsaw => 'c',
+                    WeaponType::Pistol => 'p',
+                    WeaponType::Rifle => 'r',
+                    WeaponType::Railgun => 'R',
+                    WeaponType::Leecher => 'l',
+                    WeaponType::FiftyCal => '5',
+                    _ => ' ',
+                },
             };
             print!("{}", ch);
         }
@@ -58,6 +70,7 @@ pub enum LevelCell {
     Stairs,
     Light(Rgb24),
     Reactor,
+    Weapon(WeaponType),
 }
 
 impl LevelCell {

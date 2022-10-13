@@ -1,6 +1,7 @@
 use super::builders;
 use crate::prelude::*;
 use gridbugs::{direction::Directions, grid_2d::Grid};
+use rand::seq::SliceRandom;
 
 const DISTANCE_FOR_STAIRS: u32 = 25;
 
@@ -36,6 +37,16 @@ fn choose_reactor_coord(map: &mut Grid<LevelCell>, player_coord: Coord) {
     *map.get_checked_mut(reactor_coord) = LevelCell::Reactor;
 }
 
+pub fn choose_random_weapon() -> LevelCell {
+    use crate::WeaponType::*;
+    let mut rng = crate::rng::RNG.lock();
+
+    let mut ranged_weapons = vec![Rifle, Railgun, Leecher, Pistol, Rifle, Railgun, Leecher, Pistol, Pistol];
+    ranged_weapons.shuffle(&mut *rng);
+
+    LevelCell::Weapon(ranged_weapons.pop().unwrap())
+}
+
 pub fn generate_from_str(s: &str) -> Grid<LevelCell> {
     let rows = s.split('\n').filter(|s| !s.is_empty()).collect::<Vec<_>>();
     let size = Size::new_u16(rows[0].len() as u16, rows.len() as u16);
@@ -55,7 +66,7 @@ pub fn generate_from_str(s: &str) -> Grid<LevelCell> {
                 '>' => LevelCell::Stairs,
                 '@' => LevelCell::PlayerSpawn,
                 'R' => LevelCell::Light(Rgb24 { r: 255, g: 0, b: 0 }),
-                'r' => LevelCell::Reactor,
+                'r' => choose_random_weapon(),
                 ' ' => LevelCell::Floor,
                 _ => unreachable!("Unknown tile: {}", ch),
             };
@@ -94,7 +105,7 @@ pub fn generate(size: Size, level: u8) -> Grid<LevelCell> {
                 Grass => *cell = Water,
                 Floor | Door => *cell = Water,
                 CaveFloor | CaveWall => *cell = Water,
-                Reactor | Stairs | Water | PlayerSpawn => (),
+                Reactor | Stairs | Water | PlayerSpawn | Weapon(..) => (),
                 Wall => {
                     if crate::rng::range(0..=100) < 75 {
                         *cell = Water

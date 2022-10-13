@@ -1051,6 +1051,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "forgotten_web"
+version = "0.1.0"
+dependencies = [
+ "console_error_panic_hook",
+ "forgotten_app",
+ "gridbugs 0.4.0",
+ "log",
+ "wasm-bindgen",
+ "wasm-logger",
+]
+
+[[package]]
 name = "freetype-rs"
 version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2052,18 +2064,6 @@ name = "once_cell"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e82dad04139b71a90c080c8463fe0dc7902db5192d939bd0950f074d014339e1"
-
-[[package]]
-name = "orbital_decay_web"
-version = "0.1.0"
-dependencies = [
- "console_error_panic_hook",
- "forgotten_app",
- "gridbugs 0.4.0",
- "log",
- "wasm-bindgen",
- "wasm-logger",
-]
 
 [[package]]
 name = "ordered-float"

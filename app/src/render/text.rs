@@ -68,10 +68,10 @@ pub fn help(width: u32) -> AppCF<()> {
             plain("Examine: X\n"),
             plain("Descend: Period\n"),
             plain("Get Weapon: G\n"),
-            plain("Fire Ranged Weapon: 1-3\n\n"),
+            plain("Fire Ranged Weapon: 1,2,or 3\n\n"),
             // Gamepad
             bold("Default Gamepad Controls\n"),
-            plain("Movement/Aim: D-Pad\n"),
+            plain("Movement/Aim: DPad\n"),
             plain("Cancel Aim: Select\n"),
             plain("Wait: Select\n"),
             plain("Examine: Right Bumper\n"),
@@ -89,11 +89,10 @@ pub fn epilogue1(width: u32) -> AppCF<()> {
     text_component(
         width,
         vec![
-            norm(
-                "As you watch the reactor explode, you feel a sense of relief. You have done your part. 
-            You have saved humanity.\n\n",
+            plain(
+                "As you watch the reactor explode, you feel a sense of relief. You have done your part.You have saved humanity.\n\n",
             ),
-            norm("You pickup your radio and radio in \"Mission Acomplished.\"....\n\n....*static*"),
+            plain("You pickup your radio and radio in \"Mission Acomplished\"\n\n**static**"),
             faint("\n\n\n\nPress any key..."),
         ],
     )

@@ -42,7 +42,6 @@ pub fn spawn_terrain(
                     player_entity = Some(world.insert_entity_data(location, player_data.clone()));
                 } else {
                     player_entity = Some(world.spawn_player(coord));
-                    world.spawn_weapon(coord, WeaponType::Railgun)
                 }
             }
             Stairs => {
@@ -55,6 +54,10 @@ pub fn spawn_terrain(
             }
             Reactor => {
                 world.spawn_reactor(coord);
+            }
+            Weapon(wpn) => {
+                world.spawn_floor(coord);
+                world.spawn_weapon(coord, *wpn);
             }
         }
     }

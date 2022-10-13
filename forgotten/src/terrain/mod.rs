@@ -59,14 +59,11 @@ pub fn build_station(
     level: u8,
     player_data: Option<EntityData>,
 ) -> Terrain {
-    println!("Spawning terrain: {:?}", player_data);
     if level == 0 {
         return first_floor();
     } else if level == FINAL_LEVEL {
         println!("Generating last floor");
     }
-
-    let level = FINAL_LEVEL;
 
     const STATION_SIZE: Size = Size::new_u16(40, 33);
 

@@ -1,7 +1,7 @@
 [package]
-authors = ["Stephen Sherratt <stephen@sherra.tt>"]
+authors = ["Jacob LeCoq <lecoqjacob@gmail.com>"]
 edition = "2021"
-name    = "orbital_decay_web"
+name    = "forgotten_web"
 version = "0.1.0"
 
 [lib]

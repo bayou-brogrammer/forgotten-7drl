@@ -1,5 +1,5 @@
 [package]
-authors = ["Jacob LeCoq <stephen@sherra.tt>"]
+authors = ["Jacob LeCoq <lecoqjacob@gmail.com>"]
 edition = "2021"
 name    = "rational"
 version = "0.1.0"

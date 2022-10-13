@@ -1,5 +1,5 @@
 [package]
-authors = ["Stephen Sherratt <lecojacob@gmail.com>"]
+authors = ["Jacob LeCoq <lecoqjacob@gmail.com>"]
 edition = "2021"
 name    = "audio_data"
 version = "0.1.0"
