@@ -40,6 +40,7 @@ pub fn generate_from_str(s: &str) -> Grid<LevelCell> {
     let rows = s.split('\n').filter(|s| !s.is_empty()).collect::<Vec<_>>();
     let size = Size::new_u16(rows[0].len() as u16, rows.len() as u16);
 
+    log::info!("Generating map of size {:?}", size);
     let mut map: Grid<LevelCell> = Grid::new_default(size);
     for (y, row) in rows.iter().enumerate() {
         for (x, ch) in row.chars().enumerate() {
@@ -55,6 +56,7 @@ pub fn generate_from_str(s: &str) -> Grid<LevelCell> {
                 '@' => LevelCell::PlayerSpawn,
                 'R' => LevelCell::Light(Rgb24 { r: 255, g: 0, b: 0 }),
                 'r' => LevelCell::Reactor,
+                ' ' => LevelCell::Floor,
                 _ => unreachable!("Unknown tile: {}", ch),
             };
 

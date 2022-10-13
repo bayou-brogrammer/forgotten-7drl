@@ -60,11 +60,11 @@ impl Game {
 
         self.run_systems();
 
-        if self.is_game_over() && self.win_countdown.is_none() {
-            Some(ControlFlow::GameOver)
-        } else if self.is_won() {
+        if self.is_won() {
             self.win_countdown = Some(Duration::from_secs(2));
             None
+        } else if self.is_game_over() && self.win_countdown.is_none() {
+            Some(ControlFlow::GameOver)
         } else {
             None
         }

@@ -52,10 +52,18 @@ impl Default for Controls {
         ];
 
         let gamepad = btreemap![
+            // Action Keys
             GamepadButton::North => AppInput::Get,
             GamepadButton::Select => AppInput::Wait,
             GamepadButton::RightBumper => AppInput::Examine,
-            // Movement Input
+            GamepadButton::LeftBumper => AppInput::Descend,
+
+            // Slot Keys
+            GamepadButton::West => AppInput::Slot(RangedWeaponSlot::Slot1),
+            GamepadButton::South => AppInput::Slot(RangedWeaponSlot::Slot2),
+            GamepadButton::East => AppInput::Slot(RangedWeaponSlot::Slot3),
+
+            // Movement Keys
             GamepadButton::DPadLeft => AppInput::Direction(CardinalDirection::West),
             GamepadButton::DPadRight => AppInput::Direction(CardinalDirection::East),
             GamepadButton::DPadUp => AppInput::Direction(CardinalDirection::North),

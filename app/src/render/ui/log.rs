@@ -32,6 +32,9 @@ impl Component for Log {
                 Message::DoomBotExplodes => {
                     vec![plain("The "), enemy_text(NpcType::DoomBot), plain(" self destructs!")]
                 }
+                Message::AlertedNearbyEntities => {
+                    vec![plain("The "), enemy_text(NpcType::RoboCop), plain(" is alerting nearby robots!")]
+                }
 
                 // Player
                 Message::PlayerHitEnemy { enemy, weapon } => {

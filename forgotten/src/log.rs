@@ -17,6 +17,7 @@ pub enum Message {
     TakeCredit(u32),
     EnemyDies(NpcType),
     EnemyStunned(NpcType),
+    AlertedNearbyEntities,
     EnemyHitPlayer(NpcType),
     EquipWeapon(WeaponType),
     EnemySlammedIntoWall(NpcType),

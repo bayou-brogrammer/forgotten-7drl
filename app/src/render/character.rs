@@ -44,9 +44,7 @@ pub fn terrain_renderable(scope: &StateScope, tile: Tile, coord: Coord) -> Rende
             let is_wall_below = scope.0.is_wall_known_at(coord + Coord::new(0, 1));
             wall_renderable(tile, is_wall_below)
         }
-        Tile::Reactor => {
-            RenderCell::BLANK.with_character('₪').with_background(LIGHT_GREY).with_foreground(REACTOR)
-        }
+        Tile::Reactor => RenderCell::BLANK.with_character('☼').with_foreground(REACTOR),
         Tile::Stairs => RenderCell::BLANK.with_character('>').with_foreground(STAIRS),
         _ => unreachable!("Tried to render a non-terrain tile as terrain: {:?}", tile),
     }

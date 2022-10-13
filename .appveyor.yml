@@ -156,7 +156,7 @@ for:
 
           mkdir forgotten
 
-          mv dist forgotten/$APPVEYOR_REPO_BRANCH
+          mv dist forgotten/$v
 
           zip -r forgotten.zip forgotten
 

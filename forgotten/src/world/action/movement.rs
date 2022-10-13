@@ -114,12 +114,14 @@ impl World {
         let spatial = &self.spatial_table;
         for (e, npc) in self.components.npc.iter_mut() {
             let current_coord = spatial.coord_of(e).unwrap();
-            if current_coord.distance2(robo_cop_coord) <= 150 {
+            if current_coord.distance2(robo_cop_coord) <= 100 {
                 npc.move_to = Some(spatial.coord_of(player_entity).unwrap());
             } else {
                 npc.move_to = None;
             }
         }
+
+        crate::log::append_entry(Message::AlertedNearbyEntities);
 
         let _ = self.character_walk_in_direction(entity, direction);
     }

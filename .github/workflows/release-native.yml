@@ -6,7 +6,7 @@ on:
       - "v*.*.*"
 
 env:
-  RELEASE_NAME: my_game
+  RELEASE_NAME: forgotten
   PUBLIC_URL: /bevy-shell-template/
 
 jobs:
@@ -30,6 +30,7 @@ jobs:
         run: |
           cd ./launchers/native
           cargo build --release
+
       - name: Rename
         run: |
           mv ./target/release/native-launcher.exe ./${{ env.RELEASE_NAME }}.exe
@@ -55,19 +56,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Build
         run: |
           cd ./launchers/native
           cargo build --release
+
       - name: Rename
         run: |
           mv ./target/release/native-launcher ./${{ env.RELEASE_NAME }}
+
       - name: Zip release
         uses: vimtor/action-zip@v1
         with:
           files: assets/ ./${{ env.RELEASE_NAME }}
           recursive: false
           dest: ./${{ env.RELEASE_NAME }}-${{ needs.setup.outputs.version }}-darwin.zip
+
       - name: Upload
         uses: softprops/action-gh-release@v1
         with:
@@ -82,22 +87,27 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      
       - name: Get dependencies
         run: |
           sudo apt install libasound2-dev libudev-dev pkg-config
+      
       - name: Build
         run: |
           cd ./launchers/native
           cargo build --release
+
       - name: Rename
         run: |
           mv ./target/release/native-launcher ./${{ env.RELEASE_NAME }}
+
       - name: Zip release
         uses: vimtor/action-zip@v1
         with:
           files: assets/ ./${{ env.RELEASE_NAME }}
           recursive: false
           dest: ./${{ env.RELEASE_NAME }}-${{ needs.setup.outputs.version }}-ubuntu.zip
+          
       - name: Upload
         uses: softprops/action-gh-release@v1
         with:

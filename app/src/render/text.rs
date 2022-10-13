@@ -42,11 +42,61 @@ pub fn prologue(width: u32) -> AppCF<()> {
 }
 
 pub fn help(width: u32) -> AppCF<()> {
-    text_component(width, vec![bold("Combat\n")])
+    text_component(
+        width,
+        vec![
+            bold("Combat\n"),
+            plain("Each weapon has a DMG(♥) and PEN(♦) stat, and each enemy has heatlh(♥) and armour(♦). "),
+            plain(
+                "If an enemy is hit with a weapon that has a higher PEN than their armour, their health is ",
+            ),
+            plain(
+                "reduced by the weapon's DMG. If a projectile's PEN exceeds an enemy's armour, it continues ",
+            ),
+            plain("on its path with its PEN reduced by the enemy's armour.\n\n"),
+            // Enemies
+            bold("Enemies\n"),
+            plain("Minibot - basic guard robot\n"),
+            plain("SecBot - upgraded minibot\n"),
+            plain("RoboCop - elite guard robot. Alerts nearby robots when it sees you.\n"),
+            plain("Doom Bot - Kill bot. Very hard to kill. Explodes on death\n\n"),
+            // Keys
+            bold("Default Keyboard Controls\n"),
+            plain("Movement/Aim: Arrows/WASD/HJKL\n"),
+            plain("Cancel Aim: Escape\n"),
+            plain("Wait: Space\n"),
+            plain("Examine: X\n"),
+            plain("Descend: Period\n"),
+            plain("Get Weapon: G\n"),
+            plain("Fire Ranged Weapon: 1-3\n\n"),
+            // Gamepad
+            bold("Default Gamepad Controls\n"),
+            plain("Movement/Aim: D-Pad\n"),
+            plain("Cancel Aim: Select\n"),
+            plain("Wait: Select\n"),
+            plain("Examine: Right Bumper\n"),
+            plain("Descend: Left Bumper\n"),
+            plain("Get Weapon: Y/Triangle\n"),
+            plain("Fire Ranged Weapon Slot 1: X/Square\n"),
+            plain("Fire Ranged Weapon Slot 2: A/Cross\n"),
+            plain("Fire Ranged Weapon Slot 2: B/Circle\n"),
+            faint("\n\n\n\n\nPress any key..."),
+        ],
+    )
 }
 
 pub fn epilogue1(width: u32) -> AppCF<()> {
-    text_component(width, vec![])
+    text_component(
+        width,
+        vec![
+            norm(
+                "As you watch the reactor explode, you feel a sense of relief. You have done your part. 
+            You have saved humanity.\n\n",
+            ),
+            norm("You pickup your radio and radio in \"Mission Acomplished.\"....\n\n....*static*"),
+            faint("\n\n\n\nPress any key..."),
+        ],
+    )
 }
 
 pub fn epilogue(width: u32) -> AppCF<()> {

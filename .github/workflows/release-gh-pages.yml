@@ -6,7 +6,7 @@ on:
       - "v*.*.*"
 
 env:
-  PUBLIC_URL: /lecoqjacob/blood-oath-bevy
+  PUBLIC_URL: forgotten-7drl
 
 jobs:
   setup:

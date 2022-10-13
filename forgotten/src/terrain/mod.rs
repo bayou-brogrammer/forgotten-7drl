@@ -66,6 +66,8 @@ pub fn build_station(
         println!("Generating last floor");
     }
 
+    let level = FINAL_LEVEL;
+
     const STATION_SIZE: Size = Size::new_u16(40, 33);
 
     let grid = procgen::generate(STATION_SIZE, level);

@@ -1,5 +1,3 @@
-#![warn(clippy::all, clippy::nursery)]
-
 mod ai;
 mod behavior;
 mod flow;

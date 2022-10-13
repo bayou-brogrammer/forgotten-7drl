@@ -8,7 +8,7 @@ target = "launchers/wasm/index.html"
 # Watch top level dir (all crates)
 watch = ["app", "forgotten", "launchers/wasm/src", "launchers/wasm/index.html"]
 
-[[hooks]]
-command           = "cp"
-command_arguments = ["-r", "audio-data", "launchers/wasm/"]
-stage             = "pre_build"
+# [[hooks]]
+# command           = "cp"
+# command_arguments = ["-r", "audio-data", "launchers/wasm/"]
+# stage             = "pre_build"

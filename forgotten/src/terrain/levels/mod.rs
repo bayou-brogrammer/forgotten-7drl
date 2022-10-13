@@ -66,7 +66,8 @@ pub fn first_floor() -> Terrain {
     const LEVEL: u8 = 0;
 
     let grid = procgen::generate_from_str(include_str!("first_floor.txt"));
-    let mut world = World::new(grid.size(), LEVEL);
+    // let grid = procgen::generate(Size::new_u16(30, 30), 0);
+    let mut world = World::new(Size::new_u16(40, 33), LEVEL);
 
     let agents = ComponentTable::default();
     let (player_entity, _) = spawn_terrain(grid, &mut world, None);
