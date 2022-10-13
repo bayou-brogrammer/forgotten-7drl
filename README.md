@@ -60,3 +60,10 @@ on its path with its PEN reduced by the enemy's armour.
 |Fire Ranged Weapon Slot 1  |X/Square   |
 |Fire Ranged Weapon Slot 2  |A/Cross    |
 |Fire Ranged Weapon Slot 3  |B/Circle   |
+
+# Huge Thanks 
+[Herbert "TheBracket"](https://github.com/thebracket) - For introducing me to roguelikes and being a fantastic inspiration for the genre
+
+[Stephen Sherrat](https://github.com/gridbugs) - For creating chargrid (the game engine that this game uses), and having wonderful past 7drl examples to help guide my inspiration
+
+[Pixbay](https://pixabay.com/) - Great source for sounds and music!
