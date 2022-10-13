@@ -46,6 +46,19 @@ impl World {
 
                     return Ok(None);
                 }
+
+                if self.components.upgrade.contains(feature_entity)
+                    && self.components.player.contains(character)
+                {
+                    return Ok(Some(ControlFlow::Upgrade));
+                }
+
+                // if self.components.reactor.contains(feature_entity)
+                //     && self.components.player.contains(character)
+                // {
+                //     self.damage_character(feature_entity, 1);
+                // }
+
                 return ActionError::err_cant_walk_there();
             }
 

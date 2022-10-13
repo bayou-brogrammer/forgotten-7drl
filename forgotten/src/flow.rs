@@ -3,6 +3,7 @@ use gridbugs::visible_area_detection::VisibilityGrid;
 
 pub enum ControlFlow {
     Win,
+    Upgrade,
     GetMelee,
     GameOver,
     GetRanged,
@@ -45,12 +46,25 @@ impl Game {
             }
         }
 
+        if let Some(countdown) = self.win_countdown {
+            if countdown.as_millis() == 0 {
+                return Some(ControlFlow::Win);
+            } else {
+                self.win_countdown = Some(
+                    countdown
+                        .checked_sub(since_previous)
+                        .map_or_else(|| Duration::from_millis(0), |remaining| remaining),
+                )
+            }
+        }
+
         self.run_systems();
 
-        if self.is_game_over() {
+        if self.is_game_over() && self.win_countdown.is_none() {
             Some(ControlFlow::GameOver)
         } else if self.is_won() {
-            Some(ControlFlow::Win)
+            self.win_countdown = Some(Duration::from_secs(2));
+            None
         } else {
             None
         }
@@ -73,7 +87,7 @@ impl Game {
         }
 
         let Terrain { world, agents, player_entity } =
-            terrain::build_station(self.world.level + 1, Some(player_data));
+            terrain::build_station(&mut self.terrain_state, self.world.level + 1, Some(player_data));
 
         self.visibility_grid = VisibilityGrid::new(world.size());
         self.behavior_context = BehaviourContext::new(world.size());

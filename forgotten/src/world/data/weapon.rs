@@ -79,7 +79,6 @@ pub struct Weapon {
     pub bright: bool,
     pub name: WeaponType,
     pub ammo: Option<Ammo>,
-    pub hull_pen_percent: u32,
     pub stun_percent: Option<u8>,
     pub light_colour: Option<Rgb24>,
     pub abilities: Vec<WeaponAbility>,
@@ -112,7 +111,6 @@ impl Weapon {
             on_collision: None,
             light_colour: None,
             stun_percent: None,
-            hull_pen_percent: 0,
             collides_with: None,
             name: WeaponType::BareHands,
             abilities: vec![WeaponAbility::KnockBack],
@@ -129,7 +127,6 @@ impl Weapon {
             stun_percent: None,
             on_collision: None,
             collides_with: None,
-            hull_pen_percent: 0,
             name: WeaponType::Chainsaw,
             ammo: Some(Ammo::new_full(6)),
         }
@@ -142,7 +139,6 @@ impl Weapon {
             bright: false,
             on_collision: None,
             light_colour: None,
-            hull_pen_percent: 0,
             collides_with: None,
             stun_percent: Some(30),
             name: WeaponType::CattleProd,
@@ -155,12 +151,11 @@ impl Weapon {
 
     pub fn new_pistol() -> Self {
         Self {
-            dmg: 2,
+            dmg: 3,
             pen: 4,
             bright: false,
             abilities: vec![],
             light_colour: None,
-            hull_pen_percent: 40,
             stun_percent: Some(12),
             name: WeaponType::Pistol,
             ammo: Some(Ammo::new_full(10)),
@@ -171,15 +166,14 @@ impl Weapon {
 
     pub fn new_rifle() -> Self {
         Self {
-            dmg: 4,
+            dmg: 5,
             pen: 6,
             bright: false,
             abilities: vec![],
             light_colour: None,
-            hull_pen_percent: 40,
             stun_percent: Some(25),
             name: WeaponType::Rifle,
-            ammo: Some(Ammo::new_full(4)),
+            ammo: Some(Ammo::new_full(6)),
             on_collision: Some(OnCollision::Remove),
             collides_with: Some(CollidesWith::default()),
         }
@@ -191,7 +185,6 @@ impl Weapon {
             pen: 3,
             bright: false,
             stun_percent: None,
-            hull_pen_percent: 0,
             name: WeaponType::Leecher,
             ammo: Some(Ammo::new_full(5)),
             on_collision: Some(OnCollision::Remove),
@@ -208,7 +201,6 @@ impl Weapon {
             bright: true,
             abilities: vec![],
             stun_percent: None,
-            hull_pen_percent: 75,
             name: WeaponType::Railgun,
             ammo: Some(Ammo::new_full(4)),
             on_collision: Some(OnCollision::Remove),
@@ -223,7 +215,6 @@ impl Weapon {
             pen: 100,
             bright: true,
             abilities: vec![],
-            hull_pen_percent: 100,
             stun_percent: Some(100),
             name: WeaponType::FiftyCal,
             ammo: Some(Ammo::new_full(2)),

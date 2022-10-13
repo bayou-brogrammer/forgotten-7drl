@@ -66,7 +66,7 @@ impl World {
                 Shock => {
                     if self.apply_stun(victim, stun) {
                         if let Some(npc) = self.components.npc.get(victim) {
-                            crate::log::append_entry(Message::EnemyStunend(npc.npc_type));
+                            crate::log::append_entry(Message::EnemyStunned(npc.npc_type));
                         }
                     }
 
@@ -128,6 +128,22 @@ impl World {
         }
 
         self.components.dead.insert(character, ());
+
+        if let Some(npc) = self.components.npc.get(character) {
+            let random_drop = crate::rng::range(0..=100) < npc.drop_chance;
+            if random_drop {
+                let coord = self.spatial_table.coord_of(character).unwrap();
+                self.spawn_credit(
+                    coord,
+                    match npc.npc_type {
+                        NpcType::MiniBot => 1,
+                        NpcType::SecBot => 1,
+                        NpcType::RoboCop => 2,
+                        NpcType::DoomBot => 3,
+                    },
+                );
+            }
+        }
 
         if self.components.explodes_on_death.contains(character) {
             if let Some(coord) = self.spatial_table.coord_of(character) {
@@ -194,6 +210,15 @@ impl World {
                         }
                         .build(),
                     );
+                }
+                if let Some(chance) = projectile_damage.stun_chance {
+                    self.apply_stun(entity_to_damage, chance);
+
+                    if self.components.player.get(entity_to_damage).is_some() {
+                        crate::log::append_entry(Message::PlayerStunned);
+                    } else if let Some(npc) = self.components.npc.get(entity_to_damage) {
+                        crate::log::append_entry(Message::EnemyStunned(npc.npc_type));
+                    }
                 }
 
                 if remaining_pen > 0 {

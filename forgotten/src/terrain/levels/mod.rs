@@ -42,7 +42,7 @@ pub fn spawn_terrain(
                     player_entity = Some(world.insert_entity_data(location, player_data.clone()));
                 } else {
                     player_entity = Some(world.spawn_player(coord));
-                    world.spawn_weapon(coord, WeaponType::CattleProd)
+                    world.spawn_weapon(coord, WeaponType::Railgun)
                 }
             }
             Stairs => {
@@ -70,23 +70,6 @@ pub fn first_floor() -> Terrain {
 
     let agents = ComponentTable::default();
     let (player_entity, _) = spawn_terrain(grid, &mut world, None);
-
-    Terrain { world, player_entity, agents }
-}
-
-pub fn last_floor(terrain_state: &mut TerrainState, player_data: Option<EntityData>) -> Terrain {
-    println!("Generating last floor");
-
-    const STATION_SIZE: Size = Size::new_u16(60, 60);
-
-    let grid = procgen::generate(STATION_SIZE, FINAL_LEVEL);
-    let mut world = World::new(grid.size(), FINAL_LEVEL);
-
-    let mut agents = ComponentTable::default();
-    let (player_entity, mut empty_coords) = spawn_terrain(grid, &mut world, player_data);
-
-    generate_items(FINAL_LEVEL, &mut world, terrain_state, &mut empty_coords);
-    generate_npcs(FINAL_LEVEL, &mut world, &mut empty_coords, &mut agents);
 
     Terrain { world, player_entity, agents }
 }

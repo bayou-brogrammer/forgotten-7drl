@@ -64,6 +64,10 @@ fn tile_str(tile: Tile) -> Option<TileLabel> {
             | Tile::Grass
             | Tile::GrassCrushed
             | Tile::Water
+            | Tile::Upgrade
+            | Tile::Credit1
+            | Tile::Credit2
+            | Tile::Credit3
     )
     .then(|| TileLabel::Name(desc.clone()))
     .or_else(|| {
@@ -84,6 +88,11 @@ fn default_tile_str(tile: Tile) -> Option<&'static str> {
         Tile::Reactor => "core reactor that powers all robots",
         Tile::Stairs => "an elevator down...",
         Tile::Medkit => "a medkit",
+        Tile::Upgrade => "an upgrade store",
+
+        Tile::Credit1 => "a $1 credit chip",
+        Tile::Credit2 => "a $2 credit chip",
+        Tile::Credit3 => "a $3 credit chip",
 
         Tile::Weapon(wpn) => match wpn {
             WeaponType::BareHands => return None,

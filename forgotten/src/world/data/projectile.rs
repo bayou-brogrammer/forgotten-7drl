@@ -32,6 +32,6 @@ pub struct ProjectileDamage {
     pub hit_points: u32,
     pub push_back: bool,
     pub life_steal: bool,
-    pub hull_pen_percent: u32,
+    pub stun_chance: Option<u8>,
     pub weapon_name: Option<WeaponType>,
 }

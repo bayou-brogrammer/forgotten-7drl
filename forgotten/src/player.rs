@@ -37,6 +37,10 @@ impl Game {
     // Actions
 
     pub fn player_walk(&mut self, direction: CardinalDirection) -> Result<Option<ControlFlow>, ActionError> {
+        if self.win_countdown.is_some() {
+            return Ok(None);
+        }
+
         let flow = self.world.character_walk_in_direction(self.player_entity, direction)?;
         self.turn_state = TurnState::EnemyTurn;
         Ok(flow)
@@ -48,6 +52,10 @@ impl Game {
     }
 
     pub fn player_get(&mut self) -> Result<Option<ControlFlow>, ActionError> {
+        if self.win_countdown.is_some() {
+            return Ok(None);
+        }
+
         if let Some(weapon) = self.world.weapon_under_entity(self.player_entity) {
             if weapon.is_ranged() {
                 return Ok(Some(ControlFlow::GetRanged));
@@ -62,6 +70,10 @@ impl Game {
     }
 
     pub fn player_fire(&self, slot: RangedWeaponSlot) -> Result<Option<ControlFlow>, ActionError> {
+        if self.win_countdown.is_some() {
+            return Ok(None);
+        }
+
         if let Some(player) = self.player() {
             if let Some(weapon) = player.weapon_in_slot(slot) {
                 if weapon.ammo.unwrap().current == 0 {
@@ -76,6 +88,10 @@ impl Game {
     }
 
     pub fn player_descend(&mut self) -> Result<Option<ControlFlow>, ActionError> {
+        if self.win_countdown.is_some() {
+            return Ok(None);
+        }
+
         if self.stairs_under_player() {
             self.generate_level();
             return Ok(Some(ControlFlow::LevelChange));

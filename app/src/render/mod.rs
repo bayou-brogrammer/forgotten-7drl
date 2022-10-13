@@ -41,104 +41,98 @@ impl Tint for Remembered {
     }
 }
 
-pub(crate) fn render_game_with_visibility(
-    scope: &StateScope,
-    offset: Coord,
-    size: Size,
-    ctx: Ctx,
-    fb: &mut FrameBuffer,
-) {
-    let visibility_grid = scope.visibility_grid();
-    for screen_coord in size.coord_iter_row_major() {
-        let world_coord = offset + screen_coord;
-        match visibility_grid.get_visibility(world_coord) {
-            CellVisibility::Never => (),
-            CellVisibility::Previous(data) => {
-                let light_colour = AMBIENT_COL;
-                render_cell(
-                    scope,
-                    screen_coord,
-                    world_coord,
-                    data,
-                    true,
-                    light_colour,
-                    ctx_tint!(ctx, LightBlend { light_colour }),
-                    fb,
-                );
-            }
-            CellVisibility::Current { data, light_colour } => {
-                log::info!("rendering");
-
-                let light_colour = light_colour.unwrap_or(AMBIENT_COL);
-                render_cell(
-                    scope,
-                    screen_coord,
-                    world_coord,
-                    data,
-                    false,
-                    light_colour,
-                    ctx_tint!(ctx, LightBlend { light_colour }),
-                    fb,
-                );
+impl GameLoopData {
+    pub fn render_game_with_visibility(&self, ctx: Ctx, fb: &mut FrameBuffer) {
+        let ctx = ctx.add_offset(GAME_VIEW_OFFSET);
+        for (coord, visibility) in self.scope().0.enumerate_cell_visibility() {
+            match visibility {
+                CellVisibility::Never => (),
+                CellVisibility::Previous(data) => {
+                    let light_colour = AMBIENT_COL;
+                    self.render_cell(
+                        coord,
+                        data,
+                        true,
+                        light_colour,
+                        ctx_tint!(ctx, LightBlend { light_colour }),
+                        fb,
+                    );
+                }
+                CellVisibility::Current { data, light_colour } => {
+                    let light_colour = light_colour.unwrap_or(AMBIENT_COL);
+                    self.render_cell(
+                        coord,
+                        data,
+                        false,
+                        light_colour,
+                        ctx_tint!(ctx, LightBlend { light_colour }),
+                        fb,
+                    );
+                }
             }
         }
     }
-}
 
-#[allow(clippy::too_many_arguments)]
-fn render_cell(
-    scope: &StateScope,
-    screen_coord: Coord,
-    world_coord: Coord,
-    cell: &VisibleCellData,
-    remembered: bool,
-    light_colour: Rgb24,
-    ctx: Ctx,
-    fb: &mut FrameBuffer,
-) {
-    cell.tiles.option_for_each_enumerate(|&tile, layer| {
-        let render_cell = render_cell_from_tile(scope, tile, world_coord, remembered);
-        let depth = layer_depth(layer);
-        fb.set_cell_relative_to_ctx(ctx, screen_coord, depth, render_cell);
-    });
+    fn render_cell(
+        &self,
+        coord: Coord,
+        cell: &VisibleCellData,
+        remembered: bool,
+        light_colour: Rgb24,
+        ctx: Ctx,
+        fb: &mut FrameBuffer,
+    ) {
+        cell.tiles.option_for_each_enumerate(|&tile, layer| {
+            let render_cell = self.render_cell_from_tile(tile, coord, remembered);
+            let depth = layer_depth(layer);
+            fb.set_cell_relative_to_ctx(ctx, coord, depth, render_cell);
+        });
 
-    cell.realtime.iter().for_each(|entity| {
-        let light_colour = Rgb24::new(light_colour.r, light_colour.g, light_colour.b);
-        if let Some(tile) = entity.tile {
-            let render_cell = render_cell_from_tile(scope, tile, entity.coord, remembered);
-            fb.set_cell_relative_to_ctx(ctx, screen_coord, 1, render_cell);
-        }
-
-        if entity.particle {
-            if let Some(fade) = entity.fade {
-                let alpha = (255 - fade) / 10;
-                let cell = RenderCell::BLANK
-                    .with_background(Rgb24::new_grey(187).normalised_mul(light_colour).to_rgba32(alpha));
-                fb.set_cell_relative_to_ctx(ctx, screen_coord, 1, cell);
+        cell.realtime.iter().for_each(|entity| {
+            let light_colour = Rgb24::new(light_colour.r, light_colour.g, light_colour.b);
+            if let Some(tile) = entity.tile {
+                let render_cell = self.render_cell_from_tile(tile, entity.coord, remembered);
+                fb.set_cell_relative_to_ctx(ctx, coord, 1, render_cell);
             }
+
+            if entity.particle {
+                if let Some(fade) = entity.fade {
+                    let alpha = (255 - fade) / 10;
+                    let cell = RenderCell::BLANK
+                        .with_background(Rgb24::new_grey(187).normalised_mul(light_colour).to_rgba32(alpha));
+                    fb.set_cell_relative_to_ctx(ctx, coord, 1, cell);
+                }
+            }
+        });
+    }
+
+    /// Associate each tile with a description of how to render it
+    fn render_cell_from_tile(&self, tile: Tile, coord: Coord, remembered: bool) -> RenderCell {
+        match tile {
+            // Terrain
+            Tile::Wall
+            | Tile::CaveWall
+            | Tile::Floor
+            | Tile::CaveFloor
+            | Tile::Water
+            | Tile::Grass
+            | Tile::GrassCrushed
+            | Tile::DoorClosed
+            | Tile::DoorOpen
+            | Tile::Reactor
+            | Tile::Stairs => terrain_renderable(self.scope(), tile, coord),
+
+            // Entity
+            Tile::Player | Tile::Npc(_) => npc_renderable(tile, remembered),
+            Tile::Bullet => RenderCell::BLANK.with_character('◊').with_background(color::BULLET),
+
+            Tile::Weapon(_)
+            | Tile::Medkit
+            | Tile::Upgrade
+            | Tile::Credit1
+            | Tile::Credit2
+            | Tile::Credit3 => item_renderable(tile),
         }
-    });
-}
-
-/// Associate each tile with a description of how to render it
-fn render_cell_from_tile(scope: &StateScope, tile: Tile, coord: Coord, remembered: bool) -> RenderCell {
-    match tile {
-        // Terrain
-        Tile::Wall
-        | Tile::CaveWall
-        | Tile::Floor
-        | Tile::CaveFloor
-        | Tile::Water
-        | Tile::Grass
-        | Tile::GrassCrushed
-        | Tile::DoorClosed
-        | Tile::DoorOpen
-        | Tile::Reactor
-        | Tile::Stairs => terrain_renderable(scope, tile, coord),
-
-        // Entity
-        Tile::Player | Tile::Npc(_) | Tile::Weapon(_) | Tile::Medkit => npc_renderable(tile, remembered),
-        Tile::Bullet => RenderCell::BLANK.with_character('*').with_background(color::BULLET),
     }
 }
 

@@ -6,12 +6,14 @@ mod options;
 mod paused;
 mod prologue;
 mod prompt;
+mod upgrade;
 
 pub use main_menu::*;
 pub use options::*;
 pub use paused::*;
 pub use prologue::*;
 pub use prompt::*;
+pub use upgrade::*;
 
 fn _menu_style<T: 'static>(menu: AppCF<T>) -> AppCF<T> {
     menu.border(BorderStyle::default()).fill(color::MENU_BACKGROUND).centre().overlay_tint(

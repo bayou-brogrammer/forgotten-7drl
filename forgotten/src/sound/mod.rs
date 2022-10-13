@@ -30,6 +30,7 @@ pub enum SoundEffect {
     // Actions
     Heal,
     Die,
+    Pickup,
 
     // Weapon
     Punch,

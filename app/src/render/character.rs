@@ -23,36 +23,7 @@ pub fn npc_renderable(tile: Tile, remembered: bool) -> RenderCell {
                     RenderCell::BLANK.with_character('Œ').with_foreground(DOOMBOT).with_bold(true)
                 }
             },
-            Tile::Weapon(weapon_type) => match weapon_type {
-                forgotten_game::WeaponType::BareHands => RenderCell::BLANK,
-                forgotten_game::WeaponType::CattleProd => {
-                    RenderCell::BLANK.with_character('Δ').with_foreground(YELLOW).with_bold(true)
-                }
-                forgotten_game::WeaponType::Chainsaw => {
-                    RenderCell::BLANK.with_character('Э').with_foreground(CHAINSAW).with_bold(true)
-                }
-                forgotten_game::WeaponType::Railgun => {
-                    RenderCell::BLANK.with_character('Я').with_foreground(PLASMA).with_bold(true)
-                }
-                forgotten_game::WeaponType::Leecher => {
-                    RenderCell::BLANK.with_character('ł').with_foreground(LEECH).with_bold(true)
-                }
-                forgotten_game::WeaponType::FiftyCal => {
-                    RenderCell::BLANK.with_character('£').with_foreground(GAUS).with_bold(true)
-                }
-                forgotten_game::WeaponType::Pistol => {
-                    RenderCell::BLANK.with_character('√').with_foreground(OXYGEN).with_bold(true)
-                }
-                forgotten_game::WeaponType::Rifle => {
-                    RenderCell::BLANK.with_character('∕').with_foreground(LASER).with_bold(true)
-                }
-            },
 
-            Tile::Medkit => RenderCell::BLANK
-                .with_character('†')
-                .with_foreground(HEALTH)
-                .with_background(LIGHT_RED)
-                .with_bold(true),
             _ => unreachable!("npc_renderable called with non-npc tile"),
         }
     }
@@ -76,10 +47,8 @@ pub fn terrain_renderable(scope: &StateScope, tile: Tile, coord: Coord) -> Rende
         Tile::Reactor => {
             RenderCell::BLANK.with_character('₪').with_background(LIGHT_GREY).with_foreground(REACTOR)
         }
-        Tile::Stairs => {
-            RenderCell::BLANK.with_character('>').with_foreground(STAIRS).with_background(BLUE_VIOLET)
-        }
-        _ => unreachable!("Tried to render a non-terrain tile as terrain"),
+        Tile::Stairs => RenderCell::BLANK.with_character('>').with_foreground(STAIRS),
+        _ => unreachable!("Tried to render a non-terrain tile as terrain: {:?}", tile),
     }
 }
 
@@ -102,7 +71,7 @@ pub fn wall_renderable(tile: Tile, is_wall_below: bool) -> RenderCell {
                     .with_foreground(CAVE_WALL_FG)
             }
         }
-        _ => unreachable!("wall_character called on non-wall tile"),
+        _ => unreachable!("wall_renderable called on non-wall tile"),
     }
 }
 
@@ -115,6 +84,57 @@ pub fn floor_renderable(tile: Tile) -> RenderCell {
         Tile::Water => {
             RenderCell::BLANK.with_character('≈').with_foreground(WATER_FG).with_background(WATER_BG)
         }
-        _ => unreachable!("wall_character called on non-wall tile"),
+        _ => unreachable!("floor_renderable called on non-wall tile"),
+    }
+}
+
+pub fn item_renderable(tile: Tile) -> RenderCell {
+    match tile {
+        Tile::Weapon(weapon_type) => match weapon_type {
+            forgotten_game::WeaponType::BareHands => RenderCell::BLANK,
+            forgotten_game::WeaponType::CattleProd => {
+                RenderCell::BLANK.with_character('Δ').with_foreground(YELLOW).with_bold(true)
+            }
+            forgotten_game::WeaponType::Chainsaw => {
+                RenderCell::BLANK.with_character('Э').with_foreground(CHAINSAW).with_bold(true)
+            }
+            forgotten_game::WeaponType::Railgun => {
+                RenderCell::BLANK.with_character('Я').with_foreground(PLASMA).with_bold(true)
+            }
+            forgotten_game::WeaponType::Leecher => {
+                RenderCell::BLANK.with_character('ł').with_foreground(LEECH).with_bold(true)
+            }
+            forgotten_game::WeaponType::FiftyCal => {
+                RenderCell::BLANK.with_character('ξ').with_foreground(GAUS).with_bold(true)
+            }
+            forgotten_game::WeaponType::Pistol => {
+                RenderCell::BLANK.with_character('┌').with_foreground(OXYGEN).with_bold(true)
+            }
+            forgotten_game::WeaponType::Rifle => {
+                RenderCell::BLANK.with_character('√').with_foreground(LASER).with_bold(true)
+            }
+        },
+
+        Tile::Medkit => RenderCell::BLANK
+            .with_character('†')
+            .with_foreground(HEALTH)
+            .with_background(MEDKIT_TOP)
+            .with_bold(true),
+        Tile::Upgrade => RenderCell::BLANK
+            .with_character('Ū')
+            .with_foreground(UPGRADE_FOREGROUND)
+            .with_background(UPGRADE_BACKGROUND)
+            .with_bold(true),
+        Tile::Credit1 => {
+            RenderCell::BLANK.with_character('1').with_foreground(CREDIT_FOREGROUND).with_bold(true)
+        }
+        Tile::Credit2 => {
+            RenderCell::BLANK.with_character('2').with_foreground(CREDIT_FOREGROUND).with_bold(true)
+        }
+        Tile::Credit3 => {
+            RenderCell::BLANK.with_character('3').with_foreground(CREDIT_FOREGROUND).with_bold(true)
+        }
+
+        _ => unreachable!("item_renderable called on non-wall tile"),
     }
 }

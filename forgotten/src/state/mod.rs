@@ -4,11 +4,13 @@ mod fire;
 mod get;
 mod prompt;
 mod running;
+mod upgrade;
 
 pub use fire::*;
 pub use get::*;
 pub use prompt::*;
 pub use running::*;
+pub use upgrade::*;
 
 /// The `Witness` type defined in this module is intended as the sole means of mutating the game
 /// state. Depending on the current state of the game, different types of mutation may be valid or
@@ -34,6 +36,7 @@ pub enum GameState {
     Win,
     GameOver,
     Prompt(Prompt),
+    Upgrade(UpgradeState),
     Running(Running),
     FireWeapon(FireWeapon),
     GetRangedWeapon(GetRangedWeapon),
@@ -52,7 +55,7 @@ pub struct StateScope(pub crate::Game);
 
 mod game_interface {
     use super::StateScope;
-    use crate::{CharacterInfo, ExternalEvent, Message, Player, VisibleCellData};
+    use crate::{CharacterInfo, ExternalEvent, Message, Player, Upgrade, VisibleCellData};
     use gridbugs::{coord_2d::Coord, visible_area_detection::VisibilityGrid};
 
     impl StateScope {
@@ -91,6 +94,11 @@ mod game_interface {
 
         pub fn events(&mut self) -> Vec<ExternalEvent> {
             crate::event::get_events()
+        }
+
+        pub fn available_upgrades(&self) -> Vec<Upgrade> {
+            let player = self.0.world.components.player.get(self.0.player_entity).expect("no player");
+            player.available_upgrades()
         }
     }
 }

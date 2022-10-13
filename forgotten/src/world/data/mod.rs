@@ -6,6 +6,7 @@ mod player;
 mod projectile;
 mod stats;
 mod terrain;
+mod upgrade;
 mod weapon;
 
 pub use npc::*;
@@ -13,6 +14,7 @@ pub use player::*;
 pub use projectile::*;
 pub use stats::*;
 pub use terrain::*;
+pub use upgrade::*;
 pub use weapon::*;
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
@@ -37,6 +39,10 @@ pub enum Tile {
     // Items
     Weapon(WeaponType),
     Medkit,
+    Upgrade,
+    Credit1,
+    Credit2,
+    Credit3,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -63,10 +69,10 @@ entity_table::declare_entity_module! {
         // Terrain
         solid: (),
         tile: Tile,
-        destructible: (),
         grass_state: GrassState,
         door_state: DoorState,
         stairs: (),
+        upgrade: (),
 
         //Entity
         npc: Npc,

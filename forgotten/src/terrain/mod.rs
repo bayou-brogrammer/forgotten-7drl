@@ -54,23 +54,29 @@ impl TerrainState {
     }
 }
 
-pub fn build_station(level: u8, player_data: Option<EntityData>) -> Terrain {
-    let mut terrain_state = TerrainState::new();
-
+pub fn build_station(
+    terrain_state: &mut TerrainState,
+    level: u8,
+    player_data: Option<EntityData>,
+) -> Terrain {
+    println!("Spawning terrain: {:?}", player_data);
     if level == 0 {
         return first_floor();
     } else if level == FINAL_LEVEL {
-        return last_floor(&mut terrain_state, player_data);
+        println!("Generating last floor");
     }
 
-    const STATION_SIZE: Size = Size::new_u16(40, 40);
+    const STATION_SIZE: Size = Size::new_u16(40, 33);
 
     let grid = procgen::generate(STATION_SIZE, level);
     let mut agents = ComponentTable::default();
     let mut world = World::new(STATION_SIZE, level);
     let (player_entity, mut empty_coords) = spawn_terrain(grid, &mut world, player_data);
 
-    generate_items(level, &mut world, &mut terrain_state, &mut empty_coords);
+    let player_coord = world.entity_coord(player_entity).unwrap();
+    empty_coords.retain(|coord| coord.manhattan_distance(player_coord) > 12);
+
+    generate_items(level, &mut world, terrain_state, &mut empty_coords);
     generate_npcs(level, &mut world, &mut empty_coords, &mut agents);
 
     Terrain { world, player_entity, agents }

@@ -38,8 +38,8 @@ pub mod spec {
 
     #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
     pub struct Damage {
-        pub range: UniformInclusiveRange<u32>,
         pub push_back: bool,
+        pub range: UniformInclusiveRange<u32>,
     }
 
     #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -193,7 +193,7 @@ impl RealtimeComponent for ParticleEmitterState {
                     hit_points: d.range.choose(&mut self.rng),
                     push_back: d.push_back,
                     pen: 0,
-                    hull_pen_percent: 0,
+                    stun_chance: None,
                     life_steal: false,
                     weapon_name: None,
                 })

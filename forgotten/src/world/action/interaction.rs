@@ -85,4 +85,38 @@ impl World {
             }
         }
     }
+
+    pub fn apply_upgrade(&mut self, entity: Entity, upgrade: Upgrade) -> Result<(), ActionError> {
+        let player = self.components.player.get_mut(entity).unwrap();
+        if player.credit < upgrade.level.cost() {
+            return ActionError::cannot_afford_upgrade();
+        }
+
+        player.credit -= upgrade.level.cost();
+        {
+            let player_level = match upgrade.typ {
+                UpgradeType::Toughness => &mut player.upgrade_table.toughness,
+            };
+
+            *player_level = Some(upgrade.level);
+        }
+
+        use UpgradeLevel::*;
+        use UpgradeType::*;
+        match upgrade {
+            Upgrade { typ: Toughness, level: Level1 } => {
+                player.ranged_weapons.push(None);
+            }
+            Upgrade { typ: Toughness, level: Level2 } => {
+                let hit_points = self.components.hp.get_mut(entity).unwrap();
+                hit_points.max *= 2;
+                hit_points.current *= 2;
+            }
+            Upgrade { typ: Toughness, level: Level3 } => {
+                player.traits.explosive_damage = true;
+            }
+        }
+
+        Ok(())
+    }
 }

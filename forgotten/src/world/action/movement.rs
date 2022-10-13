@@ -28,18 +28,19 @@ impl World {
                     if (collides_with.solid && self.components.solid.contains(entity_in_cell))
                         || (collides_with.character && self.components.character.contains(entity_in_cell))
                     {
-                        let mut stop = true;
                         if let Some(&projectile_damage) =
                             self.components.projectile_damage.get(projectile_entity)
                         {
-                            if self.components.destructible.contains(entity_in_cell) {
-                                let hull_pen_percent = projectile_damage.hull_pen_percent;
-                                if crate::rng::range(0..=100) < hull_pen_percent {
-                                    self.components.remove_entity(entity_in_cell);
-                                    self.spatial_table.remove(entity_in_cell);
-                                    stop = false;
-                                }
+                            if self.components.hp.contains(entity_in_cell) {
+                                self.apply_projectile_damage(
+                                    projectile_entity,
+                                    projectile_damage,
+                                    movement_direction,
+                                    entity_in_cell,
+                                );
                             }
+
+                            self.projectile_stop(projectile_entity);
                         }
 
                         // Slammed against a wall
@@ -58,10 +59,8 @@ impl World {
                             }
                         }
 
-                        if stop {
-                            self.projectile_stop(projectile_entity);
-                            return;
-                        }
+                        self.projectile_stop(projectile_entity);
+                        return;
                     }
                 }
 

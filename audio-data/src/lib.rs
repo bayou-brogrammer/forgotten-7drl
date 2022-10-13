@@ -17,6 +17,7 @@ lazy_static! {
         OVERLAY_MUSIC.get_file("happy_ending.ogg").unwrap().contents();
     // Sound Effects
     pub static ref DIE: &'static [u8] = SOUND_EFFECTS.get_file("die.ogg").unwrap().contents();
+    pub static ref PICKUP: &'static [u8] = SOUND_EFFECTS.get_file("pickup.ogg").unwrap().contents();
     pub static ref DOOR_OPEN: &'static [u8] = SOUND_EFFECTS.get_file("door_open.ogg").unwrap().contents();
     pub static ref DOOR_CLOSE: &'static [u8] = SOUND_EFFECTS.get_file("door_close.ogg").unwrap().contents();
     // Weapon Sounds

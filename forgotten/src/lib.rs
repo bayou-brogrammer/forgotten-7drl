@@ -71,6 +71,8 @@ pub struct Game {
     pub player_entity: Entity,
 
     pub turn_state: TurnState,
+    pub win_countdown: Option<Duration>,
+    pub terrain_state: TerrainState,
     pub agents: ComponentTable<Agent>,
     pub behavior_context: BehaviourContext,
     pub visibility_grid: VisibilityGrid<VisibleCellData>,
@@ -82,9 +84,13 @@ pub struct Game {
 
 impl Game {
     pub fn new<R: Rng>(config: &GameConfig, base_rng: &mut R) -> Self {
+        crate::log::clear_log();
+        crate::log::append_entry(Message::Intro);
         crate::rng::reseed_from_rng(base_rng);
 
-        let Terrain { player_entity, world, agents } = terrain::build_station(0, None);
+        let mut terrain_state = TerrainState::new();
+
+        let Terrain { player_entity, world, agents } = terrain::build_station(&mut terrain_state, 0, None);
         let visibility_grid = VisibilityGrid::new(world.size());
         let behavior_context = BehaviourContext::new(world.size());
 
@@ -94,9 +100,11 @@ impl Game {
             won: false,
             start: true,
             player_entity,
+            terrain_state,
             config: *config,
             visibility_grid,
             behavior_context,
+            win_countdown: None,
             turn_state: TurnState::PlayerTurn,
             since_last_frame: Duration::from_millis(0),
             animation_context: AnimationContext::default(),
@@ -125,7 +133,9 @@ impl Game {
     }
 
     pub fn run_systems(&mut self) {
-        if !self.world.is_gameplay_blocked() && self.turn_state == TurnState::EnemyTurn {
+        if (!self.world.is_gameplay_blocked() || self.win_countdown.is_some())
+            && self.turn_state == TurnState::EnemyTurn
+        {
             self.npc_turn();
             self.turn_state = TurnState::PlayerTurn;
 
@@ -136,7 +146,14 @@ impl Game {
                 if let Some(item) = self.world.components.item.get(item_entity) {
                     match item {
                         Item::Weapon(_) => {}
-                        Item::Credit(_) => todo!(),
+                        Item::Credit(amount) => {
+                            if let Some(player) = self.world.components.player.get_mut(self.player_entity) {
+                                crate::log::append_entry(Message::TakeCredit(*amount));
+                                crate::event::add_event(ExternalEvent::SoundEffect(SoundEffect::Pickup));
+                                player.credit += amount;
+                            }
+                            self.world.components.dead.insert(item_entity, ());
+                        }
                         Item::Medkit => {
                             self.world.heal_fully(self.player_entity);
                             self.world.components.dead.insert(item_entity, ());

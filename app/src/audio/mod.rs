@@ -52,6 +52,7 @@ impl AudioTable {
                 Audio::Explosion => audio_player.load_sound(&EXPLOSION),
                 Audio::SoundEffect(SoundEffect::Die) => audio_player.load_sound(&DIE),
                 Audio::SoundEffect(SoundEffect::Heal) => audio_player.load_sound(&HEAL),
+                Audio::SoundEffect(SoundEffect::Pickup) => audio_player.load_sound(&PICKUP),
                 Audio::SoundEffect(SoundEffect::DoorOpen) => audio_player.load_sound(&DOOR_OPEN),
                 Audio::SoundEffect(SoundEffect::DoorClose) => audio_player.load_sound(&DOOR_CLOSE),
 

@@ -48,9 +48,10 @@ pub const BULLET: Rgba32 = Rgba32::new_grey(0);
 pub const GAUS: Rgba32 = Rgba32::new_rgb(127, 0, 255);
 pub const PLASMA: Rgba32 = Rgba32::new_rgb(0x00, 0xFF, 0xFF);
 pub const CHAINSAW: Rgba32 = Rgba32::new_rgb(0x7a, 0x6a, 0x00);
-pub const CREDIT_FOREGROUND: Rgba32 = Rgba32::new_rgb(0, 127, 127);
 
-// pub const MEDKIT: Rgba32 = Rgba32::new_grey(200);
-// pub const MEDKIT_TOP: Rgba32 = Rgba32::new_grey(150);
-// pub const MAP_FOREGROUND: Rgba32 = Rgba32::new_rgb(0, 63, 0);
-// pub const MAP_BACKGROUND: Rgba32 = Rgba32::new_rgb(0, 255, 0);
+// Items
+pub const CREDIT_FOREGROUND: Rgba32 = Rgba32::new_rgb(0, 127, 127);
+pub const UPGRADE_FOREGROUND: Rgba32 = Rgba32::new_rgb(0, 187, 0);
+pub const UPGRADE_BACKGROUND: Rgba32 = Rgba32::new_rgb(0, 0, 0);
+pub const MEDKIT: Rgba32 = Rgba32::new_grey(200);
+pub const MEDKIT_TOP: Rgba32 = Rgba32::new_grey(150);

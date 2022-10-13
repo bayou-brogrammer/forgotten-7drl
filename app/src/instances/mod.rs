@@ -11,12 +11,14 @@ mod gameover;
 mod menus;
 mod playing;
 mod weapon;
+mod win;
 
 pub use examine::*;
 pub use gameover::*;
 pub use menus::*;
 pub use playing::*;
 pub use weapon::*;
+pub use win::*;
 
 pub fn _popup_delay(string: String) -> AppCF<()> {
     popup_style(

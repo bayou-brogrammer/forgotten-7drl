@@ -33,4 +33,8 @@ impl ActionError {
     pub fn can_not_descend<T>() -> Result<T, Self> {
         Self::err_msg("You can't descend here!")
     }
+
+    pub fn cannot_afford_upgrade<T>() -> Result<T, Self> {
+        Self::err_msg("You can't afford that!")
+    }
 }

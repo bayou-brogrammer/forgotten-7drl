@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use gridbugs::chargrid::{border::BorderStyle, text::Text};
 
-const N: usize = 7;
+const N: usize = 6;
 
 pub struct Log {}
 
@@ -23,7 +23,7 @@ impl Component for Log {
                 Message::EnemyDies(enemy) => {
                     vec![plain("The "), enemy_text(*enemy), plain(" dies.")]
                 }
-                Message::EnemyStunend(npc_type) => {
+                Message::EnemyStunned(npc_type) => {
                     vec![plain("The "), enemy_text(*npc_type), plain(" is stunned.")]
                 }
                 Message::EnemySlammedIntoWall(npc_type) => {
@@ -51,6 +51,9 @@ impl Component for Log {
                 Message::Heal => vec![plain("Health restored.")],
                 Message::Descend => {
                     vec![plain("You descend further into the compound... Your ammo has been refilled!")]
+                }
+                Message::TakeCredit(credit) => {
+                    vec![plain("You gain "), bold(&format!("{}", credit)), plain(" credits.")]
                 }
             };
 

@@ -27,10 +27,6 @@ impl GameInstance {
     pub fn render(&self, ctx: Ctx, fb: &mut FrameBuffer) {
         self.render_hud(ctx, fb);
         self.render_message_log(ctx, fb);
-
-        let offset = self.scope.player_coord() - (GAME_VIEW_SIZE / 2);
-        let ctx = ctx.add_offset(GAME_VIEW_OFFSET);
-        crate::render::render_game_with_visibility(&self.scope, offset, GAME_VIEW_SIZE, ctx, fb);
     }
 
     pub fn render_message_log(&self, ctx: Ctx, fb: &mut FrameBuffer) {

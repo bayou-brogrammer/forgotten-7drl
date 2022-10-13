@@ -302,13 +302,6 @@ impl Agent {
         match self.behaviour {
             Behaviour::Flee => NpcAction::Wait,
             Behaviour::Wander { avoid } => {
-                // let (coord, _) = self
-                //     .last_seen_grid
-                //     .enumerate()
-                //     .filter(|(_, c)| *c == CellVisibility::Never)
-                //     .choose(&mut rand::thread_rng())
-                //     .unwrap();
-
                 let mut path_node = behaviour_context.wander_path.pop();
                 let need_new_path = path_node.map_or(true, |path_node| {
                     let implied_current_coord = path_node.to_coord - path_node.in_direction.coord();

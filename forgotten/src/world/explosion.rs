@@ -41,12 +41,12 @@ fn character_effect_indirect_hit(
 ) -> CharacterEffect {
     let character_to_explosion_distance_squared = explosion_to_character.delta().magnitude2();
     let push_back = 1 + (mechanics.0 / (2 * (character_to_explosion_distance_squared + 1)));
-    CharacterEffect { push_back, damage: push_back * 2 }
+    CharacterEffect { push_back, damage: push_back * 4 }
 }
 
 const fn character_effect_direct_hit(mechanics: &spec::Mechanics) -> CharacterEffect {
     let push_back = mechanics.0 / 3;
-    CharacterEffect { push_back, damage: mechanics.0 * 3 }
+    CharacterEffect { push_back, damage: mechanics.0 * 7 }
 }
 
 fn apply_indirect_hit(
@@ -134,14 +134,6 @@ fn apply_mechanics(world: &mut World, explosion_coord: Coord, mechanics: &spec::
 
                 let explosion_to_character = LineSegment::new(explosion_coord, character_coord);
                 apply_indirect_hit(world, mechanics, character_entity, explosion_to_character);
-            }
-        }
-    }
-
-    for destructible_entity in world.components.destructible.entities().collect::<Vec<_>>() {
-        if let Some(coord) = world.spatial_table.coord_of(destructible_entity) {
-            if is_in_explosion_range(explosion_coord, mechanics, coord) {
-                world.components.dead.insert(destructible_entity, ());
             }
         }
     }

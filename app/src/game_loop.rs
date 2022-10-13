@@ -187,6 +187,7 @@ impl GameLoopData {
 
         let instance = self.instance.as_ref().unwrap();
         instance.render(ctx, fb);
+        self.render_game_with_visibility(ctx, fb);
 
         if let Some(cursor) = self.cursor {
             if cursor.is_valid(GAME_VIEW_SIZE + Size::new_u16(1, 1)) {
@@ -235,10 +236,7 @@ impl GameLoopData {
     }
 
     pub fn update_examine_text(&mut self) {
-        self.examine_message = self.cursor.and_then(|coord| {
-            let world_coord = self.scope().player_coord() - (GAME_VIEW_SIZE / 2) + coord;
-            examine(self.scope(), world_coord)
-        });
+        self.examine_message = self.cursor.and_then(|coord| examine(self.scope(), coord));
     }
 }
 
@@ -266,7 +264,7 @@ pub fn game_loop_component(initial_state: GameLoopState) -> AppCF<()> {
                 }
             }),
             Playing(witness) => match witness {
-                GameState::Win => todo!(),
+                GameState::Win => win().map_val(|| MainMenu).continue_(),
                 GameState::GameOver => game_over().map_val(|| MainMenu).continue_(),
                 GameState::Prompt(prompt_witness) => prompt(prompt_witness).map(Playing).continue_(),
                 GameState::Running(running) => game_instance_component(running).continue_(),
@@ -277,6 +275,7 @@ pub fn game_loop_component(initial_state: GameLoopState) -> AppCF<()> {
                     try_get_melee_weapon(melee_witness).map(Playing).continue_()
                 }
                 GameState::FireWeapon(fire_witness) => fire_weapon(fire_witness).map(Playing).continue_(),
+                GameState::Upgrade(upgrade) => try_upgrade_component(upgrade).map(Playing).continue_(),
             },
             Examine(running) => {
                 game_examine_component().map_val(|| Playing(running.into_witness())).continue_()

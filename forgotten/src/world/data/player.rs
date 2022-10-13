@@ -3,22 +3,24 @@ use crate::prelude::*;
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct Player {
     pub credit: u32,
-    pub melee_weapon: Weapon,
     pub traits: PlayerTraits,
-    pub ranged_weapons: [Option<Weapon>; 2],
+    pub melee_weapon: Weapon,
+    pub upgrade_table: UpgradeTable,
+    pub ranged_weapons: Vec<Option<Weapon>>,
 }
 
 impl Player {
     pub fn new() -> Self {
         Self {
             credit: 0,
-            ranged_weapons: [None, None],
             traits: Default::default(),
+            ranged_weapons: vec![None, None],
             melee_weapon: Weapon::new_bare_hands(),
+            upgrade_table: UpgradeTable { toughness: None, accuracy: None, endurance: None },
         }
     }
 
-    pub const fn weapon_in_slot(&self, slot: RangedWeaponSlot) -> Option<&Weapon> {
+    pub fn weapon_in_slot(&self, slot: RangedWeaponSlot) -> Option<&Weapon> {
         if slot.index() >= self.ranged_weapons.len() {
             return None;
         }
@@ -37,6 +39,22 @@ impl Player {
     pub const fn melee_pen(&self) -> u32 {
         self.melee_weapon.pen
     }
+
+    pub fn available_upgrades(&self) -> Vec<Upgrade> {
+        let mut out = Vec::new();
+        match self.upgrade_table.toughness {
+            None => out.push(Upgrade { typ: UpgradeType::Toughness, level: UpgradeLevel::Level1 }),
+            Some(UpgradeLevel::Level1) => {
+                out.push(Upgrade { typ: UpgradeType::Toughness, level: UpgradeLevel::Level2 })
+            }
+            Some(UpgradeLevel::Level2) => {
+                out.push(Upgrade { typ: UpgradeType::Toughness, level: UpgradeLevel::Level3 })
+            }
+            Some(UpgradeLevel::Level3) => (),
+        }
+
+        out
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -54,4 +72,5 @@ pub struct CharacterInfo {
 pub struct PlayerTraits {
     pub double_stun: u8,
     pub double_damage: bool,
+    pub explosive_damage: bool,
 }

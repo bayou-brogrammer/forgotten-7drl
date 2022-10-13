@@ -28,8 +28,8 @@ impl Default for Controls {
             // Action Keys
             KeyboardInput::Char('g') => AppInput::Get,
             KeyboardInput::Char(' ') => AppInput::Wait,
-            KeyboardInput::Char('x') => AppInput::Examine,
             KeyboardInput::Char('.') => AppInput::Descend,
+            KeyboardInput::Char('x') => AppInput::Examine,
 
             // Movement Keys
             KeyboardInput::Up => AppInput::Direction(CardinalDirection::North),

@@ -129,6 +129,8 @@ impl World {
             entity_data! {
                 solid: (),
                 reactor: (),
+                character: (),
+                explodes_on_death: (),
                 tile: Tile::Reactor,
                 armour: Armour::new(0),
                 hp: HitPoints::new_full(30)
@@ -164,9 +166,15 @@ impl World {
                 damage: 1,
                 character: (),
                 armour: Armour::new(1),
-                hp: HitPoints::new_full(4),
+                hp: HitPoints::new_full(3),
                 tile: Tile::Npc(NpcType::MiniBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::MiniBot, move_to: None, weapon: None    },
+                npc: Npc {
+                    drop_chance: 5,
+                    disposition: Disposition::Hostile,
+                    npc_type: NpcType::MiniBot,
+                    move_to: None,
+                    weapon: None
+                },
             },
         )
     }
@@ -180,7 +188,13 @@ impl World {
                 armour: Armour::new(3),
                 hp: HitPoints::new_full(5),
                 tile: Tile::Npc(NpcType::SecBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::SecBot , move_to: None, weapon: None   },
+                npc: Npc {
+                    drop_chance: 15,
+                    disposition: Disposition::Hostile,
+                    npc_type: NpcType::SecBot ,
+                    move_to: None,
+                    weapon: None
+                },
             },
         )
     }
@@ -194,7 +208,13 @@ impl World {
                 armour: Armour::new(4),
                 hp: HitPoints::new_full(10),
                 tile: Tile::Npc(NpcType::RoboCop),
-                npc: Npc {disposition:Disposition::Hostile,npc_type:NpcType::RoboCop, move_to: None, weapon: None   },
+                npc: Npc {
+                    drop_chance: 40,
+                    disposition:Disposition::Hostile,
+                    npc_type:NpcType::RoboCop,
+                    move_to: None,
+                    weapon: None
+                },
             },
         )
     }
@@ -223,7 +243,13 @@ impl World {
                 armour: Armour::new(6),
                 hp: HitPoints::new_full(20),
                 tile: Tile::Npc(NpcType::DoomBot),
-                npc: Npc { disposition: Disposition::Hostile, npc_type: NpcType::DoomBot, move_to: None, weapon  },
+                npc: Npc {
+                    drop_chance: 80,
+                    disposition: Disposition::Hostile,
+                    npc_type: NpcType::DoomBot,
+                    move_to: None,
+                    weapon
+                },
             },
         )
     }
@@ -246,6 +272,36 @@ impl World {
             entity_data! {
                 tile: Tile::Medkit,
                 item: Item::Medkit,
+            },
+        );
+    }
+
+    pub fn spawn_upgrade(&mut self, coord: Coord) {
+        self.spawn_entity(
+            (coord, Layer::Feature),
+            entity_data! {
+                solid: (),
+                upgrade: (),
+                tile: Tile::Upgrade,
+                item: Item::Medkit,
+            },
+        );
+    }
+
+    pub fn spawn_credit(&mut self, coord: Coord, value: u32) {
+        let tile = if value == 1 {
+            Tile::Credit1
+        } else if value == 2 {
+            Tile::Credit2
+        } else {
+            Tile::Credit3
+        };
+
+        self.spawn_entity(
+            (coord, Layer::Item),
+            entity_data! {
+                tile,
+                item: Item::Credit(value),
             },
         );
     }
@@ -363,7 +419,7 @@ impl World {
                     pen: weapon.pen,
                     hit_points: weapon.dmg,
                     weapon_name: Some(weapon.name),
-                    hull_pen_percent: weapon.hull_pen_percent,
+                    stun_chance: weapon.stun_percent,
                     push_back: weapon
                         .abilities
                         .iter()

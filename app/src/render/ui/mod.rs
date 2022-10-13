@@ -36,20 +36,22 @@ impl Component for Hud {
         ];
         Text::from(text).render(&(), ctx, fb);
 
-        render_weapon("Melee:", &player.melee_weapon, player, ctx.add_y(5), fb);
+        let mut y = 4;
+        render_weapon("Melee:", &player.melee_weapon, player, ctx.add_y(y), fb);
 
-        let ctx = ctx.add_y(13);
+        y += 7;
+        let ctx = ctx.add_y(y);
         for (i, ranged_slot) in player.ranged_weapons.iter().enumerate() {
             if let Some(weapon) = ranged_slot {
                 render_weapon(
                     format!("Ranged {}:", i + 1).as_str(),
                     weapon,
                     player,
-                    ctx.add_y(i as i32 * 6),
+                    ctx.add_y(i as i32 * 7),
                     fb,
                 );
             } else {
-                render_empty_weapon_slot(format!("Ranged {}:", i + 1).as_str(), ctx.add_y(i as i32 * 10), fb);
+                render_empty_weapon_slot(format!("Ranged {}:", i + 1).as_str(), ctx.add_y(i as i32 * 7), fb);
             }
         }
     }
@@ -57,7 +59,7 @@ impl Component for Hud {
     fn update(&mut self, _: &mut Self::State, _: Ctx, _: Event) -> Self::Output {}
 
     fn size(&self, _: &Self::State, ctx: Ctx) -> Size {
-        Size::new(ctx.bounding_box.size().width() + 1, GAME_VIEW_SIZE.height() - 1)
+        Size::new(ctx.bounding_box.size().width() + 1, GAME_VIEW_SIZE.height())
     }
 }
 

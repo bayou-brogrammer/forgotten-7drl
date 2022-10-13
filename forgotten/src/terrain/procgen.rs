@@ -1,16 +1,20 @@
 use super::builders;
 use crate::prelude::*;
-use gridbugs::grid_2d::Grid;
+use gridbugs::{direction::Directions, grid_2d::Grid};
 
-const DISTANCE_FOR_STAIRS: u32 = 125;
+const DISTANCE_FOR_STAIRS: u32 = 25;
 
 fn choose_stairs_coord(map: &mut Grid<LevelCell>, player_coord: Coord) {
     let mut possible_stairs = map
         .enumerate()
         .filter(|(_, cell)| **cell == LevelCell::Floor || **cell == LevelCell::CaveFloor)
-        .filter_map(
-            |(coord, _)| if coord.distance2(player_coord) > DISTANCE_FOR_STAIRS { Some(coord) } else { None },
-        )
+        .filter_map(|(coord, _)| {
+            if coord.manhattan_distance(player_coord) > DISTANCE_FOR_STAIRS {
+                Some(coord)
+            } else {
+                None
+            }
+        })
         .collect::<Vec<_>>();
 
     crate::rng::shuffle(&mut possible_stairs);
@@ -50,6 +54,7 @@ pub fn generate_from_str(s: &str) -> Grid<LevelCell> {
                 '>' => LevelCell::Stairs,
                 '@' => LevelCell::PlayerSpawn,
                 'R' => LevelCell::Light(Rgb24 { r: 255, g: 0, b: 0 }),
+                'r' => LevelCell::Reactor,
                 _ => unreachable!("Unknown tile: {}", ch),
             };
 
@@ -117,16 +122,16 @@ pub fn generate_items(
 ) {
     crate::rng::shuffle(empty_coords);
 
-    // for _ in 0..2 {
-    //     if let Some(coord) = empty_coords.pop() {
-    //         world.spawn_credit(coord, 2);
-    //     }
-    // }
-    // for _ in 0..4 {
-    //     if let Some(coord) = empty_coords.pop() {
-    //         world.spawn_credit(coord, 1);
-    //     }
-    // }
+    for _ in 0..2 {
+        if let Some(coord) = empty_coords.pop() {
+            world.spawn_credit(coord, 2);
+        }
+    }
+    for _ in 0..4 {
+        if let Some(coord) = empty_coords.pop() {
+            world.spawn_credit(coord, 1);
+        }
+    }
     for _ in 0..1 {
         if let Some(coord) = empty_coords.pop() {
             world.spawn_medkit(coord);
@@ -151,6 +156,20 @@ pub fn generate_items(
             world.spawn_weapon(coord, WeaponType::Chainsaw);
         }
     }
+
+    'outer1: for (i, &coord) in empty_coords.iter().enumerate() {
+        for direction in Directions {
+            let nei = coord + direction.coord();
+            if let Some(layers) = world.spatial_table.layers_at(nei) {
+                if layers.feature.is_some() {
+                    continue 'outer1;
+                }
+            }
+        }
+        world.spawn_upgrade(coord);
+        empty_coords.swap_remove(i);
+        break;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -171,8 +190,8 @@ impl EnemyCounts {
         Self {
             mini: vec![8, 10, 10, 12, 12],
             sec: vec![2, 2, 4, 6, 6],
-            sentry: vec![2, 3, 3, 4, 4],
-            doom: vec![0, 0, 1, 2, 4],
+            sentry: vec![0, 1, 2, 3, 3],
+            doom: vec![0, 0, 1, 2, 3],
         }
     }
 }

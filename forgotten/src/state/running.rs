@@ -44,6 +44,10 @@ impl Running {
         GameState::FireWeapon(FireWeapon { slot, private: self.0 })
     }
 
+    fn into_upgrade(self) -> GameState {
+        GameState::Upgrade(UpgradeState(self.0))
+    }
+
     pub(crate) fn handle_control_flow(self, cf: Option<ControlFlow>) -> GameState {
         match cf {
             None => self.into_witness(),
@@ -55,6 +59,7 @@ impl Running {
                 ControlFlow::GetRanged => self.into_ranged_witness(),
                 ControlFlow::Prompt(message) => self.into_prompt_witness(message),
                 ControlFlow::FireWeapon(slot) => self.into_fire_witness(slot),
+                ControlFlow::Upgrade => self.into_upgrade(),
             },
         }
     }

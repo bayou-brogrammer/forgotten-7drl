@@ -16,6 +16,7 @@ pub enum Disposition {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Npc {
+    pub drop_chance: u8,
     pub npc_type: NpcType,
     pub weapon: Option<Weapon>,
     pub move_to: Option<Coord>,
