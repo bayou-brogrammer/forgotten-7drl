@@ -202,9 +202,9 @@ impl EnemyCounts {
     fn new() -> Self {
         Self {
             mini: vec![8, 10, 10, 12, 12],
-            sec: vec![2, 2, 4, 6, 6],
-            sentry: vec![0, 1, 2, 3, 3],
-            doom: vec![0, 0, 1, 2, 3],
+            sec: vec![0, 1, 2, 5, 6],
+            sentry: vec![0, 0, 1, 2, 2],
+            doom: vec![0, 0, 0, 1, 2],
         }
     }
 }

@@ -148,7 +148,7 @@ impl World {
                 tile: Tile::Player,
                 player: Player::new(),
                 armour: Armour::new(3),
-                hp: HitPoints::new_full(100),
+                hp: HitPoints::new_full(25),
                 vision: vision_distance::Circle::new(200),
                 light: Light {
                     colour: Rgb24::new_grey(200),
