@@ -30,15 +30,19 @@ fn main_menu() -> AppCF<MainMenuEntry> {
         add_item(Options, "Options", 'o');
         add_item(Help, "Help", 'h');
         add_item(Prologue, "Prologue", 'p');
+
         if state.config.won {
             add_item(Epilogue, "Epilogue", 'e');
         }
-        add_item(Quit, "Quit", 'q');
+        if !state.web {
+            add_item(Quit, "Quit", 'q');
+        }
+
         builder.build_cf()
     })
 }
 
-fn title_decorate<T: 'static>(cf: AppCF<T>) -> AppCF<T> {
+pub fn title_decorate<T: 'static>(cf: AppCF<T>) -> AppCF<T> {
     cf.with_title(styled_string(LAUNCHER_TITLE.to_string(), Style::plain_text()), 2).centre()
 }
 

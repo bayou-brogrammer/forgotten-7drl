@@ -22,6 +22,7 @@ pub struct ScreenShake {
 }
 
 pub struct GameLoopData {
+    pub web: bool,
     pub config: AppConfig,
     pub controls: Controls,
     pub storage: AppStorage,
@@ -52,6 +53,7 @@ impl GameLoopData {
         initial_rng_seed: InitialRngSeed,
         audio_player: AppAudioPlayer,
         force_new_game: bool,
+        web: bool,
     ) -> (Self, GameLoopState) {
         let mut rng_seed_source = RngSeedSource::new(initial_rng_seed);
         let (instance, state) = match storage.load_game() {
@@ -89,6 +91,7 @@ impl GameLoopData {
         }
 
         let game_loop_data = Self {
+            web,
             audio_state,
             config,
             storage,

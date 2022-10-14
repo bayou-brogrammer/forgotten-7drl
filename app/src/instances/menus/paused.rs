@@ -5,7 +5,7 @@ enum PauseMenuEntry {
     Resume,
     SaveQuit,
     Save,
-    NewGame,
+    Options,
     Help,
     Clear,
 }
@@ -28,7 +28,7 @@ fn pause_menu() -> AppCF<PauseMenuEntry> {
     add_item(Resume, "Resume", 'r');
     add_item(SaveQuit, "Save and Quit", 'q');
     add_item(Save, "Save", 's');
-    add_item(NewGame, "New Game", 'n');
+    add_item(Options, "Options", 'o');
     add_item(Help, "Help", 'h');
     add_item(Clear, "Clear", 'c');
     builder.build_cf()
@@ -50,10 +50,7 @@ pub fn pause_menu_loop(running: state::Running) -> AppCF<PauseOutput> {
                     running: state.save_instance(running),
                 })
                 .break_(),
-                NewGame => {
-                    on_state(|state: &mut State| PauseOutput::ContinueGame { running: state.new_game() })
-                        .break_()
-                }
+                Options => options_menu().continue_with(running),
                 Help => text::help(text_width).continue_with(running),
                 Clear => on_state(|state: &mut State| {
                     state.clear_saved_game();

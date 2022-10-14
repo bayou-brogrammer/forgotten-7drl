@@ -28,6 +28,7 @@ pub fn run() -> Result<(), JsValue> {
         audio_player,
         omniscient: false,
         new_game: false,
+        web: true,
     };
     context.run(run_app(args));
     Ok(())

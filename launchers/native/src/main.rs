@@ -129,7 +129,7 @@ fn main() {
             }
         }
     };
-    let args = AppArgs { storage, initial_rng_seed, audio_player, omniscient, new_game };
+    let args = AppArgs { storage, initial_rng_seed, audio_player, omniscient, new_game, web: false };
 
     match frontend.unwrap_or_else(|| FrontEnd::Wgpu(Wgpu::default())) {
         FrontEnd::Wgpu(wgpu) => wgpu.run(forgotten_app::run_app(args)),

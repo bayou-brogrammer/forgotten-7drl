@@ -54,6 +54,7 @@ impl Default for AppConfig {
 }
 
 pub struct AppArgs {
+    pub web: bool,
     pub new_game: bool,
     pub omniscient: bool,
     pub storage: AppStorage,
@@ -61,11 +62,13 @@ pub struct AppArgs {
     pub initial_rng_seed: InitialRngSeed,
 }
 
-pub fn run_app(AppArgs { storage, initial_rng_seed, omniscient, new_game, audio_player }: AppArgs) -> App {
+pub fn run_app(
+    AppArgs { storage, initial_rng_seed, omniscient, new_game, audio_player, web }: AppArgs,
+) -> App {
     let config = GameConfig { omniscient, debug: false };
 
     let (game_loop_data, initial_state) =
-        game_loop::GameLoopData::new(config, storage, initial_rng_seed, audio_player, new_game);
+        game_loop::GameLoopData::new(config, storage, initial_rng_seed, audio_player, new_game, web);
 
     game_loop::game_loop_component(initial_state)
         .map(|_| app::Exit)
