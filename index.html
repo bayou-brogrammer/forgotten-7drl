@@ -24,11 +24,11 @@
     
     
     
-    <script type="module">import init from '/forgotten-7drl/forgotten_web-2be6cf57b797655c.js';init('/forgotten-7drl/forgotten_web-2be6cf57b797655c_bg.wasm');</script>
+    <script type="module">import init from '/forgotten-7drl/forgotten_web-2a29efe995be3c24.js';init('/forgotten-7drl/forgotten_web-2a29efe995be3c24_bg.wasm');</script>
 
 
-<link rel="preload" href="/forgotten-7drl/forgotten_web-2be6cf57b797655c_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
-<link rel="modulepreload" href="/forgotten-7drl/forgotten_web-2be6cf57b797655c.js"></head>
+<link rel="preload" href="/forgotten-7drl/forgotten_web-2a29efe995be3c24_bg.wasm" as="fetch" type="application/wasm" crossorigin="">
+<link rel="modulepreload" href="/forgotten-7drl/forgotten_web-2a29efe995be3c24.js"></head>
 
 <body>
     <style>
@@ -59,13 +59,13 @@
             -ms-user-select: none;
             user-select: none;
             font-family: PxPlus_IBM_CGA;
-            font-size: 15px;
-            line-height: 15px;
+            font-size: 12px;
+            line-height: 12px;
         }
     
         #content>span {
-            width: 15px;
-            height: 15px;
+            width: 12px;
+            height: 12px;
         }
     
         @font-face {
@@ -83,5 +83,27 @@
     <div id="main">
         <div id="content"></div>
     </div>
+
+    <script>
+        window.addEventListener('keydown', (e) => {
+            if (e.target.localName != 'input') {   // if you need to filter <input> elements
+                switch (e.keyCode) {
+                    case 37: // left
+                    case 39: // right
+                        e.preventDefault();
+                        break;
+                    case 38: // up
+                    case 40: // down
+                        e.preventDefault();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }, {
+            capture: true,   // this disables arrow key scrolling in modern Chrome
+            passive: false   // this is optional, my code works without it
+        });
+    </script>
 
 </body></html>
